@@ -21,7 +21,7 @@ Three *polymorphic collections* are provided:
 
 * [`boost::base_collection`](http://rawgit.com/joaquintides/poly_collection/website/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection) 
 * [`boost::function_collection`](http://rawgit.com/joaquintides/poly_collection/website/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection)
-* [`any::base_collection`](http://rawgit.com/joaquintides/poly_collection/website/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection)
+* [`boost::any_collection`](http://rawgit.com/joaquintides/poly_collection/website/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection)
 
 dealing respectively with classic base/derived or OOP polymorphism, function wrapping
 in the spirit of `std::function` and so-called
