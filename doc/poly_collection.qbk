@@ -336,7 +336,7 @@ so that we can use it to specify the interface all entities have to adhere to:
 
 [basic_any_2]
 
-The collection just created happily accepts insertion of heteroenegous entities
+The collection just created happily accepts insertion of heteroegeneous entities
 (since interface conformity is silently checked at compile time)
 
 [basic_any_3]
@@ -512,7 +512,7 @@ advance to minimize reallocations:
 [segmented_structure_9]
 
 If there is no segment for the indicated type (here, `goblin`), one is
-automatically created. This is in contrast with the rest segment-specific
+automatically created. This is in contrast with the rest of segment-specific
 member functions, which throw
 [link poly_collection.tutorial.deeper_into_the_segmented_nature.type_registration
 `boost::poly_collection::unregistered_type`].
