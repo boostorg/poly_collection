@@ -902,9 +902,9 @@ public:
   void swap(poly_collection& x){map.swap(x.map);}
 
 private:
-  template<typename B,typename A>
+  template<typename M,typename A>
   friend bool operator==(
-    const poly_collection<B,A>&,const poly_collection<B,A>&);
+    const poly_collection<M,A>&,const poly_collection<M,A>&);
 
   template<
     typename T,
