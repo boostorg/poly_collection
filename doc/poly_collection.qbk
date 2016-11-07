@@ -336,7 +336,7 @@ so that we can use it to specify the interface all entities have to adhere to:
 
 [basic_any_2]
 
-The collection just created happily accepts insertion of heteroegeneous entities
+The collection just created happily accepts insertion of heterogeneous entities
 (since interface conformity is silently checked at compile time)
 
 [basic_any_3]
