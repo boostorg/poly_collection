@@ -1434,7 +1434,7 @@ as:[br]
 
 [*Requires:] The expression `expr` is well-formed, where `expr` is defined
 as:[br]
-(1) [' `alg`]`(rfirst,rlast,args...)`,[br]
+(1) `std::`[' `alg`]`(rfirst,rlast,args...)`,[br]
 (2) `std::copy_n(rfirst,args...)`,[br]
 (3) `std::rotate_copy(rfirst,rmiddle,rlast,args...)`,[br]
 and `rfirst`, `rmiddle` and `rlast` are iterator-like objects behaving like

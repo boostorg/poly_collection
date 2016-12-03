@@ -254,7 +254,7 @@ juggernaut 0,juggernaut 4,goblin 1,goblin 3,goblin 5,goblin 8,warrior 2,warrior 
 [section `boost::function_collection`]
 
 [import ../example/basic_function.cpp]
-(Code samples from [@../../example/basic_base.cpp `basic_function.cpp`].)
+(Code samples from [@../../example/basic_function.cpp `basic_function.cpp`].)
 
 Well into the development of the game, the product manager requests that two new
 types of entities be added to the rendering loop:
@@ -554,7 +554,7 @@ the capacity of the collection drops to more mundane values:
 We already know that `insert(x)`, without further positional information,
 stores `x` at the end of its associated segment. When a regular iterator `it`
 is provided, insertion happens at the position indicated if both `it` and
-`x` belongs in the same segment; otherwise, `it` is ignored. For instance,
+`x` belong in the same segment; otherwise, `it` is ignored. For instance,
 if our sprite collection has the following entities:
 
 [pre
@@ -842,7 +842,7 @@ calls are not needed.
 
 [def _vs2015_x86_ Visual Studio 2015 x86]
 [def _vs2015_x64_ Visual Studio 2015 x64]
-[def _gcc521_x64_ GCC 5.2.1 x64]
+[def _gcc52_x64_ GCC 5.2 x64]
 [def _clang37_x64_ Clang 3.7 x64]
 
 [template perf_fig[name environment file]
@@ -875,7 +875,7 @@ following environments:
 
 * *_vs2015_x86_*: Visual C++ 2015 in 32-bit (x86) release mode, Windows 7 64-bit, Intel Core i5-2520M @2.5GHz
 * *_vs2015_x64_*: Visual C++ 2015 in 64-bit (x64) release mode, same machine
-* *_gcc521_x64_*: GCC 5.2.1 release mode, Ubuntu 12.04 LTS Server Edition 64 bit, HW specs unknown
+* *_gcc52_x64_*: GCC 5.2 release mode, Linux 64 bit, Intel Core i7-3770K @3.5HGz
 * *_clang37_x64_*: Clang 3.7 release mode, same machine
 
 [section Container definitions]
@@ -926,21 +926,21 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_base_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_base_vs2015_x64]
-[perf_fig Insertion.._gcc521_x64_..insert_base_gcc521_x64]
+[perf_fig Insertion.._gcc52_x64_..insert_base_gcc52_x64]
 [perf_fig Insertion.._clang37_x64_..insert_base_clang37_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_function_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_function_vs2015_x64]
-[perf_fig Insertion.._gcc521_x64_..insert_function_gcc521_x64]
+[perf_fig Insertion.._gcc52_x64_..insert_function_gcc52_x64]
 [perf_fig Insertion.._clang37_x64_..insert_function_clang37_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_any_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_any_vs2015_x64]
-[perf_fig Insertion.._gcc521_x64_..insert_any_gcc521_x64]
+[perf_fig Insertion.._gcc52_x64_..insert_any_gcc52_x64]
 [perf_fig Insertion.._clang37_x64_..insert_any_clang37_x64]
 [endsect]
 
@@ -991,21 +991,21 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_base_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_base_vs2015_x64]
-[perf_fig Processing.._gcc521_x64_..for_each_base_gcc521_x64]
+[perf_fig Processing.._gcc52_x64_..for_each_base_gcc52_x64]
 [perf_fig Processing.._clang37_x64_..for_each_base_clang37_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_function_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_function_vs2015_x64]
-[perf_fig Processing.._gcc521_x64_..for_each_function_gcc521_x64]
+[perf_fig Processing.._gcc52_x64_..for_each_function_gcc52_x64]
 [perf_fig Processing.._clang37_x64_..for_each_function_clang37_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_any_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_any_vs2015_x64]
-[perf_fig Processing.._gcc521_x64_..for_each_any_gcc521_x64]
+[perf_fig Processing.._gcc52_x64_..for_each_any_gcc52_x64]
 [perf_fig Processing.._clang37_x64_..for_each_any_clang37_x64]
 [endsect]
 
@@ -1021,7 +1021,8 @@ The library uses [@http://www.pdimov.com/ Peter Dimov]'s
 [@http://www.pdimov.com/cpp2/simple_cxx11_metaprogramming.html implementation
 of `std::make_index_sequence`].
 [@http://manu343726.github.io/ Manu Sánchez] aided immensely with CI setup and
-performance testing.
+performance testing. [@http://stackoverflow.com/users/85371/sehe Sehe]
+contributed performance results for GCC 5.2.
 
 Boost.PolyCollection was designed and written between rainy
 [@https://es.wikipedia.org/wiki/Viav%C3%A9lez Viavélez], noisy Madrid and beautiful
