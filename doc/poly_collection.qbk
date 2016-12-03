@@ -73,8 +73,8 @@ stored for further opportunities of increased efficiency related to inlining and
 [@http://hubicka.blogspot.com.es/2014/01/devirtualization-in-c-part-1.html ['devirtualization]].
 
 [note Boost.PolyCollection is a header-only library. C++11 support is required.
-The library has been verified to work with Visual Studio 2015, GCC 5.2.1 and
-Clang 3.7.]
+The library has been verified to work with Visual Studio 2015, GCC 5.2 and
+Clang 3.9.]
 
 [endsect]
 
@@ -843,7 +843,7 @@ calls are not needed.
 [def _vs2015_x86_ Visual Studio 2015 x86]
 [def _vs2015_x64_ Visual Studio 2015 x64]
 [def _gcc52_x64_ GCC 5.2 x64]
-[def _clang37_x64_ Clang 3.7 x64]
+[def _clang39_x64_ Clang 3.9 x64]
 
 [template perf_fig[name environment file]
 [section [environment]]
@@ -876,7 +876,7 @@ following environments:
 * *_vs2015_x86_*: Visual C++ 2015 in 32-bit (x86) release mode, Windows 7 64-bit, Intel Core i5-2520M @2.5GHz
 * *_vs2015_x64_*: Visual C++ 2015 in 64-bit (x64) release mode, same machine
 * *_gcc52_x64_*: GCC 5.2 release mode, Linux 64 bit, Intel Core i7-3770K @3.5HGz
-* *_clang37_x64_*: Clang 3.7 release mode, same machine
+* *_clang39_x64_*: Clang 3.9 release mode, Xubuntu 16.04 x64, Intel Core i7-5820 @3.3GHz 
 
 [section Container definitions]
 
@@ -927,21 +927,21 @@ The horizontal axis is logarithmic.
 [perf_fig Insertion.._vs2015_x86_..insert_base_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_base_vs2015_x64]
 [perf_fig Insertion.._gcc52_x64_..insert_base_gcc52_x64]
-[perf_fig Insertion.._clang37_x64_..insert_base_clang37_x64]
+[perf_fig Insertion.._clang39_x64_..insert_base_clang39_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_function_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_function_vs2015_x64]
 [perf_fig Insertion.._gcc52_x64_..insert_function_gcc52_x64]
-[perf_fig Insertion.._clang37_x64_..insert_function_clang37_x64]
+[perf_fig Insertion.._clang39_x64_..insert_function_clang39_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_any_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_any_vs2015_x64]
 [perf_fig Insertion.._gcc52_x64_..insert_any_gcc52_x64]
-[perf_fig Insertion.._clang37_x64_..insert_any_clang37_x64]
+[perf_fig Insertion.._clang39_x64_..insert_any_clang39_x64]
 [endsect]
 
 [endsect]
@@ -992,21 +992,21 @@ The horizontal axis is logarithmic.
 [perf_fig Processing.._vs2015_x86_..for_each_base_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_base_vs2015_x64]
 [perf_fig Processing.._gcc52_x64_..for_each_base_gcc52_x64]
-[perf_fig Processing.._clang37_x64_..for_each_base_clang37_x64]
+[perf_fig Processing.._clang39_x64_..for_each_base_clang39_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_function_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_function_vs2015_x64]
 [perf_fig Processing.._gcc52_x64_..for_each_function_gcc52_x64]
-[perf_fig Processing.._clang37_x64_..for_each_function_clang37_x64]
+[perf_fig Processing.._clang39_x64_..for_each_function_clang39_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_any_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_any_vs2015_x64]
 [perf_fig Processing.._gcc52_x64_..for_each_any_gcc52_x64]
-[perf_fig Processing.._clang37_x64_..for_each_any_clang37_x64]
+[perf_fig Processing.._clang39_x64_..for_each_any_clang39_x64]
 [endsect]
 
 [endsect]
@@ -1022,7 +1022,9 @@ The library uses [@http://www.pdimov.com/ Peter Dimov]'s
 of `std::make_index_sequence`].
 [@http://manu343726.github.io/ Manu Sánchez] aided immensely with CI setup and
 performance testing. [@http://stackoverflow.com/users/85371/sehe Sehe]
-contributed performance results for GCC 5.2.
+contributed performance results for GCC 5.2, and
+[@https://www.linkedin.com/in/francisco-jose-tapia-iba%C3%B1ez-4239a07a Francisco
+José Tapia] for Clang 3.9.
 
 Boost.PolyCollection was designed and written between rainy
 [@https://es.wikipedia.org/wiki/Viav%C3%A9lez Viavélez], noisy Madrid and beautiful
