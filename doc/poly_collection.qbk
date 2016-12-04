@@ -959,7 +959,7 @@ baseline containers) is defined as
 
 whereas for `boost::any_collection` we use
 
-[pef_for_each_incrementable]
+[perf_for_each_incrementable]
 
 The baseline container is tested with three different setups:
 
