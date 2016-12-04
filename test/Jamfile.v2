@@ -5,16 +5,23 @@
 #
 # See http://www.boost.org/libs/poly_collection for library home page.
 
+
+project
+    : requirements
+      <toolset>gcc:<cxxflags>-std=c++11
+      <toolset>clang:<cxxflags>-std=c++11
+    ;
+
 test-suite "poly_collection" :
-    [ run test_algorithm.cpp    test_algorithm1.cpp
-          test_algorithm2.cpp   test_algorithm3.cpp
-          test_algorithm_main.cpp                          ]
-    [ run test_capacity.cpp     test_capacity_main.cpp     ]
-    [ run test_comparison.cpp   test_comparison_main.cpp   ]
-    [ run test_construction.cpp test_construction_main.cpp ]
-    [ run test_emplacement.cpp  test_emplacement_main.cpp  ]
-    [ run test_erasure.cpp      test_erasure_main.cpp      ]
-    [ run test_insertion.cpp    test_insertion_main.cpp    ]
-    [ run test_iterators.cpp    test_iterators_main.cpp    ]
-    [ run test_registration.cpp test_registration_main.cpp ]
+    [ run test_algorithm.cpp      test_algorithm1.cpp
+          test_algorithm2.cpp     test_algorithm3.cpp
+          test_algorithm_main.cpp                            ]
+    [ run test_capacity.cpp       test_capacity_main.cpp     ]
+    [ run test_comparison.cpp     test_comparison_main.cpp   ]
+    [ run test_construction.cpp   test_construction_main.cpp ]
+    [ run test_emplacement.cpp    test_emplacement_main.cpp  ]
+    [ run test_erasure.cpp        test_erasure_main.cpp      ]
+    [ run test_insertion.cpp      test_insertion_main.cpp    ]
+    [ run test_iterators.cpp      test_iterators_main.cpp    ]
+    [ run test_registration.cpp   test_registration_main.cpp ]
     ;
