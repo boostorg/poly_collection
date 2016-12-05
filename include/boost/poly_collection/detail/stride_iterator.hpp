@@ -59,7 +59,7 @@ public:
 
   /* interoperability with [Derived]Value* */
 
-  stride_iterator& operator=(Value* p_)noexcept{this->p=p_;return *this;}
+  stride_iterator& operator=(Value* p_)noexcept{p=p_;return *this;}
   operator Value*()const noexcept{return p;}
 
   template<
