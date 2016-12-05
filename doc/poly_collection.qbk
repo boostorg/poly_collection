@@ -459,7 +459,7 @@ value as regular iterators (in the case of `boost::base_collection<base>`,
 In exchange, `local_base_iterator` is a _RandomAccessIterator_, whereas
 whole-collection iterators only model _ForwardIterator_.
 
-Even more poweful than `local_base_iterator` is `local_iterator<T>`:
+Even more powerful than `local_base_iterator` is `local_iterator<T>`:
 
 [segmented_structure_7]
 
