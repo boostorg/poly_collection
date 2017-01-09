@@ -21,7 +21,7 @@ install:
   - cd ..
   - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
-  - cp -r $TRAVIS_BUILD_DIR/* libs/poly_collection
+  - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
 
