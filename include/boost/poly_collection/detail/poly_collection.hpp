@@ -145,6 +145,8 @@ private:
   using local_iterator_impl=
     detail::local_iterator_impl<poly_collection,BaseIterator>;
 
+  size_type mDefaultReserve = 0;
+
 public:
   using iterator=iterator_impl<false>;
   using const_iterator=iterator_impl<true>;
@@ -523,6 +525,11 @@ public:
   size_type capacity()const
   {
     return capacity(typeid(T));
+  }
+
+  void set_default_reserve(size_type n)
+  {
+      mDefaultReserve = n;
   }
 
   void reserve(size_type n)
@@ -906,6 +913,12 @@ private:
   friend bool operator==(
     const poly_collection<M,A>&,const poly_collection<M,A>&);
 
+  template<typename T,enable_if_acceptable<T> =nullptr>
+  void _reserve(size_type n,const_segment_map_iterator it)
+  {
+    segment(it).reserve(n);
+  }
+
   template<
     typename T,
     enable_if_acceptable<T> =nullptr,
@@ -916,8 +929,13 @@ private:
     auto it=map.find(subtypeid(x));
     if(it!=map.end())return it;
     else if(subtypeid(x)!=typeid(T))throw unregistered_type{subtypeid(x)};
-    else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+    else
+    {
+      segment_type seg=segment_type::template make<T>(get_allocator());
+      auto iter=map.insert({typeid(T),seg}).first;
+      if(mDefaultReserve)_reserve<T>(mDefaultReserve,iter);
+      return iter;
+    }
   }
 
   template<
@@ -929,8 +947,13 @@ private:
   {
     auto it=map.find(typeid(T));
     if(it!=map.end())return it;
-    else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+    else
+    {
+      segment_type seg=segment_type::template make<T>(get_allocator());
+      auto iter = map.insert({typeid(T),seg}).first;
+      if(mDefaultReserve)_reserve<T>(mDefaultReserve,iter);
+      return iter;
+    }
   }
 
   template<
@@ -965,8 +988,13 @@ private:
   {
     auto it=map.find(subtypeid(x));
     if(it!=map.end())return it;
-    else return map.insert(
-      {subtypeid(x),segment_type::make_from_prototype(seg)}).first;
+    else
+    {
+      segment_type seg=segment_type::make_from_prototype(seg);
+      auto iter=map.insert({subtypeid(x),seg}).first;
+      if(mDefaultReserve)_reserve<T>(mDefaultReserve,iter);
+      return iter;
+    }
   }
 
   template<typename T>
@@ -974,8 +1002,13 @@ private:
   {
     auto it=map.find(typeid(T));
     if(it!=map.end())return it;
-    else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+    else
+    {
+      segment_type seg=segment_type::template make<T>(get_allocator());
+      auto iter=map.insert({typeid(T),seg}).first;
+      if(mDefaultReserve)_reserve<T>(mDefaultReserve,iter);
+      return iter;
+    }
   }
 
   const_segment_map_iterator get_map_iterator_for(const std::type_info& info)
