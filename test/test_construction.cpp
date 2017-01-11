@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -113,6 +113,7 @@ void test_construction()
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
       BOOST_TEST(p3.get_allocator().root==&root2);
     }
+#if 0
     {
       rooted_poly_collection p2{cp};
       auto                   d2=get_layout_data<Types...>(p2);
@@ -124,6 +125,7 @@ void test_construction()
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
       BOOST_TEST(p3.get_allocator().root==&root2);
     }
+#endif
   }
 
   {
