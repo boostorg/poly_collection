@@ -11,11 +11,30 @@ sudo: false
 
 os:
   - linux
-  - osx
-
+    
 branches:
   only:
     - master
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: TOOLSET=gcc-5.2
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: TOOLSET=clang-3.7
 
 install:
   - cd ..
@@ -27,8 +46,6 @@ install:
   - ./b2 headers
 
 script:
-  - TOOLSET=gcc,clang
-  - if [ $TRAVIS_OS_NAME == osx ]; then TOOLSET=clang; fi
   - ./b2 libs/poly_collection/test toolset=$TOOLSET
 
 notifications:
