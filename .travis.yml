@@ -16,7 +16,15 @@ branches:
   only:
     - master
 
+# Workaround for https://github.com/travis-ci/travis-ci/issues/4681
+# (from https://github.com/boostorg/hana/blob/master/.travis.yml)
+
 matrix:
+- TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+matrix:
+  exclude:
+    - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
   include:
     - compiler: gcc
       addons:
