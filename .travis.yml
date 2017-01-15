@@ -21,9 +21,9 @@ matrix:
   exclude:
     - language: cpp
     - os: linux
-    -branches:
-      only:
-        - master
+    - branches:
+       only:
+         - master
   include:
     - compiler: gcc
       addons:
