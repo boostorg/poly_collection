@@ -51,7 +51,6 @@ install:
   - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
-  - g++-5.2 --version
 
 script:
   - ./b2 libs/poly_collection/test toolset=$TOOLSET
