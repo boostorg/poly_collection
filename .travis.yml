@@ -5,12 +5,12 @@
 #
 # See http://www.boost.org/libs/poly_collection for library home page.
 
-language: cpp
 
 sudo: false
 
-os:
-  - linux
+language: cpp
+
+os: linux
     
 branches:
   only:
@@ -20,6 +20,10 @@ matrix:
 # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
   exclude:
     - language: cpp
+    - os: linux
+    -branches:
+      only:
+        - master
   include:
     - compiler: gcc
       addons:
