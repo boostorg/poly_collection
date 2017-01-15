@@ -31,7 +31,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
+            - g++-5.2
       env: TOOLSET=gcc-5.2
     - compiler: clang
       addons:
