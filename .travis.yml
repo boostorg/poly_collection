@@ -32,7 +32,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-      env: TOOLSET=gcc-5.2
+      env: TOOLSET=gcc
     - compiler: clang
       addons:
         apt:
@@ -41,7 +41,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-      env: TOOLSET=clang-3.7
+      env: TOOLSET=clang
 
 install:
   - cd ..
@@ -51,6 +51,7 @@ install:
   - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5.2" CC="gcc-5.2"; fi
 
 script:
   - ./b2 libs/poly_collection/test toolset=$TOOLSET
