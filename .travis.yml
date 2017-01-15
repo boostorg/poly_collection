@@ -20,7 +20,7 @@ branches:
 # (from https://github.com/boostorg/hana/blob/master/.travis.yml)
 
 matrix:
-- TRAVIS_EMPTY_JOB_WORKAROUND=true
+  - TRAVIS_EMPTY_JOB_WORKAROUND=true
 
 matrix:
   exclude:
