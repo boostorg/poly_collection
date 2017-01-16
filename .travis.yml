@@ -38,11 +38,11 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.9
+            - llvm-toolchain-precise-3.8
           packages:
-            - clang-3.9
+            - clang-3.8
             - g++-5
-      env: B2_OPTIONS=toolset=clang-3.9
+      env: B2_OPTIONS=toolset=clang-3.8
 
 install:
   - cd ..
