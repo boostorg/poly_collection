@@ -41,8 +41,8 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-            - libc++-dev
-      env: B2_OPTIONS="toolset=clang-3.7 cxxflags=-stdlib=libc++"
+            - g++-5
+      env: B2_OPTIONS=toolset=clang-3.7
 
 install:
   - cd ..
