@@ -42,7 +42,7 @@ matrix:
           packages:
             - g++-5
             - clang-3.7
-      env: B2_OPTIONS=toolset=clang-3.7 cxxflags="isystem=/usr/include/c++/5/"
+      env: B2_OPTIONS="toolset=clang-3.7 cxxflags=isystem=/usr/include/c++/5/"
 
 install:
   - cd ..
