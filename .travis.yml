@@ -40,6 +40,7 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.7
           packages:
+            - g++-5
             - clang-3.7
       env: B2_OPTIONS=toolset=clang-3.7 cxxflags="isystem=/usr/include/c++/5/"
 
