@@ -32,7 +32,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-      env: TOOLSET=gcc-5
+      env: B2_OPTIONS=toolset=gcc-5
     - compiler: clang
       addons:
         apt:
@@ -41,7 +41,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-      env: TOOLSET=clang-3.7
+      env: B2_OPTIONS=toolset=clang-3.7 cxxflags="isystem=/usr/include/c++/5/"
 
 install:
   - cd ..
@@ -53,7 +53,7 @@ install:
   - ./b2 headers
 
 script:
-  - ./b2 libs/poly_collection/test toolset=$TOOLSET
+  - ./b2 libs/poly_collection/test $B2_OPTIONS
 
 notifications:
   email:
