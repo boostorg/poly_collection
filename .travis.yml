@@ -42,7 +42,7 @@ matrix:
           packages:
             - clang-3.7
             - g++-4.8
-      env: B2_OPTIONS="toolset=clang-3.7 cxxflags=-isystem /usr/include/c++/4.8/"
+      env: B2_OPTIONS="toolset=clang-3.7 cxxflags=\"-isystem /usr/include/c++/4.8/\""
 
 install:
   - cd ..
