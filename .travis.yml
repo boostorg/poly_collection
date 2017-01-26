@@ -42,7 +42,7 @@ matrix:
           packages:
             - clang-3.9
             - libc++1
-      env: B2_OPTIONS='toolset=clang cxxflags=-stdlib=libc++'
+      env: B2_OPTIONS='toolset=clang cxxflags="-stdlib=libc++ -I /usr/local/include"'
 #            - g++-5
 #      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
 
