@@ -41,7 +41,7 @@ matrix:
             - llvm-toolchain-trusty-3.9
           packages:
             - clang-3.9
-            - libc++-dev
+            - libc++1
       env: B2_OPTIONS='toolset=clang cxxflags=-stdlib=libc++'
 #            - g++-5
 #      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
