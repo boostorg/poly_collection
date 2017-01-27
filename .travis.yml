@@ -57,6 +57,7 @@ install:
 
 script:
   - "echo 'using clang : 3.9 ;' > $HOME/user-config.jam"
+  - clang --version
   - ./b2 libs/poly_collection/test $B2_OPTIONS
 
 notifications:
