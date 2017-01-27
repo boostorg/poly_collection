@@ -54,7 +54,7 @@ install:
   - ./b2 headers
 
 script:
-  - "echo 'using clang : 3.9 : clang++-3.9 ;' > $HOME/user-config.jam"
+  - "echo 'using clang : 3.7 : clang++-3.7 ;' > $HOME/user-config.jam"
   - ./b2 libs/poly_collection/test $B2_OPTIONS
 
 notifications:
