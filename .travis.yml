@@ -41,10 +41,10 @@ matrix:
             - llvm-toolchain-trusty-3.9
           packages:
             - clang-3.9
-            - libc++1
-      env: B2_OPTIONS='toolset=clang cxxflags=-stdlib=libc++ cxxflags=-I/usr/local/include'
-#            - g++-5
-#      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
+            - g++-5
+      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
+#            - libc++1
+#      env: B2_OPTIONS='toolset=clang cxxflags=-stdlib=libc++ cxxflags=-I/usr/local/include'
 
 install:
   - cd ..
