@@ -39,7 +39,7 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-trusty-3.7
           packages:
-            - clang-3.7
+            - clang++-3.7
       env: B2_OPTIONS='toolset=clang'
 #            - g++-5
 #      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
