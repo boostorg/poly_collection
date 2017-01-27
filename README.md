@@ -1,4 +1,4 @@
-# (Candidate) Boost PolyCollection library
+# (Candidate) Boost PolyCollection library [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=master)](https://travis-ci.org/joaquintides/poly_collection)
 
 **Warning:** Currently, Boost.PolyCollection is **not** part of the Boost
 libraries: its naming and structure conform to the requirements of Boost as
