@@ -17,8 +17,7 @@ branches:
     - master
 
 matrix:
-# Workaround for https://github.com/travis-ci/travis-ci/issues/4681
-  exclude:
+  exclude: # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
     - language: cpp
     - os: linux
     - branches:
@@ -38,13 +37,12 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-3.9
+            - llvm-toolchain-trusty-3.7
           packages:
-            - clang-3.9
-            - g++-5
-      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
-#            - libc++1
-#      env: B2_OPTIONS='toolset=clang cxxflags=-stdlib=libc++ cxxflags=-I/usr/local/include'
+            - clang-3.7
+        env: B2_OPTIONS='toolset=clang'
+#            - g++-5
+#      env: B2_OPTIONS='toolset=clang cxxflags=-isystem/usr/include/c++/5'
 
 install:
   - cd ..
@@ -57,7 +55,6 @@ install:
 
 script:
   - "echo 'using clang : 3.9 : clang++-3.9 ;' > $HOME/user-config.jam"
-  - clang++-3.9 --version
   - ./b2 libs/poly_collection/test $B2_OPTIONS
 
 notifications:
