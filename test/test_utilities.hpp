@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -317,6 +317,9 @@ struct jammed_auto_increment
 template<typename T>
 struct rooted_allocator:std::allocator<T>
 {
+  using propagate_on_container_copy_assignment=std::true_type;
+  using propagate_on_container_move_assignment=std::true_type;
+  using propagate_on_container_swap=std::true_type;
   template<typename U>
   struct rebind{using other=rooted_allocator<U>;};
 

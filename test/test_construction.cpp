@@ -9,7 +9,9 @@
 #include "test_construction.hpp"
 
 #include <algorithm>
+#include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
+#include <boost/detail/workaround.hpp>
 #include <utility>
 #include "any_types.hpp"
 #include "base_types.hpp"
@@ -113,7 +115,6 @@ void test_construction()
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
       BOOST_TEST(p3.get_allocator().root==&root2);
     }
-#if 0
     {
       rooted_poly_collection p2{cp};
       auto                   d2=get_layout_data<Types...>(p2);
@@ -123,9 +124,12 @@ void test_construction()
       BOOST_TEST(d2==d3);
       BOOST_TEST(p2.empty());
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-      BOOST_TEST(p3.get_allocator().root==&root2);
-    }
+
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+#else
+      BOOST_TEST(p3.get_allocator().root==&root1);
 #endif
+    }
   }
 
   {
