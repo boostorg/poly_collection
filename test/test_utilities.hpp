@@ -317,9 +317,9 @@ struct jammed_auto_increment
 template<typename T>
 struct rooted_allocator:std::allocator<T>
 {
-  using propagate_on_container_copy_assignment=std::true_type;
+  using propagate_on_container_copy_assignment=std::false_type;
   using propagate_on_container_move_assignment=std::true_type;
-  using propagate_on_container_swap=std::true_type;
+  using propagate_on_container_swap=std::false_type;
   template<typename U>
   struct rebind{using other=rooted_allocator<U>;};
 
