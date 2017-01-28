@@ -913,9 +913,10 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T& x)
   {
-    auto it=map.find(subtypeid(x));
+    const auto& id=subtypeid(x);
+    auto        it=map.find(id);
     if(it!=map.end())return it;
-    else if(subtypeid(x)!=typeid(T))throw unregistered_type{subtypeid(x)};
+    else if(id!=typeid(T))throw unregistered_type{id};
     else return map.insert(
       {typeid(T),segment_type::template make<T>(get_allocator())}).first;
   }
@@ -940,10 +941,11 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T& x)const
   {
-    BOOST_ASSERT(subtypeid(x)!=typeid(T));
-    auto it=map.find(subtypeid(x));
+    const auto& id=subtypeid(x);
+    BOOST_ASSERT(id!=typeid(T));
+    auto it=map.find(id);
     if(it!=map.end())return it;
-    else throw unregistered_type{subtypeid(x)};
+    else throw unregistered_type{id};
   }
 
   template<
@@ -963,10 +965,10 @@ private:
   const_segment_map_iterator get_map_iterator_for(
     const T& x,const segment_type& seg)
   {
-    auto it=map.find(subtypeid(x));
+    const auto& id=subtypeid(x);
+    auto        it=map.find(id);
     if(it!=map.end())return it;
-    else return map.insert(
-      {subtypeid(x),segment_type::make_from_prototype(seg)}).first;
+    else return map.insert({id,segment_type::make_from_prototype(seg)}).first;
   }
 
   template<typename T>
