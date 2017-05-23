@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -125,7 +125,7 @@ struct any_model
   >
   static const void* subaddress(const type_erasure::any<Concept2,T>& a)
   {
-    return type_erasure::any_cast<void*>(&a);
+    return type_erasure::any_cast<const void*>(&a);
   }
 
   using base_iterator=any_iterator<value_type>;
