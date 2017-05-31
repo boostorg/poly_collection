@@ -1,4 +1,10 @@
-# Boost PolyCollection library [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=master)](https://travis-ci.org/joaquintides/poly_collection)
+# Boost PolyCollection library
+
+Branch  | Status         
+--------|--------
+develop | [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=develop)](https://travis-ci.org/joaquintides/poly_collection)
+--------|--------
+master  | [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=master)](https://travis-ci.org/joaquintides/poly_collection)
 
 **Warning:** Boost.PolyCollection has been accepted into Boost but
 it is yet to be released as part of an official Boost distribution.
