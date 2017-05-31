@@ -73,7 +73,7 @@ stored for further opportunities of increased efficiency related to inlining and
 
 [note Boost.PolyCollection is a header-only library. C++11 support is required.
 The library has been verified to work with Visual Studio 2015, GCC 5.2 and
-Clang 3.9.]
+Clang 3.7.]
 
 [endsect]
 
