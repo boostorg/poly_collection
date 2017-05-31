@@ -1,9 +1,7 @@
-# (Candidate) Boost PolyCollection library [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=master)](https://travis-ci.org/joaquintides/poly_collection)
+# Boost PolyCollection library [![Build Status](https://travis-ci.org/joaquintides/poly_collection.svg?branch=master)](https://travis-ci.org/joaquintides/poly_collection)
 
-**Warning:** Currently, Boost.PolyCollection is **not** part of the Boost
-libraries: its naming and structure conform to the requirements of Boost as
-the intention is to eventually submit it for formal review and acceptance
-into the project. 
+**Warning:** Boost.PolyCollection has been accepted into Boost but
+it is yet to be released as part of an official Boost distribution.
 
 **Boost.PolyCollection**: fast containers of polymorphic objects.
 
