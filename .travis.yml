@@ -48,7 +48,7 @@ install:
   - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
   - git submodule update --init
-  - git rm libs/poly_collection/
+  - git rm --ignore-unmatch libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
   - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
