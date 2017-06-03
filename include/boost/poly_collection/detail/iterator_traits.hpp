@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -33,14 +33,18 @@ struct poly_collection_of /* to be specialized for iterator impls */
  using type=void;
 };
 
+namespace poly_collection_impl{
+
 template<typename Model,typename Allocator>
 class poly_collection;
+
+}
 
 template<typename PolyCollection>
 struct model_of;
 
 template<typename Model,typename Allocator>
-struct model_of<poly_collection<Model,Allocator>>
+struct model_of<poly_collection_impl::poly_collection<Model,Allocator>>
 {
   using type=Model;
 };
