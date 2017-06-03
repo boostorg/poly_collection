@@ -8,15 +8,18 @@
 
 project
     : requirements
-      <toolset>msvc:<cxxflags>-D_SCL_SECURE_NO_WARNINGS
-      <toolset>gcc:<cxxflags>-std=c++11
       <toolset>clang:<cxxflags>-std=c++11
+      <toolset>gcc:<cxxflags>-std=c++11
+      <toolset>msvc:<cxxflags>-D_SCL_SECURE_NO_WARNINGS
     ;
 
 test-suite "poly_collection" :
     [ run test_algorithm.cpp      test_algorithm1.cpp
           test_algorithm2.cpp     test_algorithm3.cpp
-          test_algorithm_main.cpp                            ]
+          test_algorithm_main.cpp
+        :
+        :                            
+        : <toolset>msvc:<cxxflags>/bigobj                    ]
     [ run test_capacity.cpp       test_capacity_main.cpp     ]
     [ run test_comparison.cpp     test_comparison_main.cpp   ]
     [ run test_construction.cpp   test_construction_main.cpp ]
