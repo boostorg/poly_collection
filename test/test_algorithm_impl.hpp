@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <boost/core/lightweight_test.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/function_output_iterator.hpp>
 #include <boost/poly_collection/algorithm.hpp>
 #include <functional>
@@ -27,6 +28,20 @@
 
 using namespace test_utilities;
 
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
+/* https://lists.boost.org/Archives/boost/2017/06/235687.php */
+
+#define DEFINE_ALGORITHM(name,f)                    \
+template<typename... Ts>                            \
+struct name                                         \
+{                                                   \
+  template<typename... Args>                        \
+  auto operator()(Args&&... args)const              \
+  {                                                 \
+    return f<Ts...>(std::forward<Args>(args)...);   \
+  }                                                 \
+};
+#else
 #define DEFINE_ALGORITHM(name,f)                    \
 template<typename... Ts>                            \
 struct name                                         \
@@ -38,6 +53,7 @@ struct name                                         \
     return f<Ts...>(std::forward<Args>(args)...);   \
   }                                                 \
 };
+#endif
 
 DEFINE_ALGORITHM(std_all_of,std::all_of)
 DEFINE_ALGORITHM(poly_all_of,boost::poly_collection::all_of)

@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/detail/workaround.hpp>
 #include <boost/poly_collection/detail/integer_sequence.hpp>
 #include <tuple>
 #include <utility>
@@ -21,6 +22,19 @@
  * C++14 generic lambdas. 
  */
 
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
+/* https://lists.boost.org/Archives/boost/2017/06/235687.php */
+
+#define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
+struct name                                               \
+{                                                         \
+  template<typename... Args>                              \
+  auto operator()(Args&&... args)const                    \
+  {                                                       \
+    return f(std::forward<Args>(args)...);                \
+  }                                                       \
+};
+#else
 #define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
 struct name                                               \
 {                                                         \
@@ -31,6 +45,7 @@ struct name                                               \
     return f(std::forward<Args>(args)...);                \
   }                                                       \
 };
+#endif
 
 namespace boost{
 
