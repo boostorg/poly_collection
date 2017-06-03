@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -98,8 +98,9 @@ void test_iterators(PolyCollection& p)
   BOOST_TEST(lfirst==static_cast<local_iterator>(llast));
   BOOST_TEST(clfirst==static_cast<const_local_iterator>(cllast));
   BOOST_TEST(clfirst==llast);
-  BOOST_TEST(n==p.end(typeid(Type))-p.begin(typeid(Type)));
-  BOOST_TEST(n==p.template end<Type>()-p.template begin<Type>());
+  BOOST_TEST((std::ptrdiff_t)n==p.end(typeid(Type))-p.begin(typeid(Type)));
+  BOOST_TEST(
+    (std::ptrdiff_t)n==p.template end<Type>()-p.template begin<Type>());
 
   for(auto s:p.segment_traversal()){
     if(s.type_index()==typeid(Type)){
@@ -242,9 +243,9 @@ void test_iterators()
       }
       BOOST_TEST(clbfirst==clblast);
       BOOST_TEST(lblast==clblast);
-      BOOST_TEST(m==first->end()-first->begin());
-      BOOST_TEST(m==cfirst->end()-cfirst->begin());
-      BOOST_TEST(m==cfirst->cend()-cfirst->cbegin());
+      BOOST_TEST((std::ptrdiff_t)m==first->end()-first->begin());
+      BOOST_TEST((std::ptrdiff_t)m==cfirst->end()-cfirst->begin());
+      BOOST_TEST((std::ptrdiff_t)m==cfirst->cend()-cfirst->cbegin());
 
       n+=m;
     }

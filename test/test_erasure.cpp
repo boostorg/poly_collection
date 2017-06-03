@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -25,7 +25,7 @@ void test_local_erase(const PolyCollection& p2)
   for(size_type i=0;i<p2.template size<Type>();++i){
     PolyCollection p=p2;
     auto it=p.erase(p.template cbegin<Type>()+i);
-    BOOST_TEST(it-p.template begin<Type>()==i);
+    BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
     BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-1);
   }  
 }
@@ -41,7 +41,7 @@ void test_local_range_erase(const PolyCollection& p2)
       auto first=p.template cbegin<Type>()+i,
            last=p.template cbegin<Type>()+j;
       auto it=p.erase(first,last);
-      BOOST_TEST(it-p.template begin<Type>()==i);
+      BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
       BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-(j-i));
     }
   }
@@ -73,7 +73,7 @@ void test_erasure()
   for(size_type i=0;i<p2.size();++i){
     p=p2;
     auto it=p.erase(std::next(p.cbegin(),i));
-    BOOST_TEST(std::distance(p.begin(),it)==i);
+    BOOST_TEST(std::distance(p.begin(),it)==(std::ptrdiff_t)i);
     BOOST_TEST(p.size()==p2.size()-1);
   }
 
@@ -82,7 +82,7 @@ void test_erasure()
     for(size_type i=0;i<p2.size(index);++i){
       p=p2;
       auto it=p.erase(p.cbegin(index)+i);
-      BOOST_TEST(it-p.begin(index)==i);
+      BOOST_TEST(it-p.begin(index)==(std::ptrdiff_t)i);
       BOOST_TEST(p.size(index)==p2.size(index)-1);
     }
   }
@@ -96,7 +96,7 @@ void test_erasure()
       auto first=std::next(p.cbegin(),i),
             last=std::next(p.cbegin(),j);
       auto it=p.erase(first,last);
-      BOOST_TEST(std::distance(p.begin(),it)==i);
+      BOOST_TEST(std::distance(p.begin(),it)==(std::ptrdiff_t)i);
       BOOST_TEST(p.size()==p2.size()-(j-i));
     }
   }
@@ -109,7 +109,7 @@ void test_erasure()
         auto first=p.cbegin(index)+i,
               last=p.cbegin(index)+j;
         auto it=p.erase(first,last);
-        BOOST_TEST(it-p.begin(index)==i);
+        BOOST_TEST(it-p.begin(index)==(std::ptrdiff_t)i);
         BOOST_TEST(p.size(index)==p2.size(index)-(j-i));
       }
     }
