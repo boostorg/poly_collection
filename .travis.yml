@@ -48,9 +48,9 @@ install:
   - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
   - git submodule update --init
-  - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
+  - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
 
 script:
   - "echo 'using clang : 3.7 : clang++-3.7 ;' > $HOME/user-config.jam"
