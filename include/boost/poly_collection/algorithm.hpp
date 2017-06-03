@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -58,7 +58,7 @@ template<
 bool all_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
   auto alg=restitute_range<Ts...>(std_all_of{},pred);
-  for(auto i:segment_split(first,last))if(!alg(i))return false;
+  for(auto i:detail::segment_split(first,last))if(!alg(i))return false;
   return true;
 }
 
@@ -71,7 +71,7 @@ template<
 bool any_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
   auto alg=restitute_range<Ts...>(std_any_of{},pred);
-  for(auto i:segment_split(first,last))if(alg(i))return true;
+  for(auto i:detail::segment_split(first,last))if(alg(i))return true;
   return false;
 }
 
@@ -84,7 +84,7 @@ template<
 bool none_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
   auto alg=restitute_range<Ts...>(std_none_of{},pred);
-  for(auto i:segment_split(first,last))if(!alg(i))return false;
+  for(auto i:detail::segment_split(first,last))if(!alg(i))return false;
   return true;
 }
 
@@ -122,7 +122,7 @@ Iterator generic_find(
   auto alg=restitute_range<Ts...>(
     cast_return<local_base_iterator>(Algorithm{}),
     std::forward<Args>(args)...);
-  for(auto i:segment_split(first,last)){
+  for(auto i:detail::segment_split(first,last)){
     auto it=alg(i);
     if(it!=i.end())
       return traits::iterator_from(
@@ -255,7 +255,7 @@ std::ptrdiff_t generic_count(
 {
   auto alg=restitute_range<Ts...>(Algorithm{},std::forward<Args>(args)...);
   std::ptrdiff_t res=0;
-  for(auto i:segment_split(first,last))res+=alg(i);
+  for(auto i:detail::segment_split(first,last))res+=alg(i);
   return res;
 }
 
@@ -407,7 +407,7 @@ bool equal(
   InputIterator first2,BinaryPredicate pred)
 {
   auto alg=restitute_range<Ts...>(equal_alg{},first2,pred);
-  for(auto i:segment_split(first1,last1))if(!alg(i))return false;
+  for(auto i:detail::segment_split(first1,last1))if(!alg(i))return false;
   return true;
 }
 
@@ -431,7 +431,7 @@ bool equal(
   InputIterator first2,InputIterator last2,BinaryPredicate pred)
 {
   auto alg=restitute_range<Ts...>(equal_alg{},first2,last2,pred);
-  for(auto i:segment_split(first1,last1))if(!alg(i))return false;
+  for(auto i:detail::segment_split(first1,last1))if(!alg(i))return false;
   return first2==last2;
 }
 
@@ -459,7 +459,7 @@ bool is_permutation_suffix(
   using traits=iterator_traits<Iterator>;
 
   auto send=traits::end_segment_info_iterator_from(last1);
-  for(auto i:segment_split(first1,last1)){
+  for(auto i:detail::segment_split(first1,last1)){
     for(auto lbscan=i.begin();lbscan!=i.end();++lbscan){
       auto index=i.type_index();
       auto p=head_closure(
@@ -537,7 +537,7 @@ Iterator search(
   using traits=iterator_traits<Iterator>;
 
   auto send=traits::end_segment_info_iterator_from(last1);
-  for(auto i:segment_split(first1,last1)){
+  for(auto i:detail::segment_split(first1,last1)){
     for(auto lbit=i.begin(),lbend=i.end();lbit!=lbend;++lbit){
       Iterator it=traits::iterator_from(lbit,send);
       if(algorithm::mismatch<Ts...>(it,last1,first2,last2,pred).second==last2)
@@ -635,7 +635,7 @@ Iterator search_n(
                         cast_return<local_base_iterator>(search_n_alg{}),
                         count,carry,remain,x,pred);
   local_base_iterator prev;
-  for(auto i:segment_split(first,last)){
+  for(auto i:detail::segment_split(first,last)){
     auto it=alg(i);
     if(it!=i.end()){
       if(remain==0)
@@ -668,7 +668,7 @@ template<
 OutputIterator generic_copy(
   const Iterator& first,const Iterator& last,OutputIterator res,Args&&... args)
 {
-  for(auto i:segment_split(first,last)){
+  for(auto i:detail::segment_split(first,last)){
     auto alg=restitute_range<Ts...>(
       Algorithm{},res,std::forward<Args>(args)...);
     res=alg(i);
@@ -961,7 +961,7 @@ std::pair<OutputIterator1,OutputIterator2> partition_copy(
   const Iterator& first,const Iterator& last,
   OutputIterator1 rest,OutputIterator2 resf,Predicate pred)
 {
-  for(auto i:segment_split(first,last)){
+  for(auto i:detail::segment_split(first,last)){
     auto alg=restitute_range<Ts...>(std_partition_copy{},rest,resf,pred);
     std::tie(rest,resf)=alg(i);
   }
