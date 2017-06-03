@@ -3,7 +3,7 @@
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
  *
- * See http://www.boost.org/libs/function_collection for library home page.
+ * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
 #ifndef BOOST_POLY_COLLECTION_FUNCTION_COLLECTION_FWD_HPP
