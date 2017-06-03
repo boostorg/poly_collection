@@ -266,7 +266,7 @@ private:
     friend class poly_collection;
     friend class boost::iterator_core_access;
     template<typename>
-    friend struct iterator_traits;
+    friend struct detail::iterator_traits;
 
     SegmentInfo dereference()const noexcept{return this->base();}
   };
