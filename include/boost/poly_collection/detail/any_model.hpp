@@ -50,6 +50,7 @@ struct is_acceptable<
   type_erasure::any<Concept2,T>,any_model<Concept>,
   typename std::enable_if<
     !type_erasure::is_relaxed<Concept2>::value&&
+    !type_erasure::is_subconcept<type_erasure::assignable<>,Concept2>::value&&
     !type_erasure::is_subconcept<
       type_erasure::assignable<type_erasure::_self,type_erasure::_self&&>,
       Concept2>::value
