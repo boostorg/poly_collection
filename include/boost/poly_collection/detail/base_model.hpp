@@ -41,10 +41,17 @@ struct base_model
   using is_terminal=is_final<T>; //TODO: should we say !is_polymorhpic||is_final?
   template<typename T>
   static const std::type_info& subtypeid(const T& x){return typeid(x);}
+
   template<typename T>
-  static void* subaddress(T& x){return boost::addressof(x);}
+  static void* subaddress(T& x)
+  {
+    return dynamic_cast<void*>(boost::addressof(x));
+  }
+
   template<typename T>
-  static const void* subaddress(const T& x){return boost::addressof(x);}
+  static const void* subaddress(const T& x){
+    return dynamic_cast<const void*>(boost::addressof(x));
+  }
 
   using base_iterator=stride_iterator<Base>;
   using const_base_iterator=stride_iterator<const Base>;
