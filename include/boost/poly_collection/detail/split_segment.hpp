@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -31,8 +31,9 @@ namespace detail{
  *
  * Requires:
  *   - [const_]base_iterator is constructible from value_type*.
- *   - value_type is constructible from a reference to the concrete type and
- *     copy constructible.
+ *   - value_type is copy constructible.
+ *   - Model::make_value_type(x) returns a value_type created from a reference
+ *     to the concrete type.
  *
  * Conversion from base_iterator to local_iterator<Concrete> requires accesing
  * value_type internal info, so the end() base_iterator has to be made to point
@@ -300,7 +301,7 @@ private:
   void build_index(std::size_t start=0)
   {
     for(std::size_t n=start,m=s.size();n<=m;++n){
-      i.push_back(value_type{concrete_ref(s.data()[n])});
+      i.push_back(Model::make_value_type(concrete_ref(s.data()[n])));
     };
   }
 

@@ -14,6 +14,8 @@
 #endif
 
 #include <boost/core/addressof.hpp>
+#include <boost/mpl/map/map10.hpp>
+#include <boost/mpl/pair.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 #include <boost/poly_collection/detail/any_iterator.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
@@ -21,9 +23,12 @@
 #include <boost/poly_collection/detail/split_segment.hpp>
 #include <boost/type_erasure/any.hpp>
 #include <boost/type_erasure/any_cast.hpp>
+#include <boost/type_erasure/binding.hpp>
 #include <boost/type_erasure/builtin.hpp>
+#include <boost/type_erasure/concept_of.hpp>
 #include <boost/type_erasure/is_subconcept.hpp>
 #include <boost/type_erasure/relaxed.hpp>
+#include <boost/type_erasure/static_binding.hpp>
 #include <boost/type_erasure/typeid_of.hpp>
 #include <memory>
 #include <type_traits>
@@ -75,6 +80,14 @@ struct any_model_is_terminal<
   type_erasure::any<Concept,T>,any_model_enable_if_has_typeid_<Concept,T>
 >:std::false_type{};
 
+/* used for make_value_type */
+
+template<typename T,typename Q>
+struct any_model_make_reference
+{
+  static T& apply(Q& x){return x;}
+}; 
+
 template<typename Concept>
 struct any_model
 {
@@ -86,6 +99,26 @@ struct any_model
     >::type,
     type_erasure::_self&
   >;
+
+  template<typename Concrete>
+  static value_type make_value_type(Concrete& x){return value_type{x};}
+
+  template<typename Concept2,typename T>
+  static value_type make_value_type(type_erasure::any<Concept2,T>& x)
+  {
+    /* I don't pretend to understand what's going on here, see
+     * https://lists.boost.org/boost-users/2017/05/87556.php
+     */
+
+    using namespace boost::type_erasure;
+    using ref_type=any<Concept2,T>;
+    using make_ref=any_model_make_reference<_self,ref_type>;
+    using concept=typename concept_of<value_type>::type;
+
+    auto b=make_binding<mpl::map1<mpl::pair<_self,ref_type>>>();
+
+    return {call(binding<make_ref>{b},make_ref{},x),binding<concept>{b}};
+  }
 
   template<typename Concrete>
   using is_subtype=std::true_type; /* can't compile-time check concept
