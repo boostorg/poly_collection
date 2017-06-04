@@ -49,8 +49,8 @@ struct function_model<R(Args...)>
 {
   using value_type=callable_wrapper<R(Args...)>;
 
-  template<typename Concrete>
-  static value_type make_value_type(Concrete& x){return value_type{x};}
+  template<typename Callable>
+  static value_type make_value_type(Callable& x){return value_type{x};}
 
   template<typename Callable>
   using is_subtype=is_callable<Callable&(Args...),R>;
