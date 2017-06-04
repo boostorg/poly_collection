@@ -58,15 +58,20 @@ struct is_acceptable<
 
 /* is_terminal defined out-class to allow for partial specialization */
 
-template<typename T,typename=void>
+template<typename Concept,typename T>
+using any_model_enable_if_has_typeid_=typename std::enable_if<
+  type_erasure::is_subconcept<
+    type_erasure::typeid_<typename std::decay<T>::type>,
+    Concept
+  >::value
+>::type*;
+
+template<typename T,typename=void*>
 struct any_model_is_terminal:std::true_type{};
 
 template<typename Concept,typename T>
 struct any_model_is_terminal<
-  type_erasure::any<Concept,T>,
-  typename std::enable_if<
-    type_erasure::is_subconcept<type_erasure::typeid_<>,Concept>::value
-  >::type
+  type_erasure::any<Concept,T>,any_model_enable_if_has_typeid_<Concept,T>
 >:std::false_type{};
 
 template<typename Concept>
@@ -92,9 +97,7 @@ struct any_model
 
   template<
     typename Concept2,typename T,
-    typename std::enable_if<
-      type_erasure::is_subconcept<type_erasure::typeid_<>,Concept2>::value
-    >::type* = nullptr
+    any_model_enable_if_has_typeid_<Concept2,T> =nullptr
   >
   static const std::type_info& subtypeid(
     const type_erasure::any<Concept2,T>& a)
@@ -110,9 +113,7 @@ struct any_model
 
   template<
     typename Concept2,typename T,
-    typename std::enable_if<
-      type_erasure::is_subconcept<type_erasure::typeid_<>,Concept2>::value
-    >::type* =nullptr
+    any_model_enable_if_has_typeid_<Concept2,T> =nullptr
   >
   static void* subaddress(type_erasure::any<Concept2,T>& a)
   {
@@ -121,9 +122,7 @@ struct any_model
 
   template<
     typename Concept2,typename T,
-    typename std::enable_if<
-      type_erasure::is_subconcept<type_erasure::typeid_<>,Concept2>::value
-    >::type* =nullptr
+    any_model_enable_if_has_typeid_<Concept2,T> =nullptr
   >
   static const void* subaddress(const type_erasure::any<Concept2,T>& a)
   {
