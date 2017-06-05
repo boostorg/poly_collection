@@ -14,6 +14,7 @@
 #endif
 
 #include <algorithm>
+#include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/function_output_iterator.hpp>

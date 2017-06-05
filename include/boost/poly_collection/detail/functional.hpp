@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/poly_collection/detail/integer_sequence.hpp>
 #include <tuple>
