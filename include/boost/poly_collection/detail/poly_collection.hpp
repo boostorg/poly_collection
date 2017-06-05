@@ -944,7 +944,6 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T& x)const
   {
     const auto& id=subtypeid(x);
-    BOOST_ASSERT(id!=typeid(T));
     auto it=map.find(id);
     if(it!=map.end())return it;
     else throw unregistered_type{id};
