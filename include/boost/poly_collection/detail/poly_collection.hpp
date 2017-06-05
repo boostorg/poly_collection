@@ -1108,14 +1108,15 @@ bool operator==(
   const poly_collection<Model,Allocator>& x,
   const poly_collection<Model,Allocator>& y)
 {
-  // TODO: can we do better than two passes?
-  if(x.size()!=y.size())return false;
+  typename poly_collection<Model,Allocator>::size_type s=0;
   const auto &mapx=x.map,&mapy=y.map;
   for(const auto& p:mapx){
+    auto ss=p.second.size();
     auto it=mapy.find(p.first);
-    if(it==mapy.end()?!p.second.empty():p.second!=it->second)return false;
+    if(it==mapy.end()?ss!=0:p.second!=it->second)return false;
+    s+=ss;
   }
-  return true;
+  return s==y.size(); 
 }
 
 template<typename Model,typename Allocator>
