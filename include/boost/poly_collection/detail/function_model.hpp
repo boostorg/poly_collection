@@ -50,9 +50,6 @@ struct function_model<R(Args...)>
   using value_type=callable_wrapper<R(Args...)>;
 
   template<typename Callable>
-  static value_type make_value_type(Callable& x){return value_type{x};}
-
-  template<typename Callable>
   using is_subtype=is_callable<Callable&(Args...),R>;
 
   template<typename T>
@@ -118,6 +115,13 @@ struct function_model<R(Args...)>
         template rebind_alloc<Callable>
     >{al};
   }
+
+private:
+  template<typename,typename,typename>
+  friend class split_segment;
+
+  template<typename Callable>
+  static value_type make_value_type(Callable& x){return value_type{x};}
 };
 
 } /* namespace poly_collection::detail */

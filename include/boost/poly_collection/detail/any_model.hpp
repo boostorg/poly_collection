@@ -101,26 +101,6 @@ struct any_model
   >;
 
   template<typename Concrete>
-  static value_type make_value_type(Concrete& x){return value_type{x};}
-
-  template<typename Concept2,typename T>
-  static value_type make_value_type(type_erasure::any<Concept2,T>& x)
-  {
-    /* I don't pretend to understand what's going on here, see
-     * https://lists.boost.org/boost-users/2017/05/87556.php
-     */
-
-    using namespace boost::type_erasure;
-    using ref_type=any<Concept2,T>;
-    using make_ref=any_model_make_reference<_self,ref_type>;
-    using concept=typename concept_of<value_type>::type;
-
-    auto b=make_binding<mpl::map1<mpl::pair<_self,ref_type>>>();
-
-    return {call(binding<make_ref>{b},make_ref{},x),binding<concept>{b}};
-  }
-
-  template<typename Concrete>
   using is_subtype=std::true_type; /* can't compile-time check concept
                                     * compliance */
   template<typename T>
@@ -194,6 +174,30 @@ struct any_model
       typename std::allocator_traits<Allocator>::
         template rebind_alloc<Concrete>
     >{al};
+  }
+
+private:
+  template<typename,typename,typename>
+  friend class split_segment;
+
+  template<typename Concrete>
+  static value_type make_value_type(Concrete& x){return value_type{x};}
+
+  template<typename Concept2,typename T>
+  static value_type make_value_type(type_erasure::any<Concept2,T>& x)
+  {
+    /* I don't pretend to understand what's going on here, see
+     * https://lists.boost.org/boost-users/2017/05/87556.php
+     */
+
+    using namespace boost::type_erasure;
+    using ref_type=any<Concept2,T>;
+    using make_ref=any_model_make_reference<_self,ref_type>;
+    using concept=typename concept_of<value_type>::type;
+
+    auto b=make_binding<mpl::map1<mpl::pair<_self,ref_type>>>();
+
+    return {call(binding<make_ref>{b},make_ref{},x),binding<concept>{b}};
   }
 };
 
