@@ -26,7 +26,7 @@ boostbook standalone
     <dependency>images
   ;
 
-alias boostdoc : poly_collection ;
+alias boostdoc : poly_collection : : <dependency>images ;
 explicit boostdoc ;
 alias boostrelease ;
 explicit boostrelease ;
