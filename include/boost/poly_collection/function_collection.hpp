@@ -41,14 +41,19 @@ public:
   function_collection(function_collection&& x)=default;
   function_collection& operator=(const function_collection& x)=default;
   function_collection& operator=(function_collection&& x)=default;
- 
+
+  template<typename S,typename A> 
   friend bool operator==(
-    const function_collection<Signature,Allocator>& x,
-    const function_collection<Signature,Allocator>& y)
-  {
-    return x.base()==y.base();
-  }
+    const function_collection<S,A>&,const function_collection<S,A>&);
 };
+
+template<typename Signature,typename Allocator>
+bool operator==(
+  const function_collection<Signature,Allocator>& x,
+  const function_collection<Signature,Allocator>& y)
+{
+  return x.base()==y.base();
+}
 
 template<typename Signature,typename Allocator>
 bool operator!=(

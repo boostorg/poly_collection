@@ -43,13 +43,18 @@ public:
   any_collection& operator=(const any_collection& x)=default;
   any_collection& operator=(any_collection&& x)=default;
  
+  template<typename C,typename A>
   friend bool operator==(
-    const any_collection<Concept,Allocator>& x,
-    const any_collection<Concept,Allocator>& y)
-  {
-    return x.base()==y.base();
-  }
+    const any_collection<C,A>&,const any_collection<C,A>&);
 };
+
+template<typename Concept,typename Allocator>
+bool operator==(
+  const any_collection<Concept,Allocator>& x,
+  const any_collection<Concept,Allocator>& y)
+{
+  return x.base()==y.base();
+}
 
 template<typename Concept,typename Allocator>
 bool operator!=(
