@@ -10,9 +10,13 @@ import os ;
 using quickbook ;
 using boostbook ;
 
-# HTML dependencies for standalone docs.
-install images : [ glob img/*.png ] : <location>html/img ;
-explicit images ;
+# image dependencies
+
+install images_standalone : [ glob img/*.png ] : <location>html/img ;
+explicit images_standalone ;
+
+install images_boostdoc : [ glob img/*.png ] : <location>../../../doc/html/img ;
+explicit images_boostdoc ;
 
 xml poly_collection : poly_collection.qbk ;
 
@@ -22,11 +26,10 @@ boostbook standalone
     <xsl:param>boost.defaults=Boost
     <xsl:param>boost.image.src=img/boost.png
     <xsl:param>boost.root=http://www.boost.org/doc/libs/release
-    #<xsl:param>boost.root=../../../..
-    <dependency>images
+    <dependency>images_standalone
   ;
 
-alias boostdoc : poly_collection : : <dependency>images ;
+alias boostdoc : poly_collection : : <dependency>images_boostdoc ;
 explicit boostdoc ;
 alias boostrelease ;
 explicit boostrelease ;
