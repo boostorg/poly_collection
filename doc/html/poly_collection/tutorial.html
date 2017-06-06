@@ -52,9 +52,9 @@
           (Code samples from <a href="../../../example/basic_base.cpp" target="_top"><code class="computeroutput"><span class="identifier">basic_base</span><span class="special">.</span><span class="identifier">cpp</span></code></a>.)
         </p>
 <p>
-          Imagine we are developing a role game in C++ where sprites are rendered
-          on screen; for the purposes of illustration we can model rendering simply
-          as outputting some information to a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span></code>:
+          Imagine we are developing a role playing game in C++ where sprites are
+          rendered on screen; for the purposes of illustration we can model rendering
+          simply as outputting some information to a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ostream</span></code>:
         </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">sprite</span>
 <span class="special">{</span>
@@ -99,13 +99,14 @@
 
 <span class="identifier">boost</span><span class="special">::</span><span class="identifier">base_collection</span><span class="special">&lt;</span><span class="identifier">sprite</span><span class="special">&gt;</span> <span class="identifier">c</span><span class="special">;</span>
 
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                     <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span> <span class="comment">// some arbitrary random seed</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">uniform_real_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">;</span>
-<span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">=</span><span class="number">0</span><span class="special">;</span><span class="identifier">i</span><span class="special">&lt;</span><span class="number">8</span><span class="special">;++</span><span class="identifier">i</span><span class="special">){</span> <span class="comment">// assign each type with 1/3 probability</span>
-  <span class="keyword">auto</span> <span class="identifier">r</span><span class="special">=</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">);</span>
-       <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">1.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">warrior</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
-  <span class="keyword">else</span> <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">2.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">juggernaut</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
-  <span class="keyword">else</span>            <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">goblin</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                 <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span> <span class="comment">// some arbitrary random seed</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">discrete_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">({</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">});</span>
+<span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">=</span><span class="number">0</span><span class="special">;</span><span class="identifier">i</span><span class="special">&lt;</span><span class="number">8</span><span class="special">;++</span><span class="identifier">i</span><span class="special">){</span>        <span class="comment">// assign each type with 1/3 probability</span>
+  <span class="keyword">switch</span><span class="special">(</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">)){</span>
+    <span class="keyword">case</span> <span class="number">0</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">warrior</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">1</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">juggernaut</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">2</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">goblin</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+  <span class="special">}</span>
 <span class="special">}</span>
 </pre>
 <p>
@@ -116,9 +117,9 @@
               <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">base_collection</span></code> does not have a
               <code class="computeroutput"><span class="identifier">push_back</span></code> member function
               like, say, <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span></code>, as the order in which elements
-              are stored cannot be freely chosen by the user code --we will see more
-              about this later. Insertion mechanisms are rather those of containers
-              like <a href="http://en.cppreference.com/w/cpp/container/unordered_multiset" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">unordered_multiset</span></code></a>, namely
+              are stored cannot be freely chosen by the user code &#8212;we will
+              see more about this later. The insertion mechanisms are rather those
+              of containers like <a href="http://en.cppreference.com/w/cpp/container/unordered_multiset" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">unordered_multiset</span></code></a>, namely
               <code class="computeroutput"><span class="identifier">insert</span></code> and <code class="computeroutput"><span class="identifier">emplace</span></code> with or without a position
               <span class="emphasis"><em>hint</em></span>.
             </li>
@@ -364,13 +365,14 @@
           entities (since interface conformity is silently checked at compile time)
         </p>
 <pre class="programlisting"><span class="comment">// populate with sprites</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                     <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span> <span class="comment">// some arbitrary random seed</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">uniform_real_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">;</span>
-<span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">=</span><span class="number">0</span><span class="special">;</span><span class="identifier">i</span><span class="special">&lt;</span><span class="number">4</span><span class="special">;++</span><span class="identifier">i</span><span class="special">){</span> <span class="comment">// assign each type with 1/3 probability</span>
-  <span class="keyword">auto</span> <span class="identifier">r</span><span class="special">=</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">);</span>
-       <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">1.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">warrior</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
-  <span class="keyword">else</span> <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">2.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">juggernaut</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
-  <span class="keyword">else</span>            <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">goblin</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                 <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span> <span class="comment">// some arbitrary random seed</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">discrete_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">({</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">});</span>
+<span class="keyword">for</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">=</span><span class="number">0</span><span class="special">;</span><span class="identifier">i</span><span class="special">&lt;</span><span class="number">4</span><span class="special">;++</span><span class="identifier">i</span><span class="special">){</span>        <span class="comment">// assign each type with 1/3 probability</span>
+  <span class="keyword">switch</span><span class="special">(</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">)){</span>
+    <span class="keyword">case</span> <span class="number">0</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">warrior</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">1</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">juggernaut</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">2</span><span class="special">:</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">goblin</span><span class="special">{</span><span class="identifier">i</span><span class="special">});</span><span class="keyword">break</span><span class="special">;</span>
+  <span class="special">}</span>
 <span class="special">}</span>
 
 <span class="comment">// populate with messages</span>
@@ -434,14 +436,15 @@
         </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">sprite</span><span class="special">&gt;</span> <span class="identifier">make_sprite</span><span class="special">()</span>
 <span class="special">{</span>
-  <span class="keyword">static</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                     <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span>
-  <span class="keyword">static</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">uniform_real_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">;</span>
-  <span class="keyword">static</span> <span class="keyword">int</span>                              <span class="identifier">id</span><span class="special">=</span><span class="number">0</span><span class="special">;</span>
+  <span class="keyword">static</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span>                 <span class="identifier">gen</span><span class="special">{</span><span class="number">92748</span><span class="special">};</span>
+  <span class="keyword">static</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">discrete_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">rnd</span><span class="special">({</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">,</span><span class="number">1</span><span class="special">});</span>
+  <span class="keyword">static</span> <span class="keyword">int</span>                          <span class="identifier">id</span><span class="special">=</span><span class="number">0</span><span class="special">;</span>
 
-  <span class="keyword">auto</span> <span class="identifier">r</span><span class="special">=</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">);</span>
-       <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">1.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span>
-  <span class="keyword">else</span> <span class="keyword">if</span><span class="special">(</span><span class="identifier">r</span><span class="special">&lt;</span><span class="number">2.0</span><span class="special">/</span><span class="number">3</span><span class="special">)</span><span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">juggernaut</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span>
-  <span class="keyword">else</span>            <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">goblin</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span>
+  <span class="keyword">switch</span><span class="special">(</span><span class="identifier">rnd</span><span class="special">(</span><span class="identifier">gen</span><span class="special">)){</span>
+    <span class="keyword">case</span> <span class="number">0</span><span class="special">:</span> <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">1</span><span class="special">:</span> <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">juggernaut</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span><span class="keyword">break</span><span class="special">;</span>
+    <span class="keyword">case</span> <span class="number">2</span><span class="special">:</span> <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">make_unique</span><span class="special">&lt;</span><span class="identifier">goblin</span><span class="special">&gt;(</span><span class="identifier">id</span><span class="special">++);</span><span class="keyword">break</span><span class="special">;</span>
+  <span class="special">}</span>
 <span class="special">}</span>
 <span class="special">...</span>
 
@@ -507,7 +510,7 @@
 </h4></div></div></div>
 <p>
           For most of the interface of a polymorphic collection, it is possible to
-          only address the elements of a given segment by providing either their
+          only refer to the elements of a given segment by providing either their
           type or <code class="computeroutput"><span class="keyword">typeid</span><span class="special">()</span></code>.
           For instance:
         </p>

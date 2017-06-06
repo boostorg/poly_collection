@@ -467,7 +467,7 @@ struct for_each_callable
 };
 //]
 
-//[pef_for_each_incrementable
+//[perf_for_each_incrementable
 struct for_each_incrementable
 {
   for_each_incrementable():res{0}{}

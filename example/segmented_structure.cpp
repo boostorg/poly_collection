@@ -38,14 +38,18 @@ int main()
 //<-
   auto make_sprite=[]()->std::unique_ptr<sprite>{
 //->
-    static std::mt19937                     gen{92748};
-    static std::uniform_real_distribution<> rnd;
-    static int                              id=0;
+    static std::mt19937                 gen{92748};
+    static std::discrete_distribution<> rnd({1,1,1});
+    static int                          id=0;
 
-    auto r=rnd(gen);
-         if(r<1.0/3)return std::make_unique<warrior>(id++);
-    else if(r<2.0/3)return std::make_unique<juggernaut>(id++);
-    else            return std::make_unique<goblin>(id++);
+    switch(rnd(gen)){ 
+//<-
+      default:
+//->
+      case 0: return std::make_unique<warrior>(id++);break;
+      case 1: return std::make_unique<juggernaut>(id++);break;
+      case 2: return std::make_unique<goblin>(id++);break;
+    }
 //<-
   };
 //->
