@@ -6,7 +6,6 @@
 #
 # See http://www.boost.org/libs/poly_collection for library home page.
 
-import os ;
 using quickbook ;
 using boostbook ;
 
