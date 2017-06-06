@@ -1,5 +1,5 @@
 [/
-  Copyright 2016 Joaquin M Lopez Munoz.
+  Copyright 2016-2017 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
@@ -85,7 +85,7 @@ modfications and extra guarantees:
 
 * `a==b` evaluates to `true` iff for each non-empty segment of subojects
 of type `U` in `a` there is a segment of `U` in `b` with the same size
-and equal elements in the same order, and viceversa.
+and equal elements in the same order, and vice versa.
 * No exceptions are thrown associated to some subobject type not being
 _CopyAssignable_, _MoveConstructible_ or _MoveAssignable_.
 

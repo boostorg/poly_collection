@@ -106,7 +106,7 @@ to minimize the effect of running conditional code (such as an
 `if`-`else` statement or the invocation of a `base` virtual function) by
 speculatively executing a given branch based on past history. This
 mechanism is rendered mostly useless when `derived1`, `derived2` and
-`derived3` elements are traversed interspersedly without a definite pattern. 
+`derived3` elements are interspersed along the sequence without a definite pattern. 
 
 These limitations are imposed by the very nature of dynamic polymorphism:
 as the exact types of the elements accessed through `base`'s interface are not
@@ -179,7 +179,7 @@ conventions of standard library containers.
 [import ../example/basic_base.cpp]
 (Code samples from [@../../example/basic_base.cpp `basic_base.cpp`].)
 
-Imagine we are developing a role game in C++ where sprites are rendered on
+Imagine we are developing a role playing game in C++ where sprites are rendered on
 screen; for the purposes of illustration we can model rendering simply as
 outputting some information to a `std::ostream`:
 
@@ -198,7 +198,7 @@ There are two aspects to notice here:
 
 * `boost::base_collection` does not have a `push_back` member function like, say,
 `std::vector`, as the order in which elements are stored cannot be freely
-chosen by the user code --we will see more about this later. Insertion mechanisms
+chosen by the user code \u2014we will see more about this later. The insertion mechanisms
 are rather those of containers like _std::unordered_multiset_, namely `insert` and
 `emplace` with or without a position /hint/.
 * Elements are not created with `new` but constructed on the stack and passed
@@ -426,7 +426,7 @@ expected to be much less frequent with `boost::function_collection` and
 [section Segment-specific interface]
 
 For most of the interface of a polymorphic collection, it is possible to only
-address the elements of a given segment by providing either their type or
+refer to the elements of a given segment by providing either their type or
 `typeid()`. For instance:
 
 [segmented_structure_5]
