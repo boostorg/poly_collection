@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,8 +13,11 @@
 #pragma once
 #endif
 
+#include <boost/mpl/vector/vector10.hpp>
 #include <boost/poly_collection/any_collection.hpp>
 #include <boost/type_erasure/any_cast.hpp>
+#include <boost/type_erasure/builtin.hpp>
+#include <boost/type_erasure/call.hpp>
 #include <boost/type_erasure/operators.hpp>
 
 namespace any_types{
@@ -42,11 +45,24 @@ struct incrementable3
 using concept=boost::type_erasure::incrementable<>;
 using collection=boost::any_collection<concept>;
 
+template<typename T=boost::type_erasure::_self>
+struct convertible_to_int
+{
+  static int apply(const T& x){return x;}
+};
+
 using t1=incrementable1;
 using t2=double;
 using t3=incrementable3;
 using t4=int;
-using t5=char;
+using t5=boost::type_erasure::any<
+  boost::mpl::vector4<
+    boost::type_erasure::copy_constructible<>,
+    boost::type_erasure::assignable<>,
+    concept,
+    convertible_to_int<>
+  >
+>;
 
 struct to_int
 {
@@ -67,7 +83,10 @@ struct to_int
   int operator()(const t2& x)const{return static_cast<int>(x);};
   int operator()(const t3& x)const{return static_cast<int>(x.n);}
   int operator()(const t4& x)const{return x;}
-  int operator()(const t5& x)const{return static_cast<int>(x);};
+  int operator()(const t5& x)const
+  {
+    return boost::type_erasure::call(convertible_to_int<>{},x);
+  }
 };
 
 } /* namespace any_types*/
