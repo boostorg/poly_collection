@@ -63,6 +63,7 @@ _EqualityComparable_,  with the following semantic clause: may throw if
 some subobject in the container is not
 _CopyConstructible_ (respectively, _CopyAssignable_, _MoveConstructible_, 
 _MoveAssignable_, _EqualityComparable_).
+* `max_size()` is not provided.
 
 [section Polymorphic collections]
 
@@ -377,13 +378,6 @@ is empty.[br]
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size]
 [def _max_size_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size `max_size`]]
 
-`cc.max_size()`
-
-[* REVIEW THIS DESIGN DECISION][br]
-[*Returns:] the minimum return value of `max_size` for each of the segments of
-the collection, or `std::numeric_limits<size_type>::max` if there are no
-segments.
-
 `cc.max_size(index)`[br]
 `cc.max_size<U>()`
 
@@ -393,12 +387,6 @@ the indicated type.[br]
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity]
 [def _capacity_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity `capacity`]]
-
-`cc.capacity()`
-
-[*Returns:] the minimum return value of `capacity` for each of the segments of
-the collection, or `std::numeric_limits<size_type>::max` if there are no
-segments.
 
 `cc.capacity(index)`[br]
 `cc.capacity<U>()`[br]

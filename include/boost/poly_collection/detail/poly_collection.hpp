@@ -23,7 +23,6 @@
 #include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <iterator>
-#include <limits>
 #include <new>
 #include <type_traits>
 #include <typeindex>
@@ -491,13 +490,6 @@ public:
     return size(typeid(T));
   }
 
-  size_type max_size()const noexcept
-  {
-    size_type res=(std::numeric_limits<size_type>::max)();
-    for(const auto& x:map)res=(std::min)(res,x.second.max_size());
-    return res;
-  }
-
   size_type max_size(const std::type_index& index)const
   {
     return segment(get_map_iterator_for(index)).max_size();
@@ -507,13 +499,6 @@ public:
   size_type max_size()const
   {
     return max_size(typeid(T));
-  }
-
-  size_type capacity()const noexcept
-  {
-    size_type res=(std::numeric_limits<size_type>::max)();
-    for(const auto& x:map)res=(std::min)(res,x.second.capacity());
-    return res;
   }
 
   size_type capacity(const std::type_index& index)const

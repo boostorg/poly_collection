@@ -1,5 +1,5 @@
 [/
-  Copyright 2016 Joaquin M Lopez Munoz.
+  Copyright 2016-2017 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
@@ -95,11 +95,9 @@
     size_type _size_(const std::type_index& index)const;
     template<typename T> size_type _size_()const;
 
-    size_type _max_size_()const noexcept;
     size_type _max_size_(const std::type_index& index)const;
     template<typename T> size_type _max_size_()const;
 
-    size_type _capacity_()const noexcept;
     size_type _capacity_(const std::type_index& index)const;
     template<typename T> size_type _capacity_()const;
 

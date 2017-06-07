@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -148,18 +148,8 @@ int main()
 
 //[segmented_structure_10
   c.reserve(1000); // reserve(1000) for each segment
-  std::cout<<c.capacity()<<"\n"; // prints 1000
+  std::cout<<c.capacity<warrior>()<<", "
+           <<c.capacity<juggernaut>()<<", "
+           <<c.capacity<goblin>()<<"\n"; // prints 1000, 1000, 1000
 //]
-
-  {
-//[segmented_structure_11
-    boost::base_collection<sprite> c; // newly created collection
-    std::cout<<c.capacity()<<"\n"; // prints 18446744073709551615!!
-//]
-
-//[segmented_structure_12
-    c.register_types<warrior,juggernaut,goblin>();
-    std::cout<<c.capacity()<<"\n"; // prints 0
-//]
-  }
 }
