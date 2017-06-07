@@ -71,7 +71,7 @@
       interface are not known, an indirection through <code class="computeroutput"><span class="identifier">base</span><span class="special">*</span></code> (a particular form of <span class="emphasis"><em>type erasure</em></span>)
       is required. There is however a critical observation: even though derived types
       are not known when traversing a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">*&gt;</span></code>, the information is typically available
-      <span class="emphasis"><em>at compile time</em></span> in the point of insertion in the vector:
+      <span class="emphasis"><em>at compile time</em></span> at the point of insertion in the vector:
     </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">*&gt;</span> <span class="identifier">v</span><span class="special">;</span>
 <span class="special">...</span>

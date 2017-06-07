@@ -125,7 +125,8 @@
         and <a href="http://en.cppreference.com/w/cpp/concept/AllocatorAwareContainer" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">AllocatorAwareContainer</span></code></strong></span></a>
         with the following modifications:
       </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
             Where it occurs, replace the requirement that <code class="computeroutput"><span class="identifier">T</span></code>
             be <a href="http://en.cppreference.com/w/cpp/concept/CopyInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyInsertable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/CopyAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyAssignable</span></code></strong></span></a>,
@@ -138,7 +139,12 @@
             <a href="http://en.cppreference.com/w/cpp/concept/MoveConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveConstructible</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/MoveAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveAssignable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>).
-          </li></ul></div>
+          </li>
+<li class="listitem">
+            <code class="computeroutput"><span class="identifier">max_size</span><span class="special">()</span></code>
+            is not provided.
+          </li>
+</ul></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections"></a><a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections" title="Polymorphic collections">Polymorphic
@@ -587,15 +593,7 @@
             the indicated type is not registered.
           </p>
 <p>
-            <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"></a><code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">max_size</span><span class="special">()</span></code>
-          </p>
-<p>
-            <span class="bold"><strong>REVIEW THIS DESIGN DECISION</strong></span><br> <span class="bold"><strong>Returns:</strong></span> the minimum return value of <code class="computeroutput"><span class="identifier">max_size</span></code> for each of the segments of
-            the collection, or <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">size_type</span><span class="special">&gt;::</span><span class="identifier">max</span></code>
-            if there are no segments.
-          </p>
-<p>
-            <code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">max_size</span><span class="special">(</span><span class="identifier">index</span><span class="special">)</span></code><br>
+            <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"></a><code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">max_size</span><span class="special">(</span><span class="identifier">index</span><span class="special">)</span></code><br>
             <code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">max_size</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;()</span></code>
           </p>
 <p>
@@ -604,16 +602,7 @@
             If the indicated type is not registered.
           </p>
 <p>
-            <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"></a><code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">()</span></code>
-          </p>
-<p>
-            <span class="bold"><strong>Returns:</strong></span> the minimum return value of
-            <code class="computeroutput"><span class="identifier">capacity</span></code> for each of
-            the segments of the collection, or <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">size_type</span><span class="special">&gt;::</span><span class="identifier">max</span></code>
-            if there are no segments.
-          </p>
-<p>
-            <code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">(</span><span class="identifier">index</span><span class="special">)</span></code><br>
+            <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"></a><code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">(</span><span class="identifier">index</span><span class="special">)</span></code><br>
             <code class="computeroutput"><span class="identifier">cc</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;()</span></code><br>
           </p>
 <p>
@@ -1145,11 +1134,9 @@
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
@@ -1505,11 +1492,9 @@
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
@@ -1794,11 +1779,9 @@
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size"><code class="computeroutput"><span class="identifier">size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size"><code class="computeroutput"><span class="identifier">max_size</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 
-  <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span> <span class="keyword">noexcept</span><span class="special">;</span>
   <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">type_index</span><span class="special">&amp;</span> <span class="identifier">index</span><span class="special">)</span><span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">size_type</span> <a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity"><code class="computeroutput"><span class="identifier">capacity</span></code></a><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 

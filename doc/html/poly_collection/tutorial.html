@@ -659,7 +659,9 @@
           segments at once. The following
         </p>
 <pre class="programlisting"><span class="identifier">c</span><span class="special">.</span><span class="identifier">reserve</span><span class="special">(</span><span class="number">1000</span><span class="special">);</span> <span class="comment">// reserve(1000) for each segment</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">()&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span> <span class="comment">// prints 1000</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;()&lt;&lt;</span><span class="string">", "</span>
+         <span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">&lt;</span><span class="identifier">juggernaut</span><span class="special">&gt;()&lt;&lt;</span><span class="string">", "</span>
+         <span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">&lt;</span><span class="identifier">goblin</span><span class="special">&gt;()&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span> <span class="comment">// prints 1000, 1000, 1000</span>
 </pre>
 <p>
           instructs every <span class="emphasis"><em>existing</em></span> segment to reserve 1,000
@@ -667,25 +669,19 @@
           <a class="link" href="tutorial.html#poly_collection.tutorial.deeper_into_the_segmented_nature.type_registration" title="Type registration">type
           registration</a>), its capacity will be different.
         </p>
-<p>
-          <code class="computeroutput"><span class="identifier">capacity</span><span class="special">()</span></code>,
-          without further type indication, returns the <span class="emphasis"><em>minimum</em></span>
-          capacity across all existing segments. This can lead to some curious behavior:
-        </p>
-<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">base_collection</span><span class="special">&lt;</span><span class="identifier">sprite</span><span class="special">&gt;</span> <span class="identifier">c</span><span class="special">;</span> <span class="comment">// newly created collection</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">()&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span> <span class="comment">// prints 18446744073709551615!!</span>
-</pre>
-<p>
-          The above makes perfect (mathematical) sense: as a newly created collection
-          has no segments and <a href="https://en.wikipedia.org/wiki/Empty_set#Extended_real_numbers" target="_top">the
-          minimum of the empty set is conventionally defined as &#8734;</a>, the
-          value returned is the closest we have to infinity, i.e. <a href="http://en.cppreference.com/w/cpp/types/numeric_limits/max" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">size_type</span><span class="special">&gt;::</span><span class="identifier">max</span><span class="special">()</span></code></a>.
-          Once there is at least one segment, the capacity of the collection drops
-          to more mundane values:
-        </p>
-<pre class="programlisting"><span class="identifier">c</span><span class="special">.</span><span class="identifier">register_types</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">,</span><span class="identifier">juggernaut</span><span class="special">,</span><span class="identifier">goblin</span><span class="special">&gt;();</span>
-<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">capacity</span><span class="special">()&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span> <span class="comment">// prints 0</span>
-</pre>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="http://www.boost.org/doc/libs/release/doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            Unlike standard containers, collection-level <code class="computeroutput"><span class="identifier">capacity</span><span class="special">()</span></code> and <code class="computeroutput"><span class="identifier">max_size</span><span class="special">()</span></code> are not provided because their usual
+            semantics cannot be applied to Boost.PolyCollection: for instance, <code class="computeroutput"><span class="identifier">capacity</span><span class="special">()</span></code>
+            is typically used to check how many elements can be inserted without
+            reallocation, but in a segmented structure that depends on the exact
+            types of the elements and whether they are registered or not.
+          </p></td></tr>
+</table></div>
 </div>
 </div>
 <div class="section">
