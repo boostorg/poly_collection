@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -36,7 +36,7 @@ struct warrior:sprite
   using sprite::sprite;
   warrior(std::string rank,int id):sprite{id},rank{std::move(rank)}{}
 
-  virtual void render(std::ostream& os)const{os<<rank<<" "<<id;};
+  void render(std::ostream& os)const override{os<<rank<<" "<<id;};
 
   std::string rank="warrior";
 };
@@ -49,7 +49,7 @@ struct juggernaut:warrior
 struct goblin:sprite
 {
   using sprite::sprite;
-  virtual void render(std::ostream& os)const{os<<"goblin "<<id;};
+  void render(std::ostream& os)const override{os<<"goblin "<<id;};
 };
 //]
 
@@ -70,7 +70,7 @@ struct elf:sprite
   using sprite::sprite;
   elf(const elf&)=delete; // not copyable
   elf(elf&&)=default;     // but moveable
-  virtual void render(std::ostream& os)const{os<<"elf "<<id;};
+  void render(std::ostream& os)const override{os<<"elf "<<id;};
 };
 //]
 
