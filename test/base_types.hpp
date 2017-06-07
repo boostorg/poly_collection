@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -53,14 +53,20 @@ struct derived3:base
   int n;
 };
 
-struct derived4:derived3
+struct another_base
+{
+  virtual ~another_base()=default;
+  char x[5];
+};
+
+struct derived4:another_base,derived3
 {
   using derived3::derived3;
   virtual int operator()(int x)const{return -(this->derived3::operator()(x));}
   bool operator==(const derived4& x)const{return n==x.n;}
 };
 
-struct derived5:base
+struct derived5:base,another_base
 {
   derived5(int n):n{n}{}
   virtual int operator()(int x)const{return x*x*x*n;}
