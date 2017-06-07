@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -20,8 +20,6 @@ using namespace test_utilities;
 template<typename PolyCollection,typename ValueFactory,typename... Types>
 void test_capacity()
 {
-  using size_type=typename PolyCollection::size_type;
-
   PolyCollection        p;
   const PolyCollection& cp=p;
   ValueFactory          v;
