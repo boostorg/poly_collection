@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,7 +13,7 @@
 #pragma once
 #endif
 
-#include <boost/type_traits/has_equal_to.hpp>
+#include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <type_traits>
 #include <utility>
 
@@ -30,7 +30,7 @@ template<typename T>
 struct is_nothrow_equality_comparable<
   T,
   typename std::enable_if<
-    boost::has_equal_to<T,T>::value
+    is_equality_comparable<T>::value
   >::type
 >:std::integral_constant<
   bool,

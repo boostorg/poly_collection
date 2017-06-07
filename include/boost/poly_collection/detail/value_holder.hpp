@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,7 @@
 #endif
 
 #include <boost/core/addressof.hpp>
-#include <boost/type_traits/has_equal_to.hpp>
+#include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <new>
@@ -61,7 +61,7 @@ class value_holder:public value_holder_base<T>
   using is_nothrow_move_assignable=std::is_nothrow_move_assignable<T>;
   using is_equality_comparable=std::integral_constant<
     bool,
-    boost::has_equal_to<T,T>::value
+    is_equality_comparable<T>::value
   >;
   using is_nothrow_equality_comparable=
     detail::is_nothrow_equality_comparable<T>;
