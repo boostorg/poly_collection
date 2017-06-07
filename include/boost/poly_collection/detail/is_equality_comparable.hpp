@@ -57,7 +57,10 @@ struct is_equality_comparable<
  */
 
 template<typename T,typename=void>
-struct is_equality_comparable:has_equal_to<T,T,bool>{};
+struct is_equality_comparable:std::integral_constant<
+  bool,
+  has_equal_to<T,T,bool>::value
+>{};
 
 template<typename T>
 struct is_equality_comparable<

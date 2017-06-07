@@ -59,10 +59,7 @@ class value_holder:public value_holder_base<T>
   using is_nothrow_copy_constructible=std::is_nothrow_copy_constructible<T>;
   using is_move_assignable=std::is_move_assignable<T>;
   using is_nothrow_move_assignable=std::is_nothrow_move_assignable<T>;
-  using is_equality_comparable=std::integral_constant<
-    bool,
-    is_equality_comparable<T>::value
-  >;
+  using is_equality_comparable=detail::is_equality_comparable<T>;
   using is_nothrow_equality_comparable=
     detail::is_nothrow_equality_comparable<T>;
 
