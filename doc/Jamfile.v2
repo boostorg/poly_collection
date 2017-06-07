@@ -11,10 +11,18 @@ using boostbook ;
 
 # image dependencies
 
-install images_standalone : [ glob img/*.png ] : <location>html/img ;
+install images_standalone
+  : [ glob img/*.png ]
+  : <location>html/poly_collection/img
+  ;
+
 explicit images_standalone ;
 
-install images_boostdoc : [ glob img/*.png ] : <location>../../../doc/html/img ;
+install images_boostdoc
+  : [ glob img/*.png ]
+  : <location>../../../doc/html/poly_collection/img
+  ;
+
 explicit images_boostdoc ;
 
 xml poly_collection : poly_collection.qbk ;
@@ -23,7 +31,7 @@ boostbook standalone
   : poly_collection
   : 
     <xsl:param>boost.defaults=Boost
-    <xsl:param>boost.image.src=img/boost.png
+    <xsl:param>boost.image.src=poly_collection/img/boost.png
     <xsl:param>boost.root=http://www.boost.org/doc/libs/release
     <dependency>images_standalone
   ;

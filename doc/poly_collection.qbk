@@ -85,7 +85,7 @@ such as `std::vector<std::unique_ptr<base>>` or
 [@http://www.boost.org/libs/ptr_container/ `boost::ptr_vector<base>`]) looks like
 the following:
 
-[$img/ptr_vector.png]
+[$poly_collection/img/ptr_vector.png]
 
 Elements that are adjacent in the vector are not necessarily allocated contiguously,
 much less so if the vector has undergone mid insertions and deletions. A typical
@@ -125,7 +125,7 @@ in an internal data structure (a map of
 [@http://en.cppreference.com/w/cpp/types/type_index `std::type_index`] objects,
 actually) pointing to as many vectors or /segments/ as there are derived classes:
 
-[$img/segment_map.png]
+[$poly_collection/img/segment_map.png]
 
 Traversing such a structure reduces to looping over all the segments one after
 another: this is extremely efficient both in terms of caching and branch
@@ -484,7 +484,7 @@ to a segment for `T`, it can then be explictly converted to a
 The figure shows the action scopes of all the iterators associated to
 a polymorphic collection (`const_` versions not included):
 
-[$ img/poly_collection_iterators.png]
+[$ poly_collection/img/poly_collection_iterators.png]
 
 We have yet to describe the bottom part of the diagram.
 To allow for per-segment traversal of a polymorphic collection, a
@@ -849,7 +849,7 @@ calls are not needed.
 
 [role aligncenter
 '''<inlinemediaobject>
-    <imageobject><imagedata fileref="'''img/[file].png'''"/></imageobject>
+    <imageobject><imagedata fileref="'''poly_collection/img/[file].png'''"/></imageobject>
   </inlinemediaobject>'''
 ]
 [role aligncenter [*[name], [environment]]]
