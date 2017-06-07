@@ -113,7 +113,7 @@ as the exact types of the elements accessed through `base`'s interface are not
 known, an indirection through `base*` (a particular form of /type erasure/)
 is required. There is however a critical observation: even though derived types
 are not known when traversing a `std::vector<base*>`, the information is typically
-available /at compile time/ in the point of insertion in the vector:
+available /at compile time/ at the point of insertion in the vector:
 
   std::vector<base*> v;
   ...
