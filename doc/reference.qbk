@@ -25,7 +25,7 @@
 The key aspect of dynamic polymorphism is the ability for a value of type `T`
 to internally use another value of a possibily different type `U` for the
 implementation of a given interface. Base/derived polymorphism is the classic
-model of dynamic polymorphism in C++, bot not the only possible one.
+model of dynamic polymorphism in C++, but not the only possible one.
 
 Formally, a /polymorphism model/ is defined by
 
