@@ -16,6 +16,7 @@
 ]
 
 [def _Boost.TypeErasure_ [@http://www.boost.org/libs/type_erasure Boost.TypeErasure]]
+[def _Boost.TypeIndex_ [@http://www.boost.org/libs/type_index Boost.TypeIndex]]
 [def _CopyConstructible_ [@http://en.cppreference.com/w/cpp/concept/CopyConstructible [* `CopyConstructible`]]]
 [def _duck_typing_ [@https://en.wikipedia.org/wiki/Duck_typing ['duck typing]]]
 [def _EqualityComparable_ [@http://en.cppreference.com/w/cpp/concept/EqualityComparable [* `EqualityComparable`]]]
@@ -1005,6 +1006,90 @@ The horizontal axis is logarithmic.
 [endsect]
 
 [include reference.qbk]
+
+[section Future work]
+
+A number of features asked by reviewers and users of Boost.PolyCollection are
+considered for inclusion into future versions of the library.
+
+[section Alternative RTTI systems]
+
+Boost.PolyCollection can be extended to use _Boost.TypeIndex_ in RTTI-challenged
+scenarios. Taking this idea further, it is not unusual that some environments
+(game engines, for instance) provide their own RTTI framework: an even more
+ambitious extension to Boost.PolyCollection would then be to make it configurable
+for user-provided RTTI through some sort of traits class specifying replacements for
+[@http://en.cppreference.com/w/cpp/types/type_info `std::type_info`]/[@http://en.cppreference.com/w/cpp/types/type_index `std::type_index`]
+and [@http://en.cppreference.com/w/cpp/language/typeid `typeid`].
+
+[endsect]
+
+[section Copy traits]
+
+`boost::base_collection` requires that stored objects be _MoveConstructible_ and
+_MoveAssignable_; unfortunately, it is customary to restrict copying in OOP
+hierarchies to avoid slicing, which would force users to revisit their class
+definitions in order to use Boost.PolyCollection. This can be alleviated by
+offering a configurable traits class where copy and assignment can be defined
+externally
+
+``
+template<typename T>
+struct copy_traits
+{
+  void construct(void*,T&&);
+  void assign(T&,T&&);
+};
+``
+
+with default implementations resorting to regular placement `new` and
+`T::operator=`.
+
+[endsect]
+
+[section Parallel algorithms]
+
+C++17 introduces
+[@http://en.cppreference.com/w/cpp/experimental/parallelism parallel algorithms],
+like for instance a parallel version of
+[@http://en.cppreference.com/w/cpp/algorithm/for_each `std::for_each`]; it is only
+natural then to provide the corresponding
+[link poly_collection.tutorial.algorithms Boost.PolyCollection-specific algorithms].
+The segmented nature of polymorphic collections makes them particularly amenable to
+parallel processing.
+
+[endsect]
+
+[section `variant_collection`]
+
+/Closed polymorphism/ is a kind of dynamic polymorphism where the set of implementation
+types is fixed at definition time: the prime example of this paradigm in C++ is
+[@http://en.cppreference.com/w/cpp/utility/variant `std::variant`]. Although
+`boost::any_collection<boost::mpl::vector<>>` can act as a sort of replacement for
+`std::vector<std::variant<T1,...,TN>>`, this is in fact more similar to a
+`std::vector<`[@http://en.cppreference.com/w/cpp/utility/any `std::any`]`>`,
+and a collection class `boost::variant_collection<T1,...,TN>` could be designed to
+better model closed polymorphism and take further advantage of the fact that
+implementation types are fixed (for instance, internal virtual calls can be
+completely eliminated). From a conceptual point of view, this would require introducing
+a new [* `ClosedPolymorphicCollection`] notion and renaming the current
+[link poly_collection.reference.polymorphic_containers.polymorphic_collections [* `PolymorphicCollection`]]
+model to [* `OpenPolymorphicCollection`].
+
+[endsect]
+
+[section Ordered polymorphic collections]
+
+Users have expressed interest in polymorphic collections where elements are kept
+ordered within their segment and optionally duplicates are excluded, much like
+[@http://boost.org/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx `boost::flat_set`/`boost::flat_multiset`]
+do over their internal data vector. The open question remains of whether these
+collections should also guarantee some order between segments (current ones don't)
+to allow for the definition of container-level `operator::<` and related operators.
+
+[endsect]
+
+[endsect]
 
 [section Acknowledgments]
 
