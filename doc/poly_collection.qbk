@@ -1091,6 +1091,16 @@ to allow for the definition of container-level `operator::<` and related operato
 
 [endsect]
 
+[section Release notes]
+
+[section Boost 1.65]
+
+* Initial release.
+
+[endsect]
+
+[endsect]
+
 [section Acknowledgments]
 
 The library uses [@http://www.pdimov.com/ Peter Dimov]'s
