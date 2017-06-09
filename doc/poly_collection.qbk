@@ -1017,8 +1017,19 @@ contributed performance results for GCC 5.2, and
 [@https://www.linkedin.com/in/francisco-jose-tapia-iba%C3%B1ez-4239a07a Francisco
 José Tapia] for Clang 3.9.
 
+The Boost acceptance review took place between the 3rd and 17th of May, 2017. Thank you
+to Ion Gaztañaga for smoothly managing the process. The following people participated
+with full reviews or valuable comments:
+Pete Bartlett, Hans Dembinski, Dominique Devienne, Edward Diener, Vinnie Falco,
+Ion Gaztañaga, Andrzej Krzemienski, Brook Milligan, Thorsten Ottosen, Steven Watanabe,
+Adam Wulkiewicz. Many thanks to all of them. Steven Watanable gave crucial help in
+solving some hard problems related to the usage of _Boost.TypeErasure_.
+
 Boost.PolyCollection was designed and written between rainy
 [@https://es.wikipedia.org/wiki/Viav%C3%A9lez Viavélez], noisy Madrid and beautiful
 [@https://en.wikipedia.org/wiki/C%C3%A1ceres,_Spain Cáceres], August-November, 2016.
+Most of the after-review work in preparation for the official Boost release was done
+in the quiet town of [@https://es.wikipedia.org/wiki/Oropesa_(Toledo) Oropesa] during
+the spring of 2017.
 
 [endsect]
