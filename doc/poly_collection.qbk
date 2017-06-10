@@ -920,6 +920,7 @@ from a source of values with types following the cyclic sequence
 
 `T1` `T1` `T2`  `T2` `T3` `T1` `T1` `T2`  `T2` `T3` ···
 
+No `reserve` operation is done before insertion.
 The figures show resulting times in nanoseconds/element.
 The horizontal axis is logarithmic.
 
