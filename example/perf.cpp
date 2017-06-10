@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -571,7 +571,7 @@ int main(int argc, char *argv[])
   }
   {
 //[perf_any_types
-    using concept=boost::mpl::vector<
+    using concept_=boost::mpl::vector<
       boost::type_erasure::copy_constructible<>,
       boost::type_erasure::relaxed,
       boost::type_erasure::typeid_<>,
@@ -581,17 +581,17 @@ int main(int argc, char *argv[])
 
     auto seq=  element_sequence<int,int,double,double,char>{};
     auto f=    for_each_incrementable{};
-    auto av=   label<any_vector<concept>>
+    auto av=   label<any_vector<concept_>>
                {"any_vector"};
-    auto sav=  label<sorted_any_vector<concept>>
+    auto sav=  label<sorted_any_vector<concept_>>
                {"sorted any_vector"};
-    auto shav= label<shuffled_any_vector<concept>>
+    auto shav= label<shuffled_any_vector<concept_>>
                {"shuffled any_vector"};
-    auto ac=   label<any_collection<concept>>
+    auto ac=   label<any_collection<concept_>>
                {"any_collection"};
-    auto fac=  label<poly_for_each_any_collection<concept>>
+    auto fac=  label<poly_for_each_any_collection<concept_>>
                {"any_collection (poly::for_each)"};
-    auto rfac= label<poly_for_each_any_collection<concept,int,double,char>>
+    auto rfac= label<poly_for_each_any_collection<concept_,int,double,char>>
                {"any_collection (restituted poly::for_each)"};
 
     if(all||insert_any)insert_perf(n0,n1,dn,seq,av,ac);

@@ -42,8 +42,8 @@ struct incrementable3
   double n;
 };
 
-using concept=boost::type_erasure::incrementable<>;
-using collection=boost::any_collection<concept>;
+using concept_=boost::type_erasure::incrementable<>;
+using collection=boost::any_collection<concept_>;
 
 template<typename T=boost::type_erasure::_self>
 struct convertible_to_int
@@ -59,7 +59,7 @@ using t5=boost::type_erasure::any<
   boost::mpl::vector4<
     boost::type_erasure::copy_constructible<>,
     boost::type_erasure::assignable<>,
-    concept,
+    concept_,
     convertible_to_int<>
   >
 >;

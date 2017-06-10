@@ -193,11 +193,11 @@ private:
     using namespace boost::type_erasure;
     using ref_type=any<Concept2,T>;
     using make_ref=any_model_make_reference<_self,ref_type>;
-    using concept=typename concept_of<value_type>::type;
+    using concept_=typename concept_of<value_type>::type;
 
     auto b=make_binding<mpl::map1<mpl::pair<_self,ref_type>>>();
 
-    return {call(binding<make_ref>{b},make_ref{},x),binding<concept>{b}};
+    return {call(binding<make_ref>{b},make_ref{},x),binding<concept_>{b}};
   }
 };
 

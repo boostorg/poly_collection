@@ -703,7 +703,7 @@ Boost.PolyCollection:
 
 * `std::vector<base*>` (or similar) → `boost::base_collection<base>`
 * `std::vector<std::function<signature>>` → `boost::function_collection<signature>`
-* `std::vector<boost::type_erasure::any<concept>>` → `boost::any_collection<concept>`
+* `std::vector<boost::type_erasure::any<concept_>>` → `boost::any_collection<concept_>`
 
 is expected to increase performance due to better caching and branch prediction
 behavior. But there is still room for improvement.
@@ -894,8 +894,8 @@ following environments:
 
 [section `boost::any_collection`]
 
-* Baseline container: `any_vector` = `std::vector<boost::type_erasure::any<concept>>`
-* Polymorphic collection: `any_collection` = `boost::any_collection<concept>`
+* Baseline container: `any_vector` = `std::vector<boost::type_erasure::any<concept_>>`
+* Polymorphic collection: `any_collection` = `boost::any_collection<concept_>`
 * Element types: `T1` = `int`, `T2` = `double`, `T3` = `char`
 
 [perf_any_types]
