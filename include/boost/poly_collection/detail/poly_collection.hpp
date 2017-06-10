@@ -256,7 +256,7 @@ public:
   private:
     friend class poly_collection;
 
-    using const_segment_info::const_segment_info;
+    using const_segment_info<T>::const_segment_info;
   };
 
 private:
