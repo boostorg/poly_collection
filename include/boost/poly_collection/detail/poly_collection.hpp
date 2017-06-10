@@ -157,11 +157,11 @@ public:
   template<typename T>
   using const_local_iterator=local_iterator_impl<const_segment_iterator<T>>;
 
-  class const_segment_info
+  class const_base_segment_info
   {
   public:
-    const_segment_info(const const_segment_info&)=default;
-    const_segment_info& operator=(const const_segment_info&)=default;
+    const_base_segment_info(const const_base_segment_info&)=default;
+    const_base_segment_info& operator=(const const_base_segment_info&)=default;
     
     const_local_base_iterator begin()const noexcept
       {return {it,it->second.begin()};}
@@ -186,19 +186,19 @@ public:
   protected:
     friend class poly_collection;
 
-    const_segment_info(const_segment_map_iterator it)noexcept:it{it}{}
+    const_base_segment_info(const_segment_map_iterator it)noexcept:it{it}{}
 
     const_segment_map_iterator it;
   };
 
-  class segment_info:public const_segment_info
+  class base_segment_info:public const_base_segment_info
   {
   public:
-    segment_info(const segment_info&)=default;
-    segment_info& operator=(const segment_info&)=default;
+    base_segment_info(const base_segment_info&)=default;
+    base_segment_info& operator=(const base_segment_info&)=default;
 
-    using const_segment_info::begin;
-    using const_segment_info::end;
+    using const_base_segment_info::begin;
+    using const_base_segment_info::end;
 
     local_base_iterator begin()noexcept
       {return {this->it,this->it->second.begin()};}
@@ -209,6 +209,49 @@ public:
     local_iterator<T> begin()noexcept{return local_iterator<T>{begin()};}
     template<typename T>
     local_iterator<T> end()noexcept{return local_iterator<T>{end()};}
+
+  private:
+    friend class poly_collection;
+
+    using const_base_segment_info::const_base_segment_info;
+  };
+
+  template<typename T>
+  class const_segment_info
+  {
+  public:
+    const_segment_info(const const_segment_info&)=default;
+    const_segment_info& operator=(const const_segment_info&)=default;
+    
+    const_local_iterator<T> begin()const noexcept
+      {return {it,it->second.begin()};}
+    const_local_iterator<T> end()const noexcept
+      {return {it,it->second.end()};}
+    const_local_iterator<T> cbegin()const noexcept{return begin();}
+    const_local_iterator<T> cend()const noexcept{return end();}
+
+  protected:
+    friend class poly_collection;
+
+    const_segment_info(const_segment_map_iterator it)noexcept:it{it}{}
+
+    const_segment_map_iterator it;
+  };
+
+  template<typename T>
+  class segment_info:public const_segment_info<T>
+  {
+  public:
+    segment_info(const segment_info&)=default;
+    segment_info& operator=(const segment_info&)=default;
+
+    using const_segment_info<T>::begin;
+    using const_segment_info<T>::end;
+
+    local_iterator<T> begin()noexcept
+      {return {this->it,this->it->second.begin()};}
+    local_iterator<T> end()noexcept
+      {return {this->it,this->it->second.end()};}
 
   private:
     friend class poly_collection;
@@ -271,19 +314,20 @@ private:
   };
 
 public:
-  using segment_info_iterator=
-    segment_info_iterator_impl<segment_info>; 
-  using const_segment_info_iterator=
-    segment_info_iterator_impl<const_segment_info>;
+  using base_segment_info_iterator=
+    segment_info_iterator_impl<base_segment_info>; 
+  using const_base_segment_info_iterator=
+    segment_info_iterator_impl<const_base_segment_info>;
     
 private:
   template<typename Iterator>
-  static Iterator              nonconst_hlp(Iterator);
-  static iterator              nonconst_hlp(const_iterator);
-  static local_base_iterator   nonconst_hlp(const_local_base_iterator);
+  static Iterator                   nonconst_hlp(Iterator);
+  static iterator                   nonconst_hlp(const_iterator);
+  static local_base_iterator        nonconst_hlp(const_local_base_iterator);
   template<typename T>
-  static local_iterator<T>     nonconst_hlp(const_local_iterator<T>);
-  static segment_info_iterator nonconst_hlp(const_segment_info_iterator);
+  static local_iterator<T>          nonconst_hlp(const_local_iterator<T>);
+  static base_segment_info_iterator nonconst_hlp(
+                                      const_base_segment_info_iterator);
 
   template<typename Iterator>
   using nonconst_version=decltype(nonconst_hlp(std::declval<Iterator>()));
@@ -296,10 +340,11 @@ public:
     const_segment_traversal_info& operator=(
       const const_segment_traversal_info&)=default;
     
-    const_segment_info_iterator begin()const noexcept{return pmap->cbegin();}
-    const_segment_info_iterator end()const noexcept{return pmap->cend();}
-    const_segment_info_iterator cbegin()const noexcept{return begin();}
-    const_segment_info_iterator cend()const noexcept{return end();}
+    const_base_segment_info_iterator begin()const noexcept
+                                       {return pmap->cbegin();}
+    const_base_segment_info_iterator end()const noexcept{return pmap->cend();}
+    const_base_segment_info_iterator cbegin()const noexcept{return begin();}
+    const_base_segment_info_iterator cend()const noexcept{return end();}
 
   protected:
     friend class poly_collection;
@@ -319,8 +364,8 @@ public:
     using const_segment_traversal_info::begin;
     using const_segment_traversal_info::end;
 
-    segment_info_iterator begin()noexcept{return this->pmap->cbegin();}
-    segment_info_iterator end()noexcept{return this->pmap->cend();}
+    base_segment_info_iterator begin()noexcept{return this->pmap->cbegin();}
+    base_segment_info_iterator end()noexcept{return this->pmap->cend();}
 
   private:
     friend class poly_collection;
@@ -451,6 +496,22 @@ public:
 
   template<typename T,enable_if_acceptable<T> =nullptr>
   const_local_iterator<T> cend()const{return end<T>();}
+
+  base_segment_info segment(const std::type_index& index)
+  {
+    return get_map_iterator_for(index);
+  }
+
+  const_base_segment_info segment(const std::type_index& index)const
+  {
+    return get_map_iterator_for(index);
+  }
+
+  template<typename T,enable_if_acceptable<T> =nullptr>
+  segment_info<T> segment(){return get_map_iterator_for(typeid(T));}
+
+  template<typename T,enable_if_acceptable<T> =nullptr>
+  const_segment_info<T> segment()const{return get_map_iterator_for(typeid(T));}
 
   segment_traversal_info       segment_traversal()noexcept{return map;}
   const_segment_traversal_info segment_traversal()const noexcept{return map;}

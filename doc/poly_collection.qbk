@@ -459,9 +459,14 @@ value as regular iterators (in the case of `boost::base_collection<base>`,
 In exchange, `local_base_iterator` is a _RandomAccessIterator_, whereas
 whole-collection iterators only model _ForwardIterator_.
 
-Even more powerful than `local_base_iterator` is `local_iterator<T>`:
+A terser range-based `for` loop can be used with the convenience `segment`
+member function:
 
 [segmented_structure_7]
+
+Even more powerful than `local_base_iterator` is `local_iterator<T>`:
+
+[segmented_structure_8]
 
 This changes the `rank` data member of existing warriors to append it a
 `"super"` prefix:
@@ -471,11 +476,11 @@ superwarrior 2,superwarrior 6
 ]
 
 The observant reader will have noticed that in order to access `rank`, which
-is a member of `warrior` rather than its base class `sprite`, we need
-`first` to dereference to `warrior&`, and this is precisely the difference
-between `local_iterator<warrior>` (the type returned by `begin<warrior>()`)
-and `local_base_iterator`. `local_iterator<warrior>` is also a
-_RandomAccessIterator_: for most respects,
+is a member of `warrior` rather than its base class `sprite`, `first` (or
+`x` in the range `for` loop version) has to refer to a `warrior&`, and this
+is precisely the difference between `local_iterator<warrior>` (the type
+returned by `begin<warrior>()`) and `local_base_iterator`.
+`local_iterator<warrior>` is also a _RandomAccessIterator_: for most respects,
 \[`begin<T>()`, `end<T>()`) can be regarded as a range over an array of `T`
 objects. `local_iterator<T>`s can be explicitly converted to
 `local_base_iterator`s. Conversely, if a `local_base_iterator` is associated
@@ -488,16 +493,12 @@ a polymorphic collection (`const_` versions not included):
 [$ poly_collection/img/poly_collection_iterators.png]
 
 We have yet to describe the bottom part of the diagram.
-To allow for per-segment traversal of a polymorphic collection, a
-`segment_traversal` member function is provided that returns an object `s` of
-type `segment_traversal_info` such that \[`s.begin()`, `s.end()`)
-ranges over  `segment_info` objects associated to corresponding segments of
-the collection. Each `segment_info` has `begin` and `end` member
-functions returning `local_base_iterator`s that span over the segment.
-Complicated as it may seem, this just enables us to write nested
-segment-element `for`-loops like the following:
+Whereas `segment(typeid(T))` is used to range over the /elements/
+of a particular segment, `segment_traversal()` returns an object for ranging over
+/segments/, so that the whole collection can be processed with a nested
+segment-element `for` loop like the following:
 
-[segmented_structure_8]
+[segmented_structure_9]
 
 Segment decomposition of traversal loops forms the basis of
 [link poly_collection.tutorial.algorithms improved-performance algorithms].
@@ -509,7 +510,7 @@ Segment decomposition of traversal loops forms the basis of
 Much like `std::vector`, segments can be made to reserve memory in
 advance to minimize reallocations:
 
-[segmented_structure_9]
+[segmented_structure_10]
 
 If there is no segment for the indicated type (here, `goblin`), one is
 automatically created. This is in contrast with the rest of segment-specific
@@ -519,7 +520,7 @@ member functions, which throw
 
 `reserve` can deal with all segments at once. The following
 
-[segmented_structure_10]
+[segmented_structure_11]
 
 instructs every /existing/ segment to reserve 1,000 elements. If a
 segment is created later (through element insertion or with

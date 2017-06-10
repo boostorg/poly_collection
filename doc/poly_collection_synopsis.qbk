@@ -26,10 +26,12 @@
     using _const_local_base_iterator_=``/implementation-defined/``;
     template<typename T> using _local_iterator_=``/implementation-defined/``;
     template<typename T> using _const_local_iterator_=``/implementation-defined/``;
-    class _const_segment_info_;
-    class _segment_info_;
-    using _segment_info_iterator_=``/implementation-defined/``;
-    using _const_segment_info_iterator_=``/implementation-defined/``;
+    class _const_base_segment_info_;
+    class _base_segment_info_;
+    template<typename T> class _const_segment_info_;
+    template<typename T> class _segment_info_;
+    using _base_segment_info_iterator_=``/implementation-defined/``;
+    using _const_base_segment_info_iterator_=``/implementation-defined/``;
     class _const_segment_traversal_info_;
     class _segment_traversal_info_;
 
@@ -81,6 +83,11 @@
     template<typename T> const_local_iterator<T> _end_()const;
     template<typename T> const_local_iterator<T> _cbegin_()const;
     template<typename T> const_local_iterator<T> _cend_()const;
+
+    base_segment_info       _segment_(const std::type_index& index);
+    const_base_segment_info _segment_(const std::type_index& index)const;
+    template<typename T> segment_info<T>       _segment_();
+    template<typename T> const_segment_info<T> _segment_()const;
 
     segment_traversal_info       _segment_traversal_()noexcept;
     const_segment_traversal_info _segment_traversal_()const noexcept;

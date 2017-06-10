@@ -43,6 +43,12 @@ void test_iterators(PolyCollection& p)
   using local_iterator=typename PolyCollection::template local_iterator<Type>;
   using const_local_iterator=
     typename PolyCollection::template const_local_iterator<Type>;
+  using base_segment_info=typename PolyCollection::base_segment_info;
+  using const_base_segment_info=
+    typename PolyCollection::const_base_segment_info;
+  using segment_info=typename PolyCollection::template segment_info<Type>;
+  using const_segment_info=
+    typename PolyCollection::template const_segment_info<Type>;
 
   static_assert(is_random_access<local_iterator>::value,
                 "local_iterator must be random access");
@@ -68,11 +74,29 @@ void test_iterators(PolyCollection& p)
                             llast=p.template end<Type>();
   const_local_iterator      clfirst=cp.template begin<Type>(),
                             cllast=cp.template end<Type>();
+  base_segment_info         bi=p.segment(typeid(Type));
+  const_base_segment_info   cbi=cp.segment(typeid(Type));
+  segment_info              i=p.template segment<Type>();
+  const_segment_info        ci=cp.template segment<Type>();
 
   BOOST_TEST(clbfirst==cp.cbegin(typeid(Type)));
   BOOST_TEST(clblast==cp.cend(typeid(Type)));
   BOOST_TEST(clfirst==cp.template cbegin<Type>());
   BOOST_TEST(cllast==cp.template cend<Type>());
+
+  BOOST_TEST(lbfirst==bi.begin());
+  BOOST_TEST(lblast==bi.end());
+  BOOST_TEST(clbfirst==bi.cbegin());
+  BOOST_TEST(clbfirst==cbi.begin());
+  BOOST_TEST(clblast==bi.cend());
+  BOOST_TEST(clblast==cbi.end());
+
+  BOOST_TEST(lfirst==i.begin());
+  BOOST_TEST(llast==i.end());
+  BOOST_TEST(clfirst==i.cbegin());
+  BOOST_TEST(clfirst==ci.begin());
+  BOOST_TEST(cllast==i.cend());
+  BOOST_TEST(cllast==ci.end());
 
   for(;lbfirst!=lblast;++lbfirst,++clbfirst,++lfirst,++clfirst){
     BOOST_TEST(lfirst==static_cast<local_iterator>(lbfirst));
@@ -137,11 +161,13 @@ void test_iterators()
   using local_base_iterator=typename PolyCollection::local_base_iterator;
   using const_local_base_iterator=
     typename PolyCollection::const_local_base_iterator;
-  using segment_info_iterator=typename PolyCollection::segment_info_iterator;
-  using const_segment_info_iterator=
-    typename PolyCollection::const_segment_info_iterator;
-  using segment_info=typename PolyCollection::segment_info;
-  using const_segment_info=typename PolyCollection::const_segment_info;
+  using base_segment_info_iterator=
+    typename PolyCollection::base_segment_info_iterator;
+  using const_base_segment_info_iterator=
+    typename PolyCollection::const_base_segment_info_iterator;
+  using base_segment_info=typename PolyCollection::base_segment_info;
+  using const_base_segment_info=
+    typename PolyCollection::const_base_segment_info;
 
   static_assert(is_forward<iterator>::value,
                 "iterator must be forward");
@@ -151,21 +177,21 @@ void test_iterators()
                 "local_base_iterator must be random access");
   static_assert(is_random_access<const_local_base_iterator>::value,
                 "const_local_base_iterator must be random access");
-  static_assert(is_input<segment_info_iterator>::value,
-                "segment_info_iterator must be input");
-  static_assert(is_input<const_segment_info_iterator>::value,
-                "const_segment_info_iterator must be input");
+  static_assert(is_input<base_segment_info_iterator>::value,
+                "base_segment_info_iterator must be input");
+  static_assert(is_input<const_base_segment_info_iterator>::value,
+                "const_base_segment_info_iterator must be input");
   static_assert(std::is_base_of<
-                  const_segment_info,segment_info>::value,
-                "segment_info must derive from const_segment_info");
+                  const_base_segment_info,base_segment_info>::value,
+                "base_segment_info must derive from const_base_segment_info");
 
   {
-    iterator                    it;
-    const_iterator              cit,cit2(it);
-    local_base_iterator         lbit;
-    const_local_base_iterator   clbit,clbit2(lbit);
-    segment_info_iterator       sit;
-    const_segment_info_iterator csit,csit2(csit);
+    iterator                         it;
+    const_iterator                   cit,cit2(it);
+    local_base_iterator              lbit;
+    const_local_base_iterator        clbit,clbit2(lbit);
+    base_segment_info_iterator       sit;
+    const_base_segment_info_iterator csit,csit2(csit);
 
     it=it;
     cit=cit2;
@@ -204,11 +230,11 @@ void test_iterators()
   }
 
   {
-    std::size_t                 n=0;
-    segment_info_iterator       first=p.segment_traversal().begin(),
-                                last=p.segment_traversal().end();
-    const_segment_info_iterator cfirst=cp.segment_traversal().begin(),
-                                clast=cp.segment_traversal().end();
+    std::size_t                      n=0;
+    base_segment_info_iterator       first=p.segment_traversal().begin(),
+                                     last=p.segment_traversal().end();
+    const_base_segment_info_iterator cfirst=cp.segment_traversal().begin(),
+                                     clast=cp.segment_traversal().end();
 
     BOOST_TEST(cfirst==cp.segment_traversal().cbegin());
     BOOST_TEST(clast==cp.segment_traversal().cend());

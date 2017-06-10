@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -31,7 +31,7 @@ class segment_splitter
 {
   using traits=iterator_traits<PolyCollectionIterator>;
   using local_base_iterator=typename traits::local_base_iterator;
-  using segment_info_iterator=typename traits::segment_info_iterator;
+  using base_segment_info_iterator=typename traits::base_segment_info_iterator;
 
 public:
   struct info
@@ -53,20 +53,22 @@ public:
     friend class boost::iterator_core_access;
 
     iterator(
-      segment_info_iterator it,
+      base_segment_info_iterator it,
       const PolyCollectionIterator& first,const PolyCollectionIterator& last):
       it{it},first{&first},last{&last}{}
     iterator(
       const PolyCollectionIterator& first,const PolyCollectionIterator& last):
-      it{traits::segment_info_iterator_from(first)},first{&first},last{&last}{}
+      it{traits::base_segment_info_iterator_from(first)},
+         first{&first},last{&last}
+      {}
 
     info dereference()const noexcept
     {
       return {
         it->type_index(),
-        it==traits::segment_info_iterator_from(*first)?
+        it==traits::base_segment_info_iterator_from(*first)?
           traits::local_base_iterator_from(*first):it->begin(),
-        it==traits::segment_info_iterator_from(*last)?
+        it==traits::base_segment_info_iterator_from(*last)?
           traits::local_base_iterator_from(*last):it->end()
       };
     }
@@ -74,7 +76,7 @@ public:
     bool equal(const iterator& x)const noexcept{return it==x.it;}
     void increment()noexcept{++it;}
 
-    segment_info_iterator         it;
+    base_segment_info_iterator    it;
     const PolyCollectionIterator* first;
     const PolyCollectionIterator* last;
   };
@@ -87,8 +89,8 @@ public:
 
   iterator end()const noexcept
   {
-    auto slast=traits::segment_info_iterator_from(last);
-    if(slast!=traits::end_segment_info_iterator_from(last))++slast;
+    auto slast=traits::base_segment_info_iterator_from(last);
+    if(slast!=traits::end_base_segment_info_iterator_from(last))++slast;
     return {slast,last,last};
   }
 
@@ -115,9 +117,9 @@ void for_each_segment(
   using traits=iterator_traits<PolyCollectionIterator>;
   using info=typename segment_splitter<PolyCollectionIterator>::info;
 
-  auto sfirst=traits::segment_info_iterator_from(first),
-       slast=traits::segment_info_iterator_from(last),
-       send=traits::end_segment_info_iterator_from(last);
+  auto sfirst=traits::base_segment_info_iterator_from(first),
+       slast=traits::base_segment_info_iterator_from(last),
+       send=traits::end_base_segment_info_iterator_from(last);
   auto lbfirst=traits::local_base_iterator_from(first),
        lblast=traits::local_base_iterator_from(last);
 

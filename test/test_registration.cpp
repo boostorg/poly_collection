@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -29,6 +29,7 @@ void test_registration()
     BOOST_TEST(!p.is_registered(typeid(Type)));
     BOOST_TEST(!p.template is_registered<Type>());
     check_throw<unregistered_type>(
+      [&]{(void)p.begin(typeid(Type));},
       [&]{(void)p.end(typeid(Type));},
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
@@ -40,6 +41,10 @@ void test_registration()
       [&]{(void)cp.template end<Type>();},
       [&]{(void)p.template cbegin<Type>();},
       [&]{(void)p.template cend<Type>();},
+      [&]{(void)p.segment(typeid(Type));},
+      [&]{(void)cp.segment(typeid(Type));},
+      [&]{(void)p.template segment<Type>();},
+      [&]{(void)cp.template segment<Type>();},
       [&]{(void)cp.empty(typeid(Type));},
       [&]{(void)cp.size(typeid(Type));},
       [&]{(void)cp.max_size(typeid(Type));},

@@ -196,33 +196,33 @@ type `const U*` and the same difference type as `C::iterator`, valid for
 accessing elements of the segment for `U`. Explicitly convertible to
 `C::const_local_base_iterator`.
 
-[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info]
-[def _const_segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info `const_segment_info`]]
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_base_segment_info]
+[def _const_base_segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_base_segment_info `const_base_segment_info`]]
 
-`C::const_segment_info`
+`C::const_base_segment_info`
 
 _CopyConstructible_ and _CopyAssignable_ type with information about a given
 segment of a collection. If `ci` is a possibly `const` object of type
-`C::const_segment_info` associated to the segment of `c` for `U`, then
+`C::const_base_segment_info` associated to the segment of `c` for `U`, then
 
 * `ci.begin()==c.cbegin(typeid(U))`
 * `ci.cbegin()==c.cbegin(typeid(U))`
 * `ci.begin<U>()==c.cbegin<U>()`
-* `ci.cbegin<U>()==c.begin<U>()`
+* `ci.cbegin<U>()==c.cbegin<U>()`
 * `ci.end()==c.cend(typeid(U))`
 * `ci.cend()==c.cend(typeid(U))`
 * `ci.end<U>()==c.cend<U>()`
-* `ci.cend<U>()==c.end<U>()`
+* `ci.cend<U>()==c.cend<U>()`
 * `ci.type_index()==std::type_index(typeid(U))`
 
-[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info]
-[def _segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info `segment_info`]]
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info]
+[def _base_segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info `base_segment_info`]]
 
-`C::segment_info`
+`C::base_segment_info`
 
 _CopyConstructible_ and _CopyAssignable_ type publicly derived from 
-`C::const_segment_info` and exposing its public interface. Additionally,
-if `i` is an object of type `C::segment_info` associated to the
+`C::const_base_segment_info` and exposing its public interface. Additionally,
+if `i` is an object of type `C::base_segment_info` associated to the
 segment of `c` for `U`, then
 
 * `i.begin()==c.begin(typeid(U))`
@@ -230,19 +230,46 @@ segment of `c` for `U`, then
 * `i.end()==c.end(typeid(U))`
 * `i.end<U>()==c.end<U>()`
 
-[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info_iterator]
-[def _segment_info_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info_iterator `segment_info_iterator`]]
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info]
+[def _const_segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info `const_segment_info`]]
 
-`C::segment_info_iterator`
+`C::const_segment_info<U>`
 
-_InputIterator_ with value type and reference type `C::segment_info`.
+_CopyConstructible_ and _CopyAssignable_ type with information about the segment
+for `U`. If `ci` is a possibly `const` object of type `C::const_segment_info<U>`
+associated to the collection `c`, then
 
-[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info_iterator]
-[def _const_segment_info_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_info_iterator `const_segment_info_iterator`]]
+* `ci.begin()==c.cbegin<U>()`
+* `ci.cbegin()==c.cbegin<U>()`
+* `ci.end()==c.cend<U>()`
+* `ci.cend()==c.cend<U>()`
 
-`C::const_segment_info_iterator`
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info]
+[def _segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info `segment_info`]]
 
-_InputIterator_ with value type and reference type `C::const_segment_info`.
+`C::segment_info`
+
+_CopyConstructible_ and _CopyAssignable_ type publicly derived from 
+`C::const_segment_info<U>` and exposing its public interface. Additionally,
+if `i` is an object of type `C::segment_info<U>` associated to the collection
+`c`, then
+
+* `i.begin()==c.begin<U>()`
+* `i.end()==c.end<U>()`
+
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info_iterator]
+[def _base_segment_info_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info_iterator `base_segment_info_iterator`]]
+
+`C::base_segment_info_iterator`
+
+_InputIterator_ with value type and reference type `C::base_segment_info`.
+
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_base_segment_info_iterator]
+[def _const_base_segment_info_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_base_segment_info_iterator `const_base_segment_info_iterator`]]
+
+`C::const_base_segment_info_iterator`
+
+_InputIterator_ with value type and reference type `C::const_base_segment_info`.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_traversal_info]
 [def _const_segment_traversal_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_segment_traversal_info `const_segment_traversal_info`]]
@@ -251,8 +278,8 @@ _InputIterator_ with value type and reference type `C::const_segment_info`.
 
 _CopyConstructible_ and _CopyAssignable_ type with `const` member
 functions `begin`/`cbegin` and `end`/`cend` returning
-`C::const_segment_info_iterator` objects that span over a range
-of `C::const_segment_info` objects.
+`C::const_base_segment_info_iterator` objects that span over a range
+of `C::const_base_segment_info` objects.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_traversal_info]
 [def _segment_traversal_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_traversal_info `segment_traversal_info`]]
@@ -263,8 +290,8 @@ _CopyConstructible_ and _CopyAssignable_ type publicly derived
 from with `C::const_segment_traversal_info` and exposing its
 public interface. Additionally, provides non-const member
 functions `begin` and `end` returning
-`C::segment_info_iterator` objects that span over an equivalent range
-of `C::segment_info` objects.
+`C::base_segment_info_iterator` objects that span over an equivalent range
+of `C::base_segment_info` objects.
 
 [endsect]
 
@@ -341,7 +368,20 @@ beginning of the segment for the indicated type.[br]
 [*Returns:] A `local_base_iterator` (1) or `local_iterator<U>` (2) or
 `const_local_base_iterator` (3,4) or `const_local_iterator<U>` (5,6) to the
 end of the segment for the indicated type.[br]
-[*Throws:] If the indicated type is not registered.[endsect]
+[*Throws:] If the indicated type is not registered.
+
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment]
+[def _segment_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment `segment`]]
+
+(1) `c.segment(index)`[br]
+(2) `c.segment<U>()`[br]
+(3) `const_cast<const C&>(c).segment(index)`[br]
+(4) `const_cast<const C&>(c).segment<U>()`[br]
+
+[*Returns:] A `base_segment_info` (1) or `segment_info<U>` (2) or
+`const_base_segment_info` (3) or `const_segment_info<U>` (4) object
+referring to the segment for the indicated type.[br]
+[*Throws:] If the indicated type is not registered.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment_traversal]
 [def _segment_traversal_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment_traversal `segment_traversal`]]
@@ -353,6 +393,8 @@ end of the segment for the indicated type.[br]
 (2) object spanning over a range of segment descriptors for the collection.
 The order in which segments are visited matches that of
 \[`c.begin()`, `c.end()`).
+
+[endsect]
 
 [section Capacity]
 

@@ -116,6 +116,16 @@ int main()
 
 //[segmented_structure_7
   /*=const char**/ comma="";
+  for(const auto& x:c.segment(typeid(warrior))){
+    std::cout<<comma;
+    x.render(std::cout);
+    comma=",";
+  }
+  std::cout<<"\n";
+//]
+
+//[segmented_structure_8
+  /*=const char**/ comma="";
   for(auto first=c.begin<warrior>(),last=c.end<warrior>();
       first!=last;++first){
     first->rank.insert(0,"super");
@@ -124,13 +134,29 @@ int main()
     comma=",";
   }
   std::cout<<"\n";
+
+  // range-based for loop alternative
+
+  /*=const char**/ comma="";
+  for(auto& x:c.segment<warrior>()){
+    x.rank.insert(0,"super");
+//<-
+    auto it=x.rank.begin();
+    x.rank.erase(it,it+5); // undo previos op, 5==len("super");
+//->
+    std::cout<<comma;
+    x.render(std::cout);
+    comma=",";
+  }
+  std::cout<<"\n";
+
 //]
 
   auto render=[&](){
-//[segmented_structure_8
+//[segmented_structure_9
   const char* comma="";
-  for(auto seg_info:c.segment_traversal()){
-    for(sprite& s:seg_info){
+  for(auto seg:c.segment_traversal()){
+    for(sprite& s:seg){
       std::cout<<comma;
       s.render(std::cout);
       comma=",";
@@ -141,12 +167,12 @@ int main()
   };
   render();
 
-//[segmented_structure_9
+//[segmented_structure_10
   c.reserve<goblin>(100); // no reallocation till we exceed 100 goblins
   std::cout<<c.capacity<goblin>()<<"\n"; // prints 100
 //]
 
-//[segmented_structure_10
+//[segmented_structure_11
   c.reserve(1000); // reserve(1000) for each segment
   std::cout<<c.capacity<warrior>()<<", "
            <<c.capacity<juggernaut>()<<", "

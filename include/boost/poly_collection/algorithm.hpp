@@ -126,7 +126,7 @@ Iterator generic_find(
     auto it=alg(i);
     if(it!=i.end())
       return traits::iterator_from(
-        it,traits::end_segment_info_iterator_from(last));
+        it,traits::end_base_segment_info_iterator_from(last));
   }
   return last;
 }
@@ -458,7 +458,7 @@ bool is_permutation_suffix(
 {
   using traits=iterator_traits<Iterator>;
 
-  auto send=traits::end_segment_info_iterator_from(last1);
+  auto send=traits::end_base_segment_info_iterator_from(last1);
   for(auto i:detail::segment_split(first1,last1)){
     for(auto lbscan=i.begin();lbscan!=i.end();++lbscan){
       auto index=i.type_index();
@@ -536,7 +536,7 @@ Iterator search(
 {
   using traits=iterator_traits<Iterator>;
 
-  auto send=traits::end_segment_info_iterator_from(last1);
+  auto send=traits::end_base_segment_info_iterator_from(last1);
   for(auto i:detail::segment_split(first1,last1)){
     for(auto lbit=i.begin(),lbend=i.end();lbit!=lbend;++lbit){
       Iterator it=traits::iterator_from(lbit,send);
@@ -641,7 +641,7 @@ Iterator search_n(
       if(remain==0)
         return traits::iterator_from(
           carry?prev:it,
-          traits::end_segment_info_iterator_from(last));
+          traits::end_base_segment_info_iterator_from(last));
       else if(!carry){prev=it;carry=true;}
     }
   }
@@ -701,7 +701,7 @@ OutputIterator copy_n(const Iterator& first,Size count,OutputIterator res)
   if(count<=0)return res;
 
   auto lbit=traits::local_base_iterator_from(first);
-  auto sit=traits::segment_info_iterator_from(first);
+  auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
     auto n=(std::min)(count,sit->end()-lbit);
     auto alg=restitute_iterator<Ts...>(std_copy_n{},n,res);
@@ -977,7 +977,7 @@ struct partition_point_pred
     using traits=iterator_traits<Iterator>;
     auto p=restitute_iterator<Ts...>(deref_to(pred));
     return p(
-      traits::segment_info_iterator_from(it)->type_index(),
+      traits::base_segment_info_iterator_from(it)->type_index(),
       traits::local_base_iterator_from(it));
   }
 
