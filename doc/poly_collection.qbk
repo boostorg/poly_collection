@@ -1059,8 +1059,7 @@ with default implementations resorting to regular placement `new` and
 
 C++17 introduces
 [@http://en.cppreference.com/w/cpp/experimental/parallelism parallel algorithms],
-like for instance a parallel version of
-[@http://en.cppreference.com/w/cpp/algorithm/for_each `std::for_each`]; it is only
+like for instance a parallel version of _std::for_each_; it is only
 natural then to provide the corresponding
 [link poly_collection.tutorial.algorithms Boost.PolyCollection-specific algorithms].
 The segmented nature of polymorphic collections makes them particularly amenable to
