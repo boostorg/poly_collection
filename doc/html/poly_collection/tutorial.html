@@ -564,6 +564,19 @@
           whereas whole-collection iterators only model <a href="http://en.cppreference.com/w/cpp/concept/ForwardIterator" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">ForwardIterator</span></code></strong></span></a>.
         </p>
 <p>
+          A terser range-based <code class="computeroutput"><span class="keyword">for</span></code> loop
+          can be used with the convenience <code class="computeroutput"><span class="identifier">segment</span></code>
+          member function:
+        </p>
+<pre class="programlisting"><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">comma</span><span class="special">=</span><span class="string">""</span><span class="special">;</span>
+<span class="keyword">for</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">auto</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">:</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">segment</span><span class="special">(</span><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">warrior</span><span class="special">))){</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">comma</span><span class="special">;</span>
+  <span class="identifier">x</span><span class="special">.</span><span class="identifier">render</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">);</span>
+  <span class="identifier">comma</span><span class="special">=</span><span class="string">","</span><span class="special">;</span>
+<span class="special">}</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span>
+</pre>
+<p>
           Even more powerful than <code class="computeroutput"><span class="identifier">local_base_iterator</span></code>
           is <code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span></code>:
         </p>
@@ -576,6 +589,17 @@
   <span class="identifier">comma</span><span class="special">=</span><span class="string">","</span><span class="special">;</span>
 <span class="special">}</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span>
+
+<span class="comment">// range-based for loop alternative</span>
+
+<span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">comma</span><span class="special">=</span><span class="string">""</span><span class="special">;</span>
+<span class="keyword">for</span><span class="special">(</span><span class="keyword">auto</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">:</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">segment</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;()){</span>
+  <span class="identifier">x</span><span class="special">.</span><span class="identifier">rank</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="number">0</span><span class="special">,</span><span class="string">"super"</span><span class="special">);</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">comma</span><span class="special">;</span>
+  <span class="identifier">x</span><span class="special">.</span><span class="identifier">render</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">);</span>
+  <span class="identifier">comma</span><span class="special">=</span><span class="string">","</span><span class="special">;</span>
+<span class="special">}</span>
+<span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span>
 </pre>
 <p>
           This changes the <code class="computeroutput"><span class="identifier">rank</span></code> data
@@ -585,9 +609,9 @@
 <pre class="programlisting">superwarrior 2,superwarrior 6
 </pre>
 <p>
-          The observant reader will have noticed that in order to access <code class="computeroutput"><span class="identifier">rank</span></code>, which is a member of <code class="computeroutput"><span class="identifier">warrior</span></code> rather than its base class <code class="computeroutput"><span class="identifier">sprite</span></code>, we need <code class="computeroutput"><span class="identifier">first</span></code>
-          to dereference to <code class="computeroutput"><span class="identifier">warrior</span><span class="special">&amp;</span></code>, and this is precisely the difference
-          between <code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;</span></code> (the type returned by <code class="computeroutput"><span class="identifier">begin</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;()</span></code>)
+          The observant reader will have noticed that in order to access <code class="computeroutput"><span class="identifier">rank</span></code>, which is a member of <code class="computeroutput"><span class="identifier">warrior</span></code> rather than its base class <code class="computeroutput"><span class="identifier">sprite</span></code>, <code class="computeroutput"><span class="identifier">first</span></code>
+          (or <code class="computeroutput"><span class="identifier">x</span></code> in the range <code class="computeroutput"><span class="keyword">for</span></code> loop version) has to refer to a <code class="computeroutput"><span class="identifier">warrior</span><span class="special">&amp;</span></code>,
+          and this is precisely the difference between <code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;</span></code> (the type returned by <code class="computeroutput"><span class="identifier">begin</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;()</span></code>)
           and <code class="computeroutput"><span class="identifier">local_base_iterator</span></code>.
           <code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">&gt;</span></code>
           is also a <a href="http://en.cppreference.com/w/cpp/concept/RandomAccessIterator" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">RandomAccessIterator</span></code></strong></span></a>:
@@ -609,23 +633,15 @@
           <span class="inlinemediaobject"><img src="img/poly_collection_iterators.png"></span>
         </p>
 <p>
-          We have yet to describe the bottom part of the diagram. To allow for per-segment
-          traversal of a polymorphic collection, a <code class="computeroutput"><span class="identifier">segment_traversal</span></code>
-          member function is provided that returns an object <code class="computeroutput"><span class="identifier">s</span></code>
-          of type <code class="computeroutput"><span class="identifier">segment_traversal_info</span></code>
-          such that [<code class="computeroutput"><span class="identifier">s</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span></code>,
-          <code class="computeroutput"><span class="identifier">s</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span></code>)
-          ranges over <code class="computeroutput"><span class="identifier">segment_info</span></code>
-          objects associated to corresponding segments of the collection. Each <code class="computeroutput"><span class="identifier">segment_info</span></code> has <code class="computeroutput"><span class="identifier">begin</span></code>
-          and <code class="computeroutput"><span class="identifier">end</span></code> member functions
-          returning <code class="computeroutput"><span class="identifier">local_base_iterator</span></code>s
-          that span over the segment. Complicated as it may seem, this just enables
-          us to write nested segment-element <code class="computeroutput"><span class="keyword">for</span></code>-loops
-          like the following:
+          We have yet to describe the bottom part of the diagram. Whereas <code class="computeroutput"><span class="identifier">segment</span><span class="special">(</span><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">))</span></code> is
+          used to range over the <span class="emphasis"><em>elements</em></span> of a particular segment,
+          <code class="computeroutput"><span class="identifier">segment_traversal</span><span class="special">()</span></code>
+          returns an object for ranging over <span class="emphasis"><em>segments</em></span>, so that
+          the whole collection can be processed with a nested segment-element <code class="computeroutput"><span class="keyword">for</span></code> loop like the following:
         </p>
 <pre class="programlisting"><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">comma</span><span class="special">=</span><span class="string">""</span><span class="special">;</span>
-<span class="keyword">for</span><span class="special">(</span><span class="keyword">auto</span> <span class="identifier">seg_info</span><span class="special">:</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">segment_traversal</span><span class="special">()){</span>
-  <span class="keyword">for</span><span class="special">(</span><span class="identifier">sprite</span><span class="special">&amp;</span> <span class="identifier">s</span><span class="special">:</span><span class="identifier">seg_info</span><span class="special">){</span>
+<span class="keyword">for</span><span class="special">(</span><span class="keyword">auto</span> <span class="identifier">seg</span><span class="special">:</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">segment_traversal</span><span class="special">()){</span>
+  <span class="keyword">for</span><span class="special">(</span><span class="identifier">sprite</span><span class="special">&amp;</span> <span class="identifier">s</span><span class="special">:</span><span class="identifier">seg</span><span class="special">){</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">comma</span><span class="special">;</span>
     <span class="identifier">s</span><span class="special">.</span><span class="identifier">render</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">);</span>
     <span class="identifier">comma</span><span class="special">=</span><span class="string">","</span><span class="special">;</span>
