@@ -149,8 +149,8 @@ int main()
 //[algorithms_7
     const char* comma="";
     boost::poly_collection::for_each
-      <warrior,juggernaut,goblin,std::string,window>( //restituted types
-      c.begin(),c.end(),[&](const auto& x){
+      <warrior,juggernaut,goblin>( // restituted types
+      c.begin(),c.end(),[&](const auto& x){ // loop traverses *all* elements
         std::cout<<comma<<x;
         comma=",";
       });

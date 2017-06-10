@@ -781,13 +781,21 @@ scenario to illustrate this point:
 
 [algorithms_7]
 
+Output:
+
+[pre
+warrior 2,warrior 6,[pop-up 1],[pop-up 2],juggernaut 0,juggernaut 4,
+juggernaut 7,goblin 1,goblin 3,goblin 5,"stamina: 10,000","game over"
+]
 This rendering loop differs from the non-restituting one in two aspects:
 
 * A list of types is provided as template arguments to the algorithm. This is
 an indication that the types /may/ be actually present in the collection, not
 a promise. Also, the list of types need not be exhaustive, that is, some
-unlisted types could be present in the collection. In general, the more
-types are restituted, the greater the potential improvement in performance.
+unlisted types could be present in the collection \u2014in the example above,
+the loop traverses *all* elements (including `std::string`s and `window`s),
+not only those corresponding to restituted types. In general, the more types
+are restituted, the greater the potential improvement in performance.
 * The lambda function passed is a generic one accepting its argument as
 `const auto&`
 [footnote This requires C++14, but the same effect can be achieved in C++11
