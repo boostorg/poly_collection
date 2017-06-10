@@ -184,11 +184,11 @@
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
               Baseline container: <code class="computeroutput"><span class="identifier">any_vector</span></code>
-              = <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">type_erasure</span><span class="special">::</span><span class="identifier">any</span><span class="special">&lt;</span><span class="identifier">concept</span><span class="special">&gt;&gt;</span></code>
+              = <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">type_erasure</span><span class="special">::</span><span class="identifier">any</span><span class="special">&lt;</span><span class="identifier">concept_</span><span class="special">&gt;&gt;</span></code>
             </li>
 <li class="listitem">
               Polymorphic collection: <code class="computeroutput"><span class="identifier">any_collection</span></code>
-              = <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">any_collection</span><span class="special">&lt;</span><span class="identifier">concept</span><span class="special">&gt;</span></code>
+              = <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">any_collection</span><span class="special">&lt;</span><span class="identifier">concept_</span><span class="special">&gt;</span></code>
             </li>
 <li class="listitem">
               Element types: <code class="computeroutput"><span class="identifier">T1</span></code> =
@@ -196,7 +196,7 @@
               = <code class="computeroutput"><span class="keyword">double</span></code>, <code class="computeroutput"><span class="identifier">T3</span></code> = <code class="computeroutput"><span class="keyword">char</span></code>
             </li>
 </ul></div>
-<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">concept</span><span class="special">=</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">concept_</span><span class="special">=</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span>
   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">type_erasure</span><span class="special">::</span><span class="identifier">copy_constructible</span><span class="special">&lt;&gt;,</span>
   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">type_erasure</span><span class="special">::</span><span class="identifier">relaxed</span><span class="special">,</span>
   <span class="identifier">boost</span><span class="special">::</span><span class="identifier">type_erasure</span><span class="special">::</span><span class="identifier">typeid_</span><span class="special">&lt;&gt;,</span>
