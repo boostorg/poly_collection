@@ -261,7 +261,8 @@ private:
   split_segment(const Allocator& al):
     s{al},i{{},typename index::allocator_type{al}}{build_index();}
   split_segment(store&& s_):
-    s{std::move(s_)},i{{},s.get_allocator()}{build_index();}
+    s{std::move(s_)},i{{},typename index::allocator_type{s.get_allocator()}}
+    {build_index();}
 
   void prereserve()
   {
