@@ -1055,12 +1055,18 @@
         </p>
 <pre class="programlisting"><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">comma</span><span class="special">=</span><span class="string">""</span><span class="special">;</span>
 <span class="identifier">boost</span><span class="special">::</span><span class="identifier">poly_collection</span><span class="special">::</span><span class="identifier">for_each</span>
-  <span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">,</span><span class="identifier">juggernaut</span><span class="special">,</span><span class="identifier">goblin</span><span class="special">,</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span><span class="identifier">window</span><span class="special">&gt;(</span> <span class="comment">//restituted types</span>
-  <span class="identifier">c</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">end</span><span class="special">(),[&amp;](</span><span class="keyword">const</span> <span class="keyword">auto</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">){</span>
+  <span class="special">&lt;</span><span class="identifier">warrior</span><span class="special">,</span><span class="identifier">juggernaut</span><span class="special">,</span><span class="identifier">goblin</span><span class="special">&gt;(</span> <span class="comment">// restituted types</span>
+  <span class="identifier">c</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">end</span><span class="special">(),[&amp;](</span><span class="keyword">const</span> <span class="keyword">auto</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">){</span> <span class="comment">// loop traverses *all* elements</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="identifier">comma</span><span class="special">&lt;&lt;</span><span class="identifier">x</span><span class="special">;</span>
     <span class="identifier">comma</span><span class="special">=</span><span class="string">","</span><span class="special">;</span>
   <span class="special">});</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span><span class="special">&lt;&lt;</span><span class="string">"\n"</span><span class="special">;</span>
+</pre>
+<p>
+          Output:
+        </p>
+<pre class="programlisting">warrior 2,warrior 6,[pop-up 1],[pop-up 2],juggernaut 0,juggernaut 4,
+juggernaut 7,goblin 1,goblin 3,goblin 5,"stamina: 10,000","game over"
 </pre>
 <p>
           This rendering loop differs from the non-restituting one in two aspects:
@@ -1071,8 +1077,10 @@
               This is an indication that the types <span class="emphasis"><em>may</em></span> be actually
               present in the collection, not a promise. Also, the list of types need
               not be exhaustive, that is, some unlisted types could be present in
-              the collection. In general, the more types are restituted, the greater
-              the potential improvement in performance.
+              the collection &#8212;in the example above, the loop traverses <span class="bold"><strong>all</strong></span> elements (including <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span></code>s
+              and <code class="computeroutput"><span class="identifier">window</span></code>s), not only
+              those corresponding to restituted types. In general, the more types
+              are restituted, the greater the potential improvement in performance.
             </li>
 <li class="listitem">
               The lambda function passed is a generic one accepting its argument
