@@ -117,7 +117,7 @@ to iterate across segments, and comparing local base iterators
 associated to different segments is undefined behavior. A (const)
 local base iterator to a segment for `U` can be explicitly converted
 to (`const_`)`local_iterator<U>` pointing to the same position,
-and viceversa.
+and vice versa.
 
 Insertion and erasure do not invalidate iterators (global or local)
 except those from the insertion/erasure point to the end of the
