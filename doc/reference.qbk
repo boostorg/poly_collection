@@ -452,7 +452,7 @@ collection.
 
 [*Effects:] Throws if the type indicated by `index` is not registered (1)
 or registers `U` if needed (2). If `n` is greater than the current
-capacity of the segmentfor the indicated type, new storage space is allocated
+capacity of the segment for the indicated type, new storage space is allocated
 with a capacity of at least `n` and elements are moved there.[br]
 [*Complexity:] Linear in the size of the segment if reallocation happens,
 constant otherwise.[br]
@@ -700,7 +700,7 @@ type information.
   };
 
 `not_equality_comparable` is thrown when comparing two collections
-for (in)equality involves non-_EqualityComparable_ type.
+for (in)equality involves a non-_EqualityComparable_ type.
 
 `not_equality_comparable(const std::type_index& info);`
 
