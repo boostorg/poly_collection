@@ -550,7 +550,7 @@ from the insertion position to the end of the segment.
 
 `c.insert(i1,i2)`
 
-[*Effects:] Equivalent to `while(i1!=i2)c.insert(i1++)`.
+[*Effects:] Equivalent to `while(i1!=i2)c.insert(*i1++)`.
 
 `c.insert(it1,it2)`[br]
 `c.insert(lbit1,lbit2)`[br]
@@ -566,7 +566,7 @@ due to type registration problems.].
 
 `c.insert(it,i1,i2)`
 
-[*Effects:] If `it==c.end()`, equivalent to `while(i1!=i2)c.insert(it,i1++)`,
+[*Effects:] If `it==c.end()`, equivalent to `while(i1!=i2)c.insert(it,*i1++)`,
 otherwise inserts each of the elements in \[`i1`, `i2`) in succession with a hint
 pointing to `*it`
 [footnote That is, the hint remains stable even if `it` may become invalid due
