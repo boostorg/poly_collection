@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -49,6 +49,7 @@ class packed_segment:public segment_backend<Model>
     typename std::allocator_traits<Allocator>::
       template rebind_alloc<store_value_type>
   >;
+  using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
   using segment_backend=detail::segment_backend<Model>;
   using typename segment_backend::value_pointer;
@@ -212,14 +213,20 @@ private:
     return Model::element_ptr(const_concrete_ptr(p));
   }
 
-  const_store_iterator iterator_from(const_base_iterator p)const
+  /* It would have sufficed if iterator_from returned const_store_iterator
+   * except for the fact that some old versions of libstdc++ claiming to be
+   * C++11 compliant do not however provide std::vector modifier ops taking
+   * const_iterator's.
+   */
+
+  store_iterator iterator_from(const_base_iterator p)
   {
     return iterator_from(
       static_cast<const Concrete*>(
         static_cast<const_iterator<Concrete>>(p)));
   }
 
-  const_store_iterator iterator_from(position_pointer p)const
+  store_iterator iterator_from(position_pointer p)
   {
     return s.begin()+(const_store_value_type_ptr(p)-s.data());
   }

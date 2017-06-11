@@ -51,6 +51,7 @@ class split_segment:public segment_backend<Model>
       template rebind_alloc<value_holder<Concrete>>
   >;
   using store_value_type=typename store::value_type;
+  using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
   using index=std::vector<
     value_type,
@@ -359,12 +360,18 @@ private:
     return const_cast<value_type*>(p);
   }
 
-  const_store_iterator iterator_from(const_base_iterator p)const
+  /* It would have sufficed if iterator_from returned const_store_iterator
+   * except for the fact that some old versions of libstdc++ claiming to be
+   * C++11 compliant do not however provide std::vector modifier ops taking
+   * const_iterator's.
+   */
+
+  store_iterator iterator_from(const_base_iterator p)
   {
     return s.begin()+(p-i.data());
   }
 
-  const_store_iterator iterator_from(position_pointer p)const
+  store_iterator iterator_from(position_pointer p)
   {
     return s.begin()+(const_concrete_ptr(p)-const_concrete_ptr(s.data()));
   }
