@@ -134,7 +134,7 @@ we use the following notation:
 * `U` is an acceptable type, `Us...` is a template parameter pack of
 acceptable types, 
 * `n` is a value of `size_type`,
-* `t` is a value of a type `T` implementing the interface associated to the
+* `x` is a value of a type `T` implementing the interface associated to the
 collection,
 * `args...` is a function parameter pack of types `Args&&...`,
 * `it` is a possibly const global iterator of `c`,
@@ -517,12 +517,12 @@ the insertion position to the end of the segment.
 (1) `c.insert(x)`[br]
 (2) `c.insert(it,x)`
 
-[*Effects:] If the type of the subobject of `t` is not registered, then
+[*Effects:] If the type of the subobject of `x` is not registered, then
 if this type is `T` and `T` is acceptable, does the registration,
-otherwise throws. If `t` is not a non-const rvalue expression and the type
+otherwise throws. If `x` is not a non-const rvalue expression and the type
 of its subobject is not _CopyConstructible_, throws. Inserts an element
 with a subobject move constructed or copy constructed from the subobject
-of `t`: (1) at the end of the corresponding segment; (2) just before the
+of `x`: (1) at the end of the corresponding segment; (2) just before the
 position indicated by `it`, if it points to the corresponding segment, or at
 the end of the segment otherwise.[br]
 [*Returns:] An `iterator` to the newly inserted element.[br]
@@ -532,10 +532,10 @@ from the insertion position to the end of the segment.
 (1) `c.insert(lbit,x)`[br]
 (2) `c.insert(lit,x)`
 
-[*Requires:] The type of the subobject of `t` corresponds to the indicated
+[*Requires:] The type of the subobject of `x` corresponds to the indicated
 segment.[br]
 [*Effects:] Inserts an element with a subobject move constructed or copy
-constructed from the subobject of `t` just before the
+constructed from the subobject of `x` just before the
 position indicated.[br]
 [*Returns:] A `local_base_iterator` (1) or `local_iterator<U>` (2) to the
 newly inserted element.[br]
