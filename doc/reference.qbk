@@ -519,14 +519,15 @@ the insertion position to the end of the segment.
 (1) `c.insert(x)`[br]
 (2) `c.insert(it,x)`
 
-[*Effects:] If the type of the subobject of `x` is not registered, then
-if this type is `T` and `T` is acceptable, does the registration,
-otherwise throws. If `x` is not a non-const rvalue expression and the type
-of its subobject is not _CopyConstructible_, throws. Inserts an element
-with a subobject move constructed or copy constructed from the subobject
-of `x`: (1) at the end of the corresponding segment; (2) just before the
-position indicated by `it`, if it points to the corresponding segment, or at
-the end of the segment otherwise.[br]
+[*Effects:] Let `Q` be the type of the subobject of `x`. If
+`Q` = `T` and `T` is acceptable, registers `T` if needed.
+If `Q` = `T` and `T` is not acceptable, throws.
+If `Q` \u2260 `T` and `Q` is not registered, throws.
+If `x` is not a non-const rvalue expression and `Q` is not _CopyConstructible_, throws.
+Inserts an element with a subobject move constructed or copy constructed
+from the subobject of `x`: (1) at the end of the corresponding segment;
+(2) just before the position indicated by `it`, if it points to the
+corresponding segment, or at the end of the segment otherwise.[br]
 [*Returns:] An `iterator` to the newly inserted element.[br]
 [*Complexity:] Amortized constant time plus linear in the distance
 from the insertion position to the end of the segment.
