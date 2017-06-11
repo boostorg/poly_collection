@@ -63,7 +63,6 @@ _EqualityComparable_,  with the following semantic clause: may throw if
 some subobject in the container is not
 _CopyConstructible_ (respectively, _CopyAssignable_, _MoveConstructible_, 
 _MoveAssignable_, _EqualityComparable_).
-* `max_size()` is not provided.
 
 [section Polymorphic collections]
 
@@ -84,6 +83,9 @@ Polymorphic collections conform
 to the requirements of _PolymorphicContainer_ with the following
 modfications and extra guarantees:
 
+* The complexity of `empty()` and `size()` is linear on the number of
+segments of the collection.
+* `max_size()` is not provided.
 * `a==b` evaluates to `true` iff for each non-empty segment of subojects
 of type `U` in `a` there is a segment of `U` in `b` with the same size
 and equal elements in the same order, and vice versa.
