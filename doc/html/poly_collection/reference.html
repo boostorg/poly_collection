@@ -125,8 +125,7 @@
         and <a href="http://en.cppreference.com/w/cpp/concept/AllocatorAwareContainer" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">AllocatorAwareContainer</span></code></strong></span></a>
         with the following modifications:
       </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
-<li class="listitem">
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
             Where it occurs, replace the requirement that <code class="computeroutput"><span class="identifier">T</span></code>
             be <a href="http://en.cppreference.com/w/cpp/concept/CopyInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyInsertable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/CopyAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyAssignable</span></code></strong></span></a>,
@@ -139,12 +138,7 @@
             <a href="http://en.cppreference.com/w/cpp/concept/MoveConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveConstructible</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/MoveAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveAssignable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>).
-          </li>
-<li class="listitem">
-            <code class="computeroutput"><span class="identifier">max_size</span><span class="special">()</span></code>
-            is not provided.
-          </li>
-</ul></div>
+          </li></ul></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections"></a><a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections" title="Polymorphic collections">Polymorphic
@@ -184,6 +178,14 @@
           with the following modfications and extra guarantees:
         </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+              The complexity of <code class="computeroutput"><span class="identifier">empty</span><span class="special">()</span></code> and <code class="computeroutput"><span class="identifier">size</span><span class="special">()</span></code> is linear on the number of segments
+              of the collection.
+            </li>
+<li class="listitem">
+              <code class="computeroutput"><span class="identifier">max_size</span><span class="special">()</span></code>
+              is not provided.
+            </li>
 <li class="listitem">
               <code class="computeroutput"><span class="identifier">a</span><span class="special">==</span><span class="identifier">b</span></code> evaluates to <code class="computeroutput"><span class="keyword">true</span></code>
               iff for each non-empty segment of subojects of type <code class="computeroutput"><span class="identifier">U</span></code>
@@ -230,7 +232,7 @@
           local base iterators associated to different segments is undefined behavior.
           A (const) local base iterator to a segment for <code class="computeroutput"><span class="identifier">U</span></code>
           can be explicitly converted to (<code class="computeroutput"><span class="identifier">const_</span></code>)<code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;</span></code>
-          pointing to the same position, and viceversa.
+          pointing to the same position, and vice versa.
         </p>
 <p>
           Insertion and erasure do not invalidate iterators (global or local) except
@@ -270,7 +272,7 @@
               <code class="computeroutput"><span class="identifier">n</span></code> is a value of <code class="computeroutput"><span class="identifier">size_type</span></code>,
             </li>
 <li class="listitem">
-              <code class="computeroutput"><span class="identifier">t</span></code> is a value of a type
+              <code class="computeroutput"><span class="identifier">x</span></code> is a value of a type
               <code class="computeroutput"><span class="identifier">T</span></code> implementing the
               interface associated to the collection,
             </li>
@@ -764,15 +766,16 @@
             (2) <code class="computeroutput"><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">it</span><span class="special">,</span><span class="identifier">x</span><span class="special">)</span></code>
           </p>
 <p>
-            <span class="bold"><strong>Effects:</strong></span> If the type of the subobject
-            of <code class="computeroutput"><span class="identifier">t</span></code> is not registered,
-            then if this type is <code class="computeroutput"><span class="identifier">T</span></code>
-            and <code class="computeroutput"><span class="identifier">T</span></code> is acceptable,
-            does the registration, otherwise throws. If <code class="computeroutput"><span class="identifier">t</span></code>
-            is not a non-const rvalue expression and the type of its subobject is
-            not <a href="http://en.cppreference.com/w/cpp/concept/CopyConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyConstructible</span></code></strong></span></a>,
+            <span class="bold"><strong>Effects:</strong></span> Let <code class="computeroutput"><span class="identifier">Q</span></code>
+            be the type of the subobject of <code class="computeroutput"><span class="identifier">x</span></code>.
+            If <code class="computeroutput"><span class="identifier">Q</span></code> = <code class="computeroutput"><span class="identifier">T</span></code> and <code class="computeroutput"><span class="identifier">T</span></code>
+            is acceptable, registers <code class="computeroutput"><span class="identifier">T</span></code>
+            if needed. If <code class="computeroutput"><span class="identifier">Q</span></code> = <code class="computeroutput"><span class="identifier">T</span></code> and <code class="computeroutput"><span class="identifier">T</span></code>
+            is not acceptable, throws. If <code class="computeroutput"><span class="identifier">Q</span></code>
+            &#8800; <code class="computeroutput"><span class="identifier">T</span></code> and <code class="computeroutput"><span class="identifier">Q</span></code> is not registered, throws. If <code class="computeroutput"><span class="identifier">x</span></code> is not a non-const rvalue expression
+            and <code class="computeroutput"><span class="identifier">Q</span></code> is not <a href="http://en.cppreference.com/w/cpp/concept/CopyConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyConstructible</span></code></strong></span></a>,
             throws. Inserts an element with a subobject move constructed or copy
-            constructed from the subobject of <code class="computeroutput"><span class="identifier">t</span></code>:
+            constructed from the subobject of <code class="computeroutput"><span class="identifier">x</span></code>:
             (1) at the end of the corresponding segment; (2) just before the position
             indicated by <code class="computeroutput"><span class="identifier">it</span></code>, if it
             points to the corresponding segment, or at the end of the segment otherwise.<br>
@@ -787,10 +790,10 @@
           </p>
 <p>
             <span class="bold"><strong>Requires:</strong></span> The type of the subobject
-            of <code class="computeroutput"><span class="identifier">t</span></code> corresponds to the
+            of <code class="computeroutput"><span class="identifier">x</span></code> corresponds to the
             indicated segment.<br> <span class="bold"><strong>Effects:</strong></span> Inserts
             an element with a subobject move constructed or copy constructed from
-            the subobject of <code class="computeroutput"><span class="identifier">t</span></code> just
+            the subobject of <code class="computeroutput"><span class="identifier">x</span></code> just
             before the position indicated.<br> <span class="bold"><strong>Returns:</strong></span>
             A <code class="computeroutput"><span class="identifier">local_base_iterator</span></code>
             (1) or <code class="computeroutput"><span class="identifier">local_iterator</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;</span></code> (2) to the newly inserted element.<br>
@@ -802,7 +805,7 @@
             <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_range"></a><code class="computeroutput"><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">i1</span><span class="special">,</span><span class="identifier">i2</span><span class="special">)</span></code>
           </p>
 <p>
-            <span class="bold"><strong>Effects:</strong></span> Equivalent to <code class="computeroutput"><span class="keyword">while</span><span class="special">(</span><span class="identifier">i1</span><span class="special">!=</span><span class="identifier">i2</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">i1</span><span class="special">++)</span></code>.
+            <span class="bold"><strong>Effects:</strong></span> Equivalent to <code class="computeroutput"><span class="keyword">while</span><span class="special">(</span><span class="identifier">i1</span><span class="special">!=</span><span class="identifier">i2</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(*</span><span class="identifier">i1</span><span class="special">++)</span></code>.
           </p>
 <p>
             <code class="computeroutput"><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">it1</span><span class="special">,</span><span class="identifier">it2</span><span class="special">)</span></code><br>
@@ -818,7 +821,7 @@
             <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_hint_range"></a><code class="computeroutput"><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">it</span><span class="special">,</span><span class="identifier">i1</span><span class="special">,</span><span class="identifier">i2</span><span class="special">)</span></code>
           </p>
 <p>
-            <span class="bold"><strong>Effects:</strong></span> If <code class="computeroutput"><span class="identifier">it</span><span class="special">==</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span></code>, equivalent to <code class="computeroutput"><span class="keyword">while</span><span class="special">(</span><span class="identifier">i1</span><span class="special">!=</span><span class="identifier">i2</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">it</span><span class="special">,</span><span class="identifier">i1</span><span class="special">++)</span></code>, otherwise inserts each of the elements
+            <span class="bold"><strong>Effects:</strong></span> If <code class="computeroutput"><span class="identifier">it</span><span class="special">==</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span></code>, equivalent to <code class="computeroutput"><span class="keyword">while</span><span class="special">(</span><span class="identifier">i1</span><span class="special">!=</span><span class="identifier">i2</span><span class="special">)</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">it</span><span class="special">,*</span><span class="identifier">i1</span><span class="special">++)</span></code>, otherwise inserts each of the elements
             in [<code class="computeroutput"><span class="identifier">i1</span></code>, <code class="computeroutput"><span class="identifier">i2</span></code>) in succession with a hint pointing
             to <code class="computeroutput"><span class="special">*</span><span class="identifier">it</span></code>
             <a href="#ftn.poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.f1" class="footnote" name="poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.f1"><sup class="footnote">[13]</sup></a>.
