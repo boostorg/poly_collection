@@ -247,7 +247,7 @@ associated to the collection `c`, then
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info]
 [def _segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info `segment_info`]]
 
-`C::segment_info`
+`C::segment_info<U>`
 
 _CopyConstructible_ and _CopyAssignable_ type publicly derived from 
 `C::const_segment_info<U>` and exposing its public interface. Additionally,
