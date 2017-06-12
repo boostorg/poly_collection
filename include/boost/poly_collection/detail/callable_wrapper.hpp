@@ -13,7 +13,7 @@
 #pragma once
 #endif
 
-#include <boost/poly_collection/detail/is_callable.hpp>
+#include <boost/poly_collection/detail/is_invocable.hpp>
 #include <functional>
 #include <type_traits>
 #include <typeinfo>
@@ -38,7 +38,7 @@ public:
     typename Callable,
     typename std::enable_if<
       !std::is_same<Callable,callable_wrapper>::value&&
-      is_callable<Callable(Args...),R>::value
+      is_invocable_r<R,Callable,Args...>::value
     >::type* =nullptr
   >
   explicit callable_wrapper(Callable& x)noexcept:pt{info(x)},px{&x}{}

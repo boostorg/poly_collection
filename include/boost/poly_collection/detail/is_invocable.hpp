@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_POLY_COLLECTION_DETAIL_IS_CALLABLE_HPP
-#define BOOST_POLY_COLLECTION_DETAIL_IS_CALLABLE_HPP
+#ifndef BOOST_POLY_COLLECTION_DETAIL_IS_INVOCABLE_HPP
+#define BOOST_POLY_COLLECTION_DETAIL_IS_INVOCABLE_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -23,11 +23,18 @@
 namespace boost{
 namespace poly_collection{
 namespace detail{
-namespace is_callable_fallback{
+namespace is_invocable_fallback{
 
-template <typename,typename> struct is_callable;
-template <typename F,typename... Args,typename R>
-struct is_callable<F(Args...), R>:
+template <typename F,typename... Args>
+struct is_invocable:
+  std::is_constructible<
+    std::function<void(Args...)>,
+    std::reference_wrapper<typename std::remove_reference<F>::type>
+  >
+{};
+
+template <typename R,typename F,typename... Args>
+struct is_invocable_r:
   std::is_constructible<
     std::function<R(Args...)>,
     std::reference_wrapper<typename std::remove_reference<F>::type>
@@ -41,14 +48,21 @@ struct hook{};
 namespace std{
 
 template<>
-struct is_void< ::boost::poly_collection::detail::is_callable_fallback::hook>:
+struct is_void< ::boost::poly_collection::detail::is_invocable_fallback::hook>:
   std::false_type
 {      
-  template<typename T,typename R>
-  static constexpr bool is_callable_f()
+  template<typename F,typename... Args>
+  static constexpr bool is_invocable_f()
   {
-    using namespace ::boost::poly_collection::detail::is_callable_fallback;
-    return is_callable<T,R>::value;
+    using namespace ::boost::poly_collection::detail::is_invocable_fallback;
+    return is_invocable<F,Args...>::value;
+  }
+
+  template<typename R,typename F,typename... Args>
+  static constexpr bool is_invocable_r_f()
+  {
+    using namespace ::boost::poly_collection::detail::is_invocable_fallback;
+    return is_invocable_r<R,F,Args...>::value;
   }
 };
 
@@ -60,10 +74,18 @@ namespace poly_collection{
 
 namespace detail{
 
-template<typename T,typename R=void>
-struct is_callable:std::integral_constant<
+template<typename F,typename... Args>
+struct is_invocable:std::integral_constant<
   bool,
-  std::is_void<is_callable_fallback::hook>::template is_callable_f<T,R>()
+  std::is_void<is_invocable_fallback::hook>::template
+    is_invocable_f<F,Args...>()
+>{};
+
+template<typename R,typename F,typename... Args>
+struct is_invocable_r:std::integral_constant<
+  bool,
+  std::is_void<is_invocable_fallback::hook>::template
+    is_invocable_r_f<R,F,Args...>()
 >{};
 
 } /* namespace poly_collection::detail */

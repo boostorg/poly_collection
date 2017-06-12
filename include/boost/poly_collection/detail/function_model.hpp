@@ -16,7 +16,7 @@
 #include <boost/core/addressof.hpp>
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_iterator.hpp>
-#include <boost/poly_collection/detail/is_callable.hpp>
+#include <boost/poly_collection/detail/is_invocable.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
 #include <memory>
@@ -50,7 +50,7 @@ struct function_model<R(Args...)>
   using value_type=callable_wrapper<R(Args...)>;
 
   template<typename Callable>
-  using is_subtype=is_callable<Callable&(Args...),R>;
+  using is_subtype=is_invocable<R,Callable&,Args...>;
 
   template<typename T>
   using is_terminal=function_model_is_terminal<T>;
