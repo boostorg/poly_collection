@@ -214,8 +214,8 @@ private:
   {
     auto q=static_cast<packed_segment*>(p);
     q->~packed_segment();
-    std::allocator_traits<segment_allocator_type>::deallocate(
-      segment_allocator_type{q->s.get_allocator()},q,1);
+    segment_allocator_type al{q->s.get_allocator()};
+    std::allocator_traits<segment_allocator_type>::deallocate(al,q,1);
   }
 
   packed_segment(const Allocator& al):s{al}{}
