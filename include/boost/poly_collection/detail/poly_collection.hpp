@@ -126,6 +126,8 @@ class poly_collection
   using const_segment_map_iterator=typename segment_map::const_iterator;
 
 public:
+  /* types */
+
   using value_type=typename segment_type::value_type;
   using allocator_type=Allocator;
   using size_type=std::size_t;
@@ -400,6 +402,8 @@ public:
 
   allocator_type get_allocator()const noexcept{return map.get_allocator();}
 
+  /* type registration */
+
   template<
     typename... T,
     for_all<enable_if_acceptable<T>...> =nullptr
@@ -426,6 +430,8 @@ public:
   {
     return is_registered(typeid(T));
   }
+
+  /* iterators*/
 
   iterator       begin()noexcept{return {map.begin(),map.end()};}
   iterator       end()noexcept{return {map.end(),map.end()};}
@@ -515,6 +521,8 @@ public:
 
   segment_traversal_info       segment_traversal()noexcept{return map;}
   const_segment_traversal_info segment_traversal()const noexcept{return map;}
+
+  /* capacity */
 
   bool empty()const noexcept
   {
@@ -606,6 +614,8 @@ public:
   {
     shrink_to_fit(typeid(T));
   }
+
+  /* modifiers */
 
   template<typename T,typename... Args,enable_if_acceptable<T> =nullptr>
   iterator emplace(Args&&... args)
