@@ -213,8 +213,8 @@ private:
   static void delete_(segment_backend* p)
   {
     auto q=static_cast<packed_segment*>(p);
+    auto al=segment_allocator_type{q->s.get_allocator()};
     q->~packed_segment();
-    segment_allocator_type al{q->s.get_allocator()};
     std::allocator_traits<segment_allocator_type>::deallocate(al,q,1);
   }
 
