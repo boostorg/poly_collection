@@ -380,17 +380,18 @@ public:
   poly_collection()=default;
   poly_collection(const poly_collection&)=default;
   poly_collection(poly_collection&&)=default;
-  explicit poly_collection(const allocator_type& al):map{al}{}
+  explicit poly_collection(const allocator_type& al):
+    map{segment_map_allocator_type{al}}{}
   poly_collection(const poly_collection& x,const allocator_type& al):
-    map{x.map,al}{}
+    map{x.map,segment_map_allocator_type{al}}{}
   poly_collection(poly_collection&& x,const allocator_type& al):
-    map{std::move(x.map),al}{}
+    map{std::move(x.map),segment_map_allocator_type{al}}{}
 
   template<typename InputIterator>
   poly_collection(
     InputIterator first,InputIterator last,
     const allocator_type& al=allocator_type{}):
-    map{al}
+    map{segment_map_allocator_type{al}}
   {
     this->insert(first,last);
   }
