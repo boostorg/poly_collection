@@ -154,7 +154,7 @@ public:
   virtual range push_back(const_value_pointer x)
   {
     prereserve();
-    s.push_back(const_concrete_ref(x));
+    s.emplace_back(const_concrete_ref(x));
     push_index_entry();
     return range_from(s.size()-1);
   }
@@ -162,7 +162,7 @@ public:
   virtual range push_back_move(value_pointer x)
   {
     prereserve();
-    s.push_back(std::move(concrete_ref(x)));
+    s.emplace_back(std::move(concrete_ref(x)));
     push_index_entry();
     return range_from(s.size()-1);
   }
@@ -170,7 +170,7 @@ public:
   virtual range insert(const_base_iterator p,const_value_pointer x)
   {
     p=prereserve(p);
-    auto it=s.insert(iterator_from(p),const_concrete_ref(x));
+    auto it=s.emplace(iterator_from(p),const_concrete_ref(x));
     push_index_entry();
     return range_from(it);
   }
@@ -178,7 +178,7 @@ public:
   virtual range insert(position_pointer p,const_value_pointer x)
   {
     p=prereserve(p);
-    auto it=s.insert(iterator_from(p),const_concrete_ref(x));
+    auto it=s.emplace(iterator_from(p),const_concrete_ref(x));
     push_index_entry();
     return range_from(it);
   }
@@ -186,7 +186,7 @@ public:
   virtual range insert_move(const_base_iterator p,value_pointer x)
   {
     p=prereserve(p);
-    auto it=s.insert(iterator_from(p),std::move(concrete_ref(x)));
+    auto it=s.emplace(iterator_from(p),std::move(concrete_ref(x)));
     push_index_entry();
     return range_from(it);
   }
@@ -194,7 +194,7 @@ public:
   virtual range insert_move(position_pointer p,value_pointer x)
   {
     p=prereserve(p);
-    auto it=s.insert(iterator_from(p),std::move(concrete_ref(x)));
+    auto it=s.emplace(iterator_from(p),std::move(concrete_ref(x)));
     push_index_entry();
     return range_from(it);
   }

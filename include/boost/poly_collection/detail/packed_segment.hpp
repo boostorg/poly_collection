@@ -120,34 +120,34 @@ public:
 
   virtual range push_back(const_value_pointer x)
   {
-    s.push_back(const_concrete_ref(x));
+    s.emplace_back(const_concrete_ref(x));
     return range_from(s.size()-1);
   }
 
   virtual range push_back_move(value_pointer x)
   {
-    s.push_back(std::move(concrete_ref(x)));
+    s.emplace_back(std::move(concrete_ref(x)));
     return range_from(s.size()-1);
   }
 
   virtual range insert(const_base_iterator p,const_value_pointer x)
   {
-    return range_from(s.insert(iterator_from(p),const_concrete_ref(x)));
+    return range_from(s.emplace(iterator_from(p),const_concrete_ref(x)));
   }
 
   virtual range insert(position_pointer p,const_value_pointer x)
   {
-    return range_from(s.insert(iterator_from(p),const_concrete_ref(x)));
+    return range_from(s.emplace(iterator_from(p),const_concrete_ref(x)));
   }
 
   virtual range insert_move(const_base_iterator p,value_pointer x)
   {
-    return range_from(s.insert(iterator_from(p),std::move(concrete_ref(x))));
+    return range_from(s.emplace(iterator_from(p),std::move(concrete_ref(x))));
   }
 
   virtual range insert_move(position_pointer p,value_pointer x)
   {
-    return range_from(s.insert(iterator_from(p),std::move(concrete_ref(x))));
+    return range_from(s.emplace(iterator_from(p),std::move(concrete_ref(x))));
   }
 
   virtual range erase(const_base_iterator p)
