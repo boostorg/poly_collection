@@ -38,7 +38,7 @@ namespace detail{
  *    lambda functions, whose assignment operator is deleted by standard
  *    mandate [expr.prim.lambda]/20 even if the compiler generated one would
  *    work (capture by value).
-*  - value_holder<T> supports the type-erased emplace mechanism required
+ *  - value_holder<T> supports the type-erased emplace mechanism required
  *    by segment_backend.
  *
  *  A pointer to value_holder_base<T> can be reinterpret_cast'ed to T*.
