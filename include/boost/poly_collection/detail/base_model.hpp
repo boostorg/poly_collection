@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -62,6 +62,8 @@ struct base_model
   template<typename Derived>
   using const_iterator=const Derived*;
   using segment_backend=detail::segment_backend<base_model>;
+  using segment_backend_unique_ptr=
+    typename segment_backend::segment_backend_unique_ptr;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -78,14 +80,14 @@ struct base_model
   }
 
   template<typename Derived,typename Allocator>
-  static segment_backend* make(const Allocator& al)
+  static segment_backend_unique_ptr make(const Allocator& al)
   {
-    return new packed_segment<
+    return packed_segment<
       base_model,
       Derived,
       typename std::allocator_traits<Allocator>::
         template rebind_alloc<Derived>
-    >{al};
+    >::new_(al,al);
   }
 
 private:

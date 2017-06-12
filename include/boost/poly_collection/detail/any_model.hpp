@@ -152,6 +152,8 @@ struct any_model
   template<typename Concrete>
   using const_iterator=const Concrete*;
   using segment_backend=detail::segment_backend<any_model>;
+  using segment_backend_unique_ptr=
+    typename segment_backend::segment_backend_unique_ptr;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -166,14 +168,14 @@ struct any_model
   }
 
   template<typename Concrete,typename Allocator>
-  static segment_backend* make(const Allocator& al)
+  static segment_backend_unique_ptr make(const Allocator& al)
   {
-    return new split_segment<
+    return split_segment<
       any_model,
       Concrete,
       typename std::allocator_traits<Allocator>::
         template rebind_alloc<Concrete>
-    >{al};
+    >::new_(al,al);
   }
 
 private:

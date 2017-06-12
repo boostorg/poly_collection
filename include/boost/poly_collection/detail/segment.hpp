@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -48,7 +48,7 @@ public:
   template<typename T>
   static segment make(const Allocator& al)
   {
-    return std::unique_ptr<segment_backend>{Model::template make<T>(al)};
+    return Model::template make<T>(al);
   }
 
   /* clones the implementation of x with no elements */
@@ -127,12 +127,14 @@ public:
 
 private:
   using segment_backend=typename Model::segment_backend;
+  using segment_backend_unique_ptr=
+    typename segment_backend::segment_backend_unique_ptr;
   using position_pointer=typename segment_backend::position_pointer;
   using range=typename segment_backend::range;
 
   struct from_prototype{};
 
-  segment(std::unique_ptr<segment_backend>&& pimpl):
+  segment(segment_backend_unique_ptr&& pimpl):
     pimpl{std::move(pimpl)}{set_sentinel();}
   segment(from_prototype,const segment& x):
     pimpl{x.pimpl->empty_copy()}{set_sentinel();}
@@ -156,8 +158,8 @@ private:
   void          filter(base_sentinel x){snt=x;}
   base_iterator filter(const range& x){snt=x.second;return x.first;}
 
-  std::unique_ptr<segment_backend> pimpl;
-  base_sentinel                    snt;
+  segment_backend_unique_ptr pimpl;
+  base_sentinel              snt;
 };
 
 } /* namespace poly_collection::detail */

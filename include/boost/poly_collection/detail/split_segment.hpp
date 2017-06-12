@@ -16,6 +16,7 @@
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
 #include <memory>
+#include <new>
 #include <utility>
 #include <vector>
 
@@ -60,6 +61,7 @@ class split_segment:public segment_backend<Model>
   >;
   using const_index_iterator=typename index::const_iterator;
   using segment_backend=detail::segment_backend<Model>;
+  using typename segment_backend::segment_backend_unique_ptr;
   using typename segment_backend::value_pointer;
   using typename segment_backend::const_value_pointer;
   using typename segment_backend::base_iterator;
@@ -67,13 +69,21 @@ class split_segment:public segment_backend<Model>
   using typename segment_backend::base_sentinel;
   using typename segment_backend::position_pointer;
   using typename segment_backend::range;
+  using segment_allocator_type=typename std::allocator_traits<Allocator>::
+    template rebind_alloc<split_segment>;
 
 public:
   virtual ~split_segment()=default;
 
-  virtual segment_backend* copy()const{return new split_segment{store{s}};}
-  virtual segment_backend* empty_copy()const
-    {return new split_segment{s.get_allocator()};}
+  virtual segment_backend_unique_ptr copy()const
+  {
+    return new_(s.get_allocator(),store{s});
+  }
+
+  virtual segment_backend_unique_ptr empty_copy()const
+  {
+    return new_(s.get_allocator(),s.get_allocator());
+  }
 
   virtual bool equal(const segment_backend* p)const
   {
@@ -258,6 +268,29 @@ public:
 
 private:
   friend Model;
+
+  template<typename... Args>
+  static segment_backend_unique_ptr new_(
+    segment_allocator_type al,Args&&... args)
+  {
+    auto p=std::allocator_traits<segment_allocator_type>::allocate(al,1);
+    try{
+      ::new ((void*)p) split_segment{std::forward<Args>(args)...};
+    }
+    catch(...){
+      std::allocator_traits<segment_allocator_type>::deallocate(al,p,1);
+      throw;
+    }
+    return {p,&delete_};
+  }
+
+  static void delete_(segment_backend* p)
+  {
+    auto q=static_cast<split_segment*>(p);
+    q->~split_segment();
+    std::allocator_traits<segment_allocator_type>::deallocate(
+      segment_allocator_type{q->s.get_allocator()},q,1);
+  }
 
   split_segment(const Allocator& al):
     s{al},i{{},typename index::allocator_type{al}}{build_index();}

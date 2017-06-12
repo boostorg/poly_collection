@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <cstddef>
+#include <memory>
 #include <utility>
 
 namespace boost{
@@ -39,6 +40,8 @@ namespace detail{
 template<typename Model>
 struct segment_backend
 {
+  using segment_backend_unique_ptr=
+    std::unique_ptr<segment_backend,void(*)(segment_backend*)>;
   using value_pointer=void*;
   using const_value_pointer=const void*;
   using base_iterator=typename Model::base_iterator;
@@ -52,10 +55,10 @@ struct segment_backend
   segment_backend(const segment_backend&)=delete;
   segment_backend& operator=(const segment_backend&)=delete;
 
-  virtual                  ~segment_backend()=default;
-  virtual segment_backend* copy()const=0;
-  virtual segment_backend* empty_copy()const=0;
-  virtual bool             equal(const segment_backend*)const=0;
+  virtual                            ~segment_backend()=default;
+  virtual segment_backend_unique_ptr copy()const=0;
+  virtual segment_backend_unique_ptr empty_copy()const=0;
+  virtual bool                       equal(const segment_backend*)const=0;
 
   virtual base_iterator begin()const noexcept=0;
   virtual base_iterator end()const noexcept=0;
