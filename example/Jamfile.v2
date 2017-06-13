@@ -1,4 +1,4 @@
-# Copyright 2016 Joaquín M López Muñoz.
+# Copyright 2016-2017 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -28,6 +28,8 @@ exe basic_base
 
 exe basic_function
     : basic_function.cpp
+    : <toolset>gcc:<cxxflags>-std=c++14
+      <toolset>clang:<cxxflags>-std=c++14
     ;
 
 exe exceptions
@@ -46,4 +48,6 @@ exe perf
 
 exe segmented_structure
     : segmented_structure.cpp
+    : <toolset>gcc:<cxxflags>-std=c++14
+      <toolset>clang:<cxxflags>-std=c++14
     ;

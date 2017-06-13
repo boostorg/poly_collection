@@ -254,7 +254,8 @@ juggernaut 0,juggernaut 4,goblin 1,goblin 3,goblin 5,goblin 8,warrior 2,warrior 
 [section `boost::function_collection`]
 
 [import ../example/basic_function.cpp]
-(Code samples from [@../../example/basic_function.cpp `basic_function.cpp`].)
+(Code samples from [@../../example/basic_function.cpp `basic_function.cpp`].
+C++14 `std::make_unique` is used.)
 
 Well into the development of the game, the product manager requests that two new
 types of entities be added to the rendering loop:
@@ -368,7 +369,8 @@ each type autonomously: this is left as an exercise to the reader.
 [section Deeper into the segmented nature of Boost.PolyCollection]
 
 [import ../example/segmented_structure.cpp]
-(Code samples from [@../../example/segmented_structure.cpp `segmented_structure.cpp`].)
+(Code samples from [@../../example/segmented_structure.cpp `segmented_structure.cpp`].
+C++14 `std::make_unique` is used.)
 
 [section Type registration]
 
@@ -690,7 +692,8 @@ signature, etc.].
 [section Algorithms]
 
 [import ../example/algorithms.cpp]
-(Code samples from [@../../example/algorithms.cpp `algorithms.cpp`].)
+(Code samples from [@../../example/algorithms.cpp `algorithms.cpp`].
+C++14 generic lambda expressions are used.)
 
 The ultimate purpose of Boost.PolyCollection is to speed up the processing of
 large quantities of polymorphic entities, in particular for those operations
