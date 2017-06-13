@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -27,10 +27,10 @@ namespace poly_collection{
 
 namespace detail{
 
-template<typename T,typename U>
+template<typename T,typename... Args>
 struct is_constructible:std::integral_constant<
   bool,
-  boost::is_constructible<T,U>::value
+  boost::is_constructible<T,Args...>::value
 >{};
 
 } /* namespace poly_collection::detail */
@@ -48,8 +48,8 @@ namespace poly_collection{
 
 namespace detail{
 
-template<typename T,typename U>
-using is_constructible=std::is_constructible<T,U>;
+template<typename T,typename... Args>
+using is_constructible=std::is_constructible<T,Args...>;
 
 } /* namespace poly_collection::detail */
 
