@@ -692,11 +692,10 @@
             by <code class="computeroutput"><span class="identifier">index</span></code> is not registered
             (1) or registers <code class="computeroutput"><span class="identifier">U</span></code> if
             needed (2). If <code class="computeroutput"><span class="identifier">n</span></code> is greater
-            than the current capacity of the segmentfor the indicated type, new storage
-            space is allocated with a capacity of at least <code class="computeroutput"><span class="identifier">n</span></code>
-            and elements are moved there.<br> <span class="bold"><strong>Complexity:</strong></span>
-            Linear in the size of the segment if reallocation happens, constant otherwise.<br>
-            <span class="bold"><strong>Throws:</strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">length_error</span></code>
+            than the current capacity of the segment for the indicated type, new
+            storage space is allocated with a capacity of at least <code class="computeroutput"><span class="identifier">n</span></code> and elements are moved there.<br>
+            <span class="bold"><strong>Complexity:</strong></span> Linear in the size of the
+            segment if reallocation happens, constant otherwise.<br> <span class="bold"><strong>Throws:</strong></span> <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">length_error</span></code>
             if <code class="computeroutput"><span class="identifier">n</span></code> is greater than
             the return value of <code class="computeroutput"><span class="identifier">max_size</span></code>
             for the segment.
@@ -992,7 +991,7 @@
 </pre>
 <p>
           <code class="computeroutput"><span class="identifier">not_equality_comparable</span></code>
-          is thrown when comparing two collections for (in)equality involves non-<a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>
+          is thrown when comparing two collections for (in)equality involves a non-<a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>
           type.
         </p>
 <p>
