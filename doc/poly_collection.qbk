@@ -613,7 +613,7 @@ standard containers. Consider this attempt at emplacing a `goblin`:
 
 [insertion_emplacement_7]
 
-If considered carefully, it is only natural that the code above not compile:
+If examined carefully, it is only natural that the code above not compile:
 Boost.PolyCollection cannot possibly know that it is precisely a `goblin`
 that we want to emplace and not some other type constructible from an `int`
 (like `warrior`, `juggernaut` or an unrelated class). So, the type of
