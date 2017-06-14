@@ -27,6 +27,10 @@
 <a name="poly_collection.future_work"></a><a class="link" href="future_work.html" title="Future work">Future work</a>
 </h2></div></div></div>
 <div class="toc"><dl class="toc">
+<dt><span class="section"><a href="future_work.html#poly_collection.future_work.proper_allocator_construct_destr">Proper
+      allocator <code class="computeroutput"><span class="identifier">construct</span></code>/<code class="computeroutput"><span class="identifier">destroy</span></code> support</a></span></dt>
+<dt><span class="section"><a href="future_work.html#poly_collection.future_work.internal_devirtualization">Internal
+      devirtualization</a></span></dt>
 <dt><span class="section"><a href="future_work.html#poly_collection.future_work.alternative_rtti_systems">Alternative
       RTTI systems</a></span></dt>
 <dt><span class="section"><a href="future_work.html#poly_collection.future_work.copy_traits">Copy traits</a></span></dt>
@@ -40,6 +44,98 @@
       A number of features asked by reviewers and users of Boost.PolyCollection are
       considered for inclusion into future versions of the library.
     </p>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="poly_collection.future_work.proper_allocator_construct_destr"></a><a class="link" href="future_work.html#poly_collection.future_work.proper_allocator_construct_destr" title="Proper allocator construct/destroy support">Proper
+      allocator <code class="computeroutput"><span class="identifier">construct</span></code>/<code class="computeroutput"><span class="identifier">destroy</span></code> support</a>
+</h3></div></div></div>
+<p>
+        Section <span class="bold"><strong>[container.requirements.general]/3</strong></span>
+        of the C++ standard states that, for allocator-aware containers,
+      </p>
+<p>
+        <span class="emphasis"><em>"[...] objects stored in these components shall be constructed
+        using the <code class="computeroutput"><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">construct</span></code>
+        function and destroyed using the <code class="computeroutput"><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">destroy</span></code>
+        function [...] These functions are called only for the container&#8217;s element
+        type, not for internal types used by the container."</em></span>
+      </p>
+<p>
+        The main practical implication of this condition is that it enables the use
+        of <a href="http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor" target="_top"><code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">scoped_allocator_adaptor</span></code></a>:
+      </p>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">arena_allocator</span>
+<span class="special">{</span>
+  <span class="identifier">arena</span><span class="special">*</span> <span class="identifier">pa</span><span class="special">;</span>
+  <span class="identifier">arena_allocator</span><span class="special">(</span><span class="identifier">arena</span><span class="special">*</span> <span class="identifier">pa</span><span class="special">):</span><span class="identifier">pa</span><span class="special">{</span><span class="identifier">pa</span><span class="special">}{}</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">U</span><span class="special">&gt;</span>
+  <span class="identifier">arena_allocator</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">arena_allocator</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;&amp;</span> <span class="identifier">x</span><span class="special">):</span><span class="identifier">pa</span><span class="special">{</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">pa</span><span class="special">}{}</span>
+
+  <span class="special">...</span>
+<span class="special">};</span>
+
+<span class="keyword">using</span> <span class="identifier">string</span><span class="special">=</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">basic_string</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">char_traits</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;,</span><span class="identifier">arena_allocator</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&gt;&gt;;</span>
+<span class="keyword">using</span> <span class="identifier">vector</span><span class="special">=</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">string</span><span class="special">,</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">scoped_allocator_adaptor</span><span class="special">&lt;</span><span class="identifier">arena_allocator</span><span class="special">&lt;</span><span class="identifier">string</span><span class="special">&gt;&gt;&gt;;</span>
+<span class="special">...</span>
+
+<span class="identifier">arena</span> <span class="identifier">a</span><span class="special">=...;</span>
+
+<span class="identifier">vector</span> <span class="identifier">v</span><span class="special">{</span><span class="identifier">arena_allocator</span><span class="special">&lt;</span><span class="identifier">string</span><span class="special">&gt;{&amp;</span><span class="identifier">a</span><span class="special">}};</span>
+<span class="identifier">v</span><span class="special">.</span><span class="identifier">emplace_back</span><span class="special">(</span><span class="string">"boost"</span><span class="special">);</span>
+
+<span class="comment">// vector and string allocated in the same arena</span>
+<span class="identifier">assert</span><span class="special">(</span><span class="identifier">v</span><span class="special">.</span><span class="identifier">get_allocator</span><span class="special">().</span><span class="identifier">pa</span><span class="special">==&amp;</span><span class="identifier">a</span><span class="special">);</span>
+<span class="identifier">assert</span><span class="special">(</span><span class="identifier">v</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()-&gt;</span><span class="identifier">get_allocator</span><span class="special">().</span><span class="identifier">pa</span><span class="special">==&amp;</span><span class="identifier">a</span><span class="special">);</span>
+</pre>
+<p>
+        The current implementation of Boost.PolyCollection does not honor [container.requirements.general]/3
+        (or, more precisely, the natural extension of this clause to dynamic polymorphism,
+        where <code class="computeroutput"><span class="identifier">construct</span></code>/<code class="computeroutput"><span class="identifier">destroy</span></code> is used for construction/destruction
+        of the <span class="emphasis"><em>concrete</em></span> types being stored). This limitation
+        shall be fixed in the next Boost release.
+      </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="poly_collection.future_work.internal_devirtualization"></a><a class="link" href="future_work.html#poly_collection.future_work.internal_devirtualization" title="Internal devirtualization">Internal
+      devirtualization</a>
+</h3></div></div></div>
+<p>
+        Consider this piece of code:
+      </p>
+<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">base_collection</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;</span> <span class="identifier">c</span><span class="special">;</span>
+<span class="special">...</span>
+<span class="identifier">base</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">=...;</span>
+<span class="identifier">c</span><span class="special">.</span><span class="identifier">insert</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span>
+</pre>
+<p>
+        Internally, <code class="computeroutput"><span class="identifier">base_collection</span><span class="special">::</span><span class="identifier">insert</span></code>
+        determines the dynamic type of <code class="computeroutput"><span class="identifier">x</span></code>
+        through <code class="computeroutput"><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span></code>, uses
+        that information to locate the corresponding segment and forwards the insertion
+        operation to it through a type-erased interface based on <code class="computeroutput"><span class="keyword">virtual</span></code>
+        member functions &#8212;type erasure is needed because the dynamic type
+        of <code class="computeroutput"><span class="identifier">x</span></code> is not known at compile
+        time in the moment of insertion.
+      </p>
+<p>
+        By contrast, in the following:
+      </p>
+<pre class="programlisting"><span class="identifier">c</span><span class="special">.</span><span class="identifier">emplace</span><span class="special">&lt;</span><span class="identifier">derived</span><span class="special">&gt;(...);</span>
+</pre>
+<p>
+        the exact type involved (<code class="computeroutput"><span class="identifier">derived</span></code>)
+        is known at compile time, which allows a smart implementation to bypass type
+        erasure and talk directly to the segment for <code class="computeroutput"><span class="identifier">derived</span></code>
+        through a non-virtual interface. This devirtualization technique (which in
+        fact can be applied to many other public operations of Boost.PolyCollection
+        containers) has the potential to increase performance significantly and will
+        be implemented in future versions of the library.
+      </p>
+</div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="poly_collection.future_work.alternative_rtti_systems"></a><a class="link" href="future_work.html#poly_collection.future_work.alternative_rtti_systems" title="Alternative RTTI systems">Alternative
