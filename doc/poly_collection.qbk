@@ -359,7 +359,9 @@ with output
 '''[pop-up 1]''','''[pop-up 2]''',juggernaut 0,goblin 1,goblin 3,warrior 2,"stamina: 10,000","game over"
 ]
 
-As was the case with `boost::function_collection`, the `value_type` of a
+As was the case with `boost::function_collection`, this container is similar
+to a `std::vector<boost::type_erasure::any<Concept>>` but has better performance
+due to packing of same-type elements. Also, the `value_type` of a
 `boost::any_collection<Concept>` is /not/ `boost::type_erasure::any<Concept>`,
 but a similarly behaving entity
 [footnote Actually, it is
