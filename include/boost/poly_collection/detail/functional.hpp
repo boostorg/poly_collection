@@ -184,7 +184,7 @@ struct transparent_equal_to
     ->decltype(std::forward<T>(x)==std::forward<U>(y))
   {
     return std::forward<T>(x)==std::forward<U>(y);
-  }	
+  }
 };
 
 } /* namespace poly_collection::detail */
