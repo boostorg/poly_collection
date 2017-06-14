@@ -679,6 +679,13 @@ all their non-empty segments are equal) can return `false` without
 comparing anything at all (for instance, if segment sizes differ), in which
 case no exception is thrown.
 
+[note Operators for `<`, `<=`, `>` and `>=` comparison are not provided
+because /segment/ order is not fixed and may vary across otherwise
+identical collections. The situation is similar to that of standard
+[@http://en.cppreference.com/w/cpp/concept/UnorderedAssociativeContainer unordered
+associative containers.]
+]
+
 These three are all the intrinsic exceptions thrown by Boost.PolyCollection.
 The implication is that if a type is _CopyConstructible_,
 _MoveAssignable_ (or move construction does not throw) and _EqualityComparable_, then
