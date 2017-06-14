@@ -795,7 +795,7 @@
 <pre class="programlisting"><span class="identifier">c</span><span class="special">.</span><span class="identifier">emplace</span><span class="special">(</span><span class="number">11</span><span class="special">);</span> <span class="comment">// does not compile</span>
 </pre>
 <p>
-        If considered carefully, it is only natural that the code above not compile:
+        If examined carefully, it is only natural that the code above not compile:
         Boost.PolyCollection cannot possibly know that it is precisely a <code class="computeroutput"><span class="identifier">goblin</span></code> that we want to emplace and not
         some other type constructible from an <code class="computeroutput"><span class="keyword">int</span></code>
         (like <code class="computeroutput"><span class="identifier">warrior</span></code>, <code class="computeroutput"><span class="identifier">juggernaut</span></code> or an unrelated class). So,
@@ -899,6 +899,20 @@
         comparing anything at all (for instance, if segment sizes differ), in which
         case no exception is thrown.
       </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="http://www.boost.org/doc/libs/release/doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+          Operators for <code class="computeroutput"><span class="special">&lt;</span></code>, <code class="computeroutput"><span class="special">&lt;=</span></code>, <code class="computeroutput"><span class="special">&gt;</span></code>
+          and <code class="computeroutput"><span class="special">&gt;=</span></code> comparison are not
+          provided because <span class="emphasis"><em>segment</em></span> order is not fixed and may
+          vary across otherwise identical collections. The situation is similar to
+          that of standard <a href="http://en.cppreference.com/w/cpp/concept/UnorderedAssociativeContainer" target="_top">unordered
+          associative containers.</a>
+        </p></td></tr>
+</table></div>
 <p>
         These three are all the intrinsic exceptions thrown by Boost.PolyCollection.
         The implication is that if a type is <a href="http://en.cppreference.com/w/cpp/concept/CopyConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyConstructible</span></code></strong></span></a>,
