@@ -47,24 +47,36 @@ int main()
 //=  ...
 //=
   // function signature accepting std::ostream& and returning nothing
-  using render_callback=void(std::ostream&); 
+  using render_callback=void(std::ostream&);
+   
   boost::function_collection<render_callback> c;
 //]
 
 //[basic_function_3
+//<-
   auto render_sprite=[](const sprite& s){
+//->
+//=  auto render_sprite(const sprite& s){
     return [&](std::ostream& os){s.render(os);};
   };
-  for(const auto& ps:sprs)c.insert(render_sprite(*ps)); 
 
+//<-
   auto render_message=[](const std::string& m){
+//->
+//=  auto render_message(const std::string& m){
     return [&](std::ostream& os){os<<m;};
   };
-  for(const auto& m:msgs)c.insert(render_message(m));
 
+//<-
   auto render_window=[](const window& w){
+//->
+//=  auto render_window(const window& w){
     return [&](std::ostream& os){w.display(os);};
   };
+//=  ...
+//=
+  for(const auto& ps:sprs)c.insert(render_sprite(*ps)); 
+  for(const auto& m:msgs)c.insert(render_message(m));
   for(const auto& w:wnds)c.insert(render_window(w)); 
 //]
 

@@ -272,7 +272,8 @@ stored in dedicated containers:
 [basic_function_1]
 
 and define our rendering container as a `boost::function_collection` of
-callable entities accepting a `std::ostream&` as a parameter
+/callable entities/ \u2014function pointers or objects with a function
+call `operator()`\u2014 accepting a `std::ostream&` as a parameter
 
 [basic_function_2]
  
@@ -292,14 +293,20 @@ windows:
 juggernaut 0,goblin 1,warrior 2,goblin 3,"stamina: 10,000","game over",'''[pop-up 1]''','''[pop-up 2]'''
 ]
 
-(Note that all sprites come into one segment: this is why goblins #1 and #3 are
-not adjacent
-[footnote Exercise for the reader: change the code of the example so that
-sprites are further segmented according to their concrete type.].)
-
-The `value_type` elements held by a `boost::function_collection` are actually
-/not/ `std::function`s, althouth they behave analogously and can be converted
-to `std::function` if needed:
+The container we have just created works in many respects like a
+`std::vector<std::function<render_callback>>`, the main difference being
+that with `boost::function_collection` callable entities of the same type
+are packed together in memory 
+[footnote Note that all `sprite`s come into one segment: this is why
+goblins #1 and #3 are not adjacent. Exercise for the reader: change
+the code of the example so that sprites are further segmented according
+to their concrete type.], thus increasing performance (which is the whole
+point of using Boost.PolyCollection), while a vector of `std::function`s
+results in an individual allocation for each entity stored
+[footnote Except when [@http://talesofcpp.fusionfenix.com/post-16/episode-nine-erasing-the-concrete#a-note-on-small-buffer-optimization [' small buffer optimization]]
+applies.]. In fact, the `value_type` elements held by a
+`boost::function_collection` are actually /not/ `std::function`s,
+although they behave analogously and can be converted to `std::function` if needed:
 
 [basic_function_5]
 
