@@ -655,7 +655,7 @@ The situations in which the first is raised have been
 [link poly_collection.tutorial.deeper_into_the_segmented_nature.type_registration already discussed];
 let us focus on the other two.
 
-We have a new type of sprite in our role game defined by the non-copyable
+We have a new type of sprite in our game defined by the non-copyable
 class `elf`:
 
 [rolegame_4]
