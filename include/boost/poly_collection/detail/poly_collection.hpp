@@ -1066,7 +1066,7 @@ private:
 
   template<
     typename T,
-    typename enable_if_not_acceptable<T> =nullptr
+    enable_if_not_acceptable<T> =nullptr
   >
   segment_base_iterator push_back(segment_type& seg,T&& x)
   {
@@ -1075,8 +1075,8 @@ private:
 
   template<
     typename T,
-    typename enable_if_acceptable<T> =nullptr,
-    typename enable_if_not_terminal<T> = nullptr
+    enable_if_acceptable<T> =nullptr,
+    enable_if_not_terminal<T> = nullptr
   >
   segment_base_iterator push_back(segment_type& seg,T&& x)
   {
@@ -1087,8 +1087,8 @@ private:
 
   template<
     typename T,
-    typename enable_if_acceptable<T> =nullptr,
-    typename enable_if_terminal<T> = nullptr
+    enable_if_acceptable<T> =nullptr,
+    enable_if_terminal<T> = nullptr
   >
   segment_base_iterator push_back(segment_type& seg,T&& x)
   {
