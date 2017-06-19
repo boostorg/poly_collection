@@ -103,13 +103,27 @@ public:
     {std::allocator_traits<Allocator>::construct(
       al,data(),std::move(x.value()));}
 
+  /* stdlib implementations in current use are notoriously lacking at
+   * complying with [container.requirements.general]/3, so we keep the
+   * following to make their life easier.
+   */
+
+  value_holder(const T& x)
+    noexcept(is_nothrow_copy_constructible::value)
+    {copy(x);}
+  value_holder(T&& x)
+    noexcept(is_nothrow_move_constructible::value)
+    {::new ((void*)data()) T(std::move(x));}
+  template<typename... Args>
+  value_holder(value_holder_emplacing_ctor_t,Args&&... args)
+    {::new ((void*)data()) T(std::forward<Args>(args)...);}
   value_holder(const value_holder& x)
     noexcept(is_nothrow_copy_constructible::value)
     {copy(x.value());}
   value_holder(value_holder&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {::new (data()) T(std::move(x.value()));}
-
+    {::new ((void*)data()) T(std::move(x.value()));}
+ 
   value_holder& operator=(const value_holder& x)=delete;
   value_holder& operator=(value_holder&& x)
     noexcept(is_nothrow_move_assignable::value||!is_move_assignable::value)
