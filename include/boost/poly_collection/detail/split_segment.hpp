@@ -57,8 +57,10 @@ class split_segment:public segment_backend<Model>
   using const_store_iterator=typename store::const_iterator;
   using index=std::vector<
     value_type,
-    typename std::allocator_traits<Allocator>::
-      template rebind_alloc<value_type>
+    newdelete_allocator_adaptor<
+      typename std::allocator_traits<Allocator>::
+        template rebind_alloc<value_type>
+    >
   >;
   using const_index_iterator=typename index::const_iterator;
   using segment_backend=detail::segment_backend<Model>;
@@ -71,7 +73,7 @@ class split_segment:public segment_backend<Model>
     typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
   using typename segment_backend::range;
-    using segment_allocator_type=newdelete_allocator_adaptor<
+  using segment_allocator_type=newdelete_allocator_adaptor<
     typename std::allocator_traits<Allocator>::
       template rebind_alloc<split_segment>
   >;
