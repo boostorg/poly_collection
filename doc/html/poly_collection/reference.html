@@ -125,7 +125,8 @@
         and <a href="http://en.cppreference.com/w/cpp/concept/AllocatorAwareContainer" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">AllocatorAwareContainer</span></code></strong></span></a>
         with the following modifications:
       </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
             Where it occurs, replace the requirement that <code class="computeroutput"><span class="identifier">T</span></code>
             be <a href="http://en.cppreference.com/w/cpp/concept/CopyInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyInsertable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/CopyAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyAssignable</span></code></strong></span></a>,
@@ -138,7 +139,23 @@
             <a href="http://en.cppreference.com/w/cpp/concept/MoveConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveConstructible</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/MoveAssignable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveAssignable</span></code></strong></span></a>,
             <a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>).
-          </li></ul></div>
+          </li>
+<li class="listitem">
+            Replace [container.requirements.general]/3 with: For any any type <code class="computeroutput"><span class="identifier">T</span></code> implementing <code class="computeroutput"><span class="identifier">I</span></code>
+            and the allocator type <code class="computeroutput"><span class="identifier">A</span></code>
+            = <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">rebind_alloc</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span></code>,
+            <code class="computeroutput"><span class="identifier">T</span></code> is <a href="http://en.cppreference.com/w/cpp/concept/CopyInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyInsertable</span></code></strong></span></a>
+            (respectively <a href="http://en.cppreference.com/w/cpp/concept/MoveInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveInsertable</span></code></strong></span></a>)
+            with respect to <code class="computeroutput"><span class="identifier">A</span></code> if
+            and only if <code class="computeroutput"><span class="identifier">T</span></code> is <a href="http://en.cppreference.com/w/cpp/concept/CopyConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyConstructible</span></code></strong></span></a>
+            (respectively <a href="http://en.cppreference.com/w/cpp/concept/MoveConstructible" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveConstructible</span></code></strong></span></a>);
+            all subobjects of type <code class="computeroutput"><span class="identifier">T</span></code>
+            stored in these containers shall be constructed using the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">&gt;::</span><span class="identifier">construct</span></code> function and destroyed using
+            the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">destroy</span></code> function; these functions (or
+            their equivalents for a rebound allocator) are not called for any other
+            types used by the container.
+          </li>
+</ul></div>
 <div class="section">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="poly_collection.reference.polymorphic_containers.polymorphic_collections"></a><a class="link" href="reference.html#poly_collection.reference.polymorphic_containers.polymorphic_collections" title="Polymorphic collections">Polymorphic
