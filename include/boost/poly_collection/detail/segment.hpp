@@ -193,7 +193,7 @@ public:
   {
     return insert(
       const_iterator<
-        typename std::iterator_traits<InputIterator>::value_type>{it},
+        typename std::iterator_traits<InputIterator>::value_type>(it),
       first,last);
   }
 
