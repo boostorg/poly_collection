@@ -66,7 +66,9 @@ class value_holder:public value_holder_base<T>
 {
   template<typename U>
   using enable_if_not_emplacing_ctor_t=typename std::enable_if<
-    !std::is_same<U,value_holder_emplacing_ctor_t>::value
+    !std::is_same<
+      typename std::decay<U>::type,value_holder_emplacing_ctor_t
+    >::value
   >::type*;
 
   using is_nothrow_move_constructible=std::is_nothrow_move_constructible<T>;
