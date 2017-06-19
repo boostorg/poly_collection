@@ -143,7 +143,7 @@ public:
   }
 
   virtual range insert(const_base_iterator p,const_value_pointer x)
-  {return nv_insert(const_iterator{p},const_concrete_ref(x));}
+  {return nv_insert(const_iterator(p),const_concrete_ref(x));}
 
   range nv_insert(const_iterator p,const Concrete& x)
   {
@@ -151,7 +151,7 @@ public:
   }
 
   virtual range insert_move(const_base_iterator p,value_pointer x)
-  {return nv_insert(const_iterator{p},std::move(concrete_ref(x)));}
+  {return nv_insert(const_iterator(p),std::move(concrete_ref(x)));}
 
   range nv_insert(const_iterator p,Concrete&& x)
   {
@@ -162,7 +162,7 @@ public:
   range nv_insert(InputIterator first,InputIterator last)
   {
     return nv_insert(
-     const_iterator{concrete_ptr(s.data()+s.size())},first,last);
+     const_iterator(concrete_ptr(s.data()+s.size())),first,last);
   }
 
   template<typename InputIterator>
@@ -172,7 +172,7 @@ public:
   }
 
   virtual range erase(const_base_iterator p)
-  {return nv_erase(const_iterator{p});}
+  {return nv_erase(const_iterator(p));}
 
   range nv_erase(const_iterator p)
   {
@@ -180,7 +180,7 @@ public:
   }
     
   virtual range erase(const_base_iterator first,const_base_iterator last)
-  {return nv_erase(const_iterator{first},const_iterator{last});}
+  {return nv_erase(const_iterator(first),const_iterator(last));}
 
   range nv_erase(const_iterator first,const_iterator last)
   {
