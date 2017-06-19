@@ -15,8 +15,8 @@
 #include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/relaxed.hpp>
 #include <scoped_allocator>
-#include <string>
 #include <utility>
+#include <vector>
 #include "any_types.hpp"
 #include "base_types.hpp"
 #include "function_types.hpp"
@@ -197,29 +197,28 @@ void test_construction()
 
 void test_scoped_allocator()
 {
-  using string_allocator_type=rooted_allocator<char>;
-  using string=
-    std::basic_string<char,std::char_traits<char>,string_allocator_type>;
+  using vector_allocator_type=rooted_allocator<char>;
+  using vector=std::vector<char,vector_allocator_type>;
   using concept_=boost::type_erasure::relaxed;
   using element_allocator_type=rooted_allocator<
     boost::poly_collection::any_collection_value_type<concept_>
   >;
   using collection_allocator_type=std::scoped_allocator_adaptor<
     element_allocator_type,
-    string_allocator_type
+    vector_allocator_type
    >;
   using poly_collection=
     boost::any_collection<concept_,collection_allocator_type>;
 
   element_allocator_type     roote{0}; 
-  string_allocator_type      roots{0}; 
-  collection_allocator_type  al{roote,roots};
+  vector_allocator_type      rootv{0}; 
+  collection_allocator_type  al{roote,rootv};
   poly_collection            p{al};
 
-  p.emplace<string>("boost");
-  auto& s=boost::type_erasure::any_cast<string&>(*p.begin());
+  p.emplace<vector>();
+  auto& s=boost::type_erasure::any_cast<vector&>(*p.begin());
   BOOST_TEST(p.get_allocator().root==&roote);
-  BOOST_TEST(s.get_allocator().root==&roots);
+  BOOST_TEST(s.get_allocator().root==&rootv);
 }
 
 void test_construction()
