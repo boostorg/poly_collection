@@ -64,6 +64,11 @@ protected:
 template<typename T>
 class value_holder:public value_holder_base<T>
 {
+  template<typename T>
+  using enable_if_not_emplacing_ctor_t=typename std::enable_if<
+    !is_same<T,value_holder_emplacing_ctor_t>::value
+  >::type*;
+
   using is_nothrow_move_constructible=std::is_nothrow_move_constructible<T>;
   using is_copy_constructible=std::is_copy_constructible<T>;
   using is_nothrow_copy_constructible=std::is_nothrow_copy_constructible<T>;
@@ -81,23 +86,38 @@ class value_holder:public value_holder_base<T>
   const T& value()const noexcept{return *static_cast<const T*>(data());}
 
 public:
-  template<typename Allocator>
+  template<
+    typename Allocator,
+    enable_if_not_emplacing_ctor_t<Allocator> =nullptr
+  >
   value_holder(Allocator& al,const T& x)
     noexcept(is_nothrow_copy_constructible::value)
     {copy(al,x);}
-  template<typename Allocator>
+  template<
+    typename Allocator,
+    enable_if_not_emplacing_ctor_t<Allocator> =nullptr
+  >
   value_holder(Allocator& al,T&& x)
     noexcept(is_nothrow_move_constructible::value)
     {std::allocator_traits<Allocator>::construct(al,data(),std::move(x));}
-  template<typename Allocator,typename... Args>
+  template<
+    typename Allocator,typename... Args,
+    enable_if_not_emplacing_ctor_t<Allocator> =nullptr
+  >
   value_holder(Allocator& al,value_holder_emplacing_ctor_t,Args&&... args)
     {std::allocator_traits<Allocator>::construct(
       al,data(),std::forward<Args>(args)...);}
-  template<typename Allocator>
+  template<
+    typename Allocator,
+    enable_if_not_emplacing_ctor_t<Allocator> =nullptr
+  >
   value_holder(Allocator& al,const value_holder& x)
     noexcept(is_nothrow_copy_constructible::value)
     {copy(al,x.value());}
-  template<typename Allocator>
+  template<
+    typename Allocator,
+    enable_if_not_emplacing_ctor_t<Allocator> =nullptr
+  >
   value_holder(Allocator& al,value_holder&& x)
     noexcept(is_nothrow_move_constructible::value)
     {std::allocator_traits<Allocator>::construct(
