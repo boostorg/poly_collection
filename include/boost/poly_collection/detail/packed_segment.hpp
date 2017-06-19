@@ -52,6 +52,7 @@ class packed_segment:public segment_backend<Model>
   using typename segment_backend::segment_backend_unique_ptr;
   using typename segment_backend::value_pointer;
   using typename segment_backend::const_value_pointer;
+  using typename segment_backend::base_iterator;
   using typename segment_backend::const_base_iterator;
   using const_iterator=
     typename segment_backend::template const_iterator<Concrete>;
