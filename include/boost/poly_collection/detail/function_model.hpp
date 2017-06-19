@@ -92,6 +92,13 @@ struct function_model<R(Args...)>
   template<typename Callable>
   using const_iterator=const Callable*;
   using segment_backend=detail::segment_backend<function_model>;
+  template<typename Callable,typename Allocator>
+  using segment_backend_implementation=split_segment<
+    function_model,
+    Callable,
+    typename std::allocator_traits<Allocator>::
+      template rebind_alloc<Callable>
+  >;
   using segment_backend_unique_ptr=
     typename segment_backend::segment_backend_unique_ptr;
 
@@ -110,12 +117,7 @@ struct function_model<R(Args...)>
   template<typename Callable,typename Allocator>
   static segment_backend_unique_ptr make(const Allocator& al)
   {
-    return split_segment<
-      function_model,
-      Callable,
-      typename std::allocator_traits<Allocator>::
-        template rebind_alloc<Callable>
-    >::new_(al,al);
+    return segment_backend_implementation<Callable,Allocator>::new_(al,al);
   }
 
 private:

@@ -17,7 +17,6 @@
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
-#include <boost/poly_collection/detail/value_holder.hpp>
 #include <memory>
 #include <type_traits>
 #include <typeinfo>
@@ -82,6 +81,12 @@ struct base_model
   template<typename Derived>
   using const_iterator=const Derived*;
   using segment_backend=detail::segment_backend<base_model>;
+  template<typename Derived,typename Allocator>
+  using segment_backend_implementation=packed_segment<
+    base_model,
+    Derived,
+    typename std::allocator_traits<Allocator>::template rebind_alloc<Derived>
+  >;
   using segment_backend_unique_ptr=
     typename segment_backend::segment_backend_unique_ptr;
 
@@ -102,12 +107,7 @@ struct base_model
   template<typename Derived,typename Allocator>
   static segment_backend_unique_ptr make(const Allocator& al)
   {
-    return packed_segment<
-      base_model,
-      Derived,
-      typename std::allocator_traits<Allocator>::
-        template rebind_alloc<Derived>
-    >::new_(al,al);
+    return segment_backend_implementation<Derived,Allocator>::new_(al,al);
   }
 
 private:
@@ -115,20 +115,9 @@ private:
   friend class packed_segment;
 
   template<typename Derived>
-  using element_type=value_holder<Derived>;
-
-  template<typename Derived>
-  static const Base* value_ptr(const value_holder<Derived>* p)noexcept
+  static const Base* value_ptr(const Derived* p)noexcept
   {
-    return reinterpret_cast<const Derived*>(
-      static_cast<const value_holder_base<Derived>*>(p));
-  }
-
-  template<typename Derived>
-  static const value_holder<Derived>* element_ptr(const Derived* p)noexcept
-  {
-    return static_cast<const value_holder<Derived>*>(
-      reinterpret_cast<const value_holder_base<Derived>*>(p));
+    return p;
   }
 };
 

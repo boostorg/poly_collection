@@ -15,6 +15,7 @@
 
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
+#include <iterator>
 #include <memory>
 #include <new>
 #include <utility>
@@ -46,12 +47,12 @@ template<typename Model,typename Concrete,typename Allocator>
 class split_segment:public segment_backend<Model>
 {
   using value_type=typename Model::value_type;
+  using store_value_type=value_holder<Concrete>;
   using store=std::vector<
-    value_holder<Concrete>,
+    store_value_type,
     typename std::allocator_traits<Allocator>::
-      template rebind_alloc<value_holder<Concrete>>
+      template rebind_alloc<store_value_type>
   >;
-  using store_value_type=typename store::value_type;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
   using index=std::vector<
@@ -64,10 +65,10 @@ class split_segment:public segment_backend<Model>
   using typename segment_backend::segment_backend_unique_ptr;
   using typename segment_backend::value_pointer;
   using typename segment_backend::const_value_pointer;
-  using typename segment_backend::base_iterator;
   using typename segment_backend::const_base_iterator;
+  using const_iterator=
+    typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
-  using typename segment_backend::position_pointer;
   using typename segment_backend::range;
   using segment_allocator_type=typename std::allocator_traits<Allocator>::
     template rebind_alloc<split_segment>;
@@ -85,21 +86,29 @@ public:
     return new_(s.get_allocator(),s.get_allocator());
   }
 
-  virtual bool equal(const segment_backend* p)const
+  virtual bool equal(const segment_backend& x)const
   {
-    return s==static_cast<const split_segment*>(p)->s;
+    return s==static_cast<const split_segment&>(x).s;
   }
 
-  virtual base_iterator begin()const noexcept
+  virtual base_iterator begin()const noexcept{return nv_begin();}
+  base_iterator         nv_begin()const noexcept
                          {return base_iterator{value_ptr(i.data())};}
-  virtual base_iterator end()const noexcept
+  virtual base_iterator end()const noexcept{return nv_end();}
+  base_iterator         nv_end()const noexcept
                          {return base_iterator{value_ptr(i.data()+s.size())};}
-  virtual bool          empty()const noexcept{return s.empty();}
-  virtual std::size_t   size()const noexcept{return s.size();}
-  virtual std::size_t   max_size()const noexcept{return s.max_size()-1;}
-  virtual std::size_t   capacity()const noexcept{return s.capacity();}
+  virtual bool          empty()const noexcept{return nv_empty();}
+  bool                  nv_empty()const noexcept{return s.empty();}
+  virtual std::size_t   size()const noexcept{return nv_size();}
+  std::size_t           nv_size()const noexcept{return s.size();}
+  virtual std::size_t   max_size()const noexcept{return nv_max_size();}
+  std::size_t           nv_max_size()const noexcept{return s.max_size()-1;}
+  virtual std::size_t   capacity()const noexcept{return nv_capacity();}
+  std::size_t           nv_capacity()const noexcept{return s.capacity();}
 
-  virtual base_sentinel reserve(std::size_t n)
+  virtual base_sentinel reserve(std::size_t n){return nv_reserve(n);}
+
+  base_sentinel nv_reserve(std::size_t n)
   {
     bool rebuild=n>s.capacity();
     i.reserve(n+1);
@@ -108,7 +117,9 @@ public:
     return sentinel();
   };
 
-  virtual base_sentinel shrink_to_fit()
+  virtual base_sentinel shrink_to_fit(){return nv_shrink_to_fit();}
+
+  base_sentinel nv_shrink_to_fit()
   {
     auto p=s.data();
     s.shrink_to_fit();
@@ -125,101 +136,98 @@ public:
     return sentinel();
   }
 
-  virtual range emplace(
-    const_base_iterator p,void (*emplf)(void*,void*),void* arg)
+  template<typename Iterator,typename... Args>
+  range nv_emplace(Iterator p,Args&&... args)
   {
-    p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),emplf,arg);
+    auto q=prereserve(p);
+    auto it=s.emplace(
+      iterator_from(q),
+      value_holder_emplacing_ctor,std::forward<Args>(args)...);
     push_index_entry();
     return range_from(it);
   }
 
-  virtual range emplace(
-    position_pointer p,void (*emplf)(void*,void*),void* arg)
-  {
-    p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),emplf,arg);
-    push_index_entry();
-    return range_from(it);
-  }
-
-  virtual range emplace_back(void (*emplf)(void*,void*),void* arg)
+  template<typename... Args>
+  range nv_emplace_back(Args&&... args)
   {
     prereserve();
-    s.emplace_back(emplf,arg);
+    s.emplace_back(value_holder_emplacing_ctor,std::forward<Args>(args)...);
     push_index_entry();
     return range_from(s.size()-1);
   }
 
   virtual range push_back(const_value_pointer x)
+  {return nv_push_back(const_concrete_ref(x));}
+
+  range nv_push_back(const Concrete& x)
   {
     prereserve();
-    s.emplace_back(const_concrete_ref(x));
+    s.emplace_back(x);
     push_index_entry();
     return range_from(s.size()-1);
   }
 
   virtual range push_back_move(value_pointer x)
+  {return nv_push_back(std::move(concrete_ref(x)));}
+
+  range nv_push_back(Concrete&& x)
   {
     prereserve();
-    s.emplace_back(std::move(concrete_ref(x)));
+    s.emplace_back(std::move(x));
     push_index_entry();
     return range_from(s.size()-1);
   }
 
   virtual range insert(const_base_iterator p,const_value_pointer x)
-  {
-    p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),const_concrete_ref(x));
-    push_index_entry();
-    return range_from(it);
-  }
+  {return nv_insert(const_iterator{p},const_concrete_ref(x));}
 
-  virtual range insert(position_pointer p,const_value_pointer x)
+  range nv_insert(const_iterator p,const Concrete& x)
   {
     p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),const_concrete_ref(x));
+    auto it=s.emplace(iterator_from(p),x);
     push_index_entry();
     return range_from(it);
   }
 
   virtual range insert_move(const_base_iterator p,value_pointer x)
+  {return nv_insert(const_iterator{p},std::move(concrete_ref(x)));}
+
+  range nv_insert(const_iterator p,Concrete&& x)
   {
     p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),std::move(concrete_ref(x)));
+    auto it=s.emplace(iterator_from(p),std::move(x));
     push_index_entry();
     return range_from(it);
   }
 
-  virtual range insert_move(position_pointer p,value_pointer x)
+  template<typename InputIterator>
+  range nv_insert(InputIterator first,InputIterator last)
   {
-    p=prereserve(p);
-    auto it=s.emplace(iterator_from(p),std::move(concrete_ref(x)));
-    push_index_entry();
-    return range_from(it);
+    return nv_insert(
+      const_iterator{concrete_ptr(s.data()+s.size())},first,last);
+  }
+
+  template<typename InputIterator>
+  range nv_insert(const_iterator p,InputIterator first,InputIterator last)
+  {
+    return insert(
+      p,first,last,
+      typename std::iterator_traits<InputIterator>::iterator_category{});
   }
 
   virtual range erase(const_base_iterator p)
-  {
-    pop_index_entry();
-    return range_from(s.erase(iterator_from(p)));
-  }
+  {return nv_erase(const_iterator{p});}
 
-  virtual range erase(position_pointer p)
+  range nv_erase(const_iterator p)
   {
     pop_index_entry();
     return range_from(s.erase(iterator_from(p)));
   }
     
   virtual range erase(const_base_iterator first,const_base_iterator last)
-  {
-    std::size_t n=s.size();
-    auto it=s.erase(iterator_from(first),iterator_from(last));
-    pop_index_entry(n-s.size());
-    return range_from(it);
-  }
+  {return nv_erase(const_iterator{first},const_iterator{last});}
 
-  virtual range erase(position_pointer first,position_pointer last)
+  range nv_erase(const_iterator first,const_iterator last)
   {
     std::size_t n=s.size();
     auto it=s.erase(iterator_from(first),iterator_from(last));
@@ -235,14 +243,6 @@ public:
     return range_from(it);
   }
 
-  virtual range erase_till_end(position_pointer first)
-  {
-    std::size_t n=s.size();
-    auto it=s.erase(iterator_from(first),s.end());
-    pop_index_entry(n-s.size());
-    return range_from(it);
-  }
-
   virtual range erase_from_begin(const_base_iterator last)
   {
     std::size_t n=s.size();
@@ -251,15 +251,9 @@ public:
     return range_from(it);
   }
 
-  virtual range erase_from_begin(position_pointer last)
-  {
-    std::size_t n=s.size();
-    auto it=s.erase(s.begin(),iterator_from(last));
-    pop_index_entry(n-s.size());
-    return range_from(it);
-  }
+  base_sentinel clear()noexcept{return nv_clear();}
 
-  virtual base_sentinel clear()noexcept
+  base_sentinel nv_clear()noexcept
   {
     s.clear();
     for(std::size_t n=i.size()-1;n--;)i.pop_back();
@@ -313,11 +307,21 @@ private:
     else return p;
   }
 
-  position_pointer prereserve(position_pointer p)
+  const_iterator prereserve(const_iterator p)
   {
     if(s.size()==s.capacity()){
-      auto n=const_concrete_ptr(p)-const_concrete_ptr(s.data());
+      auto n=p-const_concrete_ptr(s.data());
       expand();
+      return const_concrete_ptr(s.data())+n;
+    }
+    else return p;
+  }
+
+  const_iterator prereserve(const_iterator p,std::size_t m)
+  {
+    if(s.size()+m>s.capacity()){
+      auto n=p-const_concrete_ptr(s.data());
+      expand(m);
       return const_concrete_ptr(s.data())+n;
     }
     else return p;
@@ -331,6 +335,13 @@ private:
         s.size()+s.size()/2;
     i.reserve(c+1);
     s.reserve(c);
+    rebuild_index();
+  }
+
+  void expand(std::size_t m)
+  {
+    i.reserve(s.size()+m+1);
+    s.reserve(s.size()+m);
     rebuild_index();
   }
 
@@ -378,11 +389,6 @@ private:
       static_cast<value_holder_base<Concrete>*>(p));
   }
 
-  static const Concrete* const_concrete_ptr(position_pointer p)noexcept
-  {
-    return static_cast<const Concrete*>(p);
-  }
-
   static const Concrete* const_concrete_ptr(const store_value_type* p)noexcept
   {
     return concrete_ptr(const_cast<store_value_type*>(p));
@@ -404,9 +410,9 @@ private:
     return s.begin()+(p-i.data());
   }
 
-  store_iterator iterator_from(position_pointer p)
+  store_iterator iterator_from(const_iterator p)
   {
-    return s.begin()+(const_concrete_ptr(p)-const_concrete_ptr(s.data()));
+    return s.begin()+(p-const_concrete_ptr(s.data()));
   }
 
   base_sentinel sentinel()const noexcept
@@ -422,6 +428,41 @@ private:
   range range_from(std::size_t n)const
   {
     return {base_iterator{value_ptr(i.data()+n)},sentinel()};
+  }
+
+  template<typename InputIterator>
+  range insert(
+    const_iterator p,InputIterator first,InputIterator last,
+    std::input_iterator_tag)
+  {
+    std::size_t n=0;
+    for(;first!=last;++first,++n,++p){
+      p=prereserve(p);
+      s.emplace(iterator_from(p),*first);
+      push_index_entry();
+    }
+    return range_from(iterator_from(p-n));
+  }
+
+  template<typename InputIterator>
+  range insert(
+    const_iterator p,InputIterator first,InputIterator last,
+    std::forward_iterator_tag)
+  {
+    auto n=s.size();
+    auto m=static_cast<std::size_t>(std::distance(first,last));
+    if(m){
+      p=prereserve(p,m);
+      try{
+        s.insert(iterator_from(p),first,last);
+      }
+      catch(...){
+        build_index(n+1);
+        throw;
+      }
+      build_index(n+1);
+    }
+    return range_from(iterator_from(p));
   }
 
   store s;

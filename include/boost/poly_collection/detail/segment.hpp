@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <iterator>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -29,6 +30,9 @@ namespace detail{
  * 157-205 of
  * https://github.com/sean-parent/sean-parent.github.com/wiki/
  *   presentations/2013-09-11-cpp-seasoning/cpp-seasoning.pdf
+ * with one twist: when the type of the implementation can be known at compile
+ * time, a downcast is done and non-virtual member functions (named with a nv_
+ * prefix) are used: this increases the performance of some operations.
  */
 
 template<typename Model,typename Allocator>
@@ -58,7 +62,7 @@ public:
     return {from_prototype{},x};
   }
 
-  segment(const segment& x):pimpl{x.pimpl->copy()}{set_sentinel();}
+  segment(const segment& x):pimpl{x.impl().copy()}{set_sentinel();}
   segment(segment&& x)=default;
   segment& operator=(segment x) // TODO: Why do we need this?
   {
@@ -70,28 +74,57 @@ public:
   friend bool operator==(const segment& x,const segment& y)
   {
     if(typeid(*(x.pimpl))!=typeid(*(y.pimpl)))return false;
-    else return x.pimpl->equal(y.pimpl.get());
+    else return x.impl().equal(y.impl());
   }
 
   friend bool operator!=(const segment& x,const segment& y){return !(x==y);}
 
-  base_iterator begin()const noexcept{return pimpl->begin();}
-  base_iterator end()const noexcept{return pimpl->end();}
-  base_sentinel sentinel()const noexcept{return snt;}
-  bool          empty()const noexcept{return pimpl->empty();}
-  std::size_t   size()const noexcept{return pimpl->size();}
-  std::size_t   max_size()const noexcept{return pimpl->max_size();}
-  void          reserve(std::size_t n){filter(pimpl->reserve(n));}
-  std::size_t   capacity()const noexcept{return pimpl->capacity();}
-  void          shrink_to_fit(){filter(pimpl->shrink_to_fit());}
-  template<typename Iterator>
-  base_iterator emplace(Iterator it,void (*emplf)(void*,void*),void* arg)
-                  {return filter(pimpl->emplace(decay(it),emplf,arg));}
-  base_iterator emplace_back(void (*emplf)(void*,void*),void* arg)
-                  {return filter(pimpl->emplace_back(emplf,arg));}
+  base_iterator        begin()const noexcept{return impl().begin();}
+  template<typename U>
+  base_iterator        begin()const noexcept{return impl<U>().nv_begin();}
+  base_iterator        end()const noexcept{return impl().end();}
+  template<typename U>
+  base_iterator        end()const noexcept{return impl<U>().nv_end();}
+  base_sentinel        sentinel()const noexcept{return snt;}
+  bool                 empty()const noexcept{return impl().empty();}
+  template<typename U>
+  bool                 empty()const noexcept{return impl<U>().nv_empty();}
+  std::size_t          size()const noexcept{return impl().size();}
+  template<typename U>
+  std::size_t          size()const noexcept{return impl<U>().nv_size();}
+  std::size_t          max_size()const noexcept{return impl().max_size();}
+  template<typename U>
+  std::size_t          max_size()const noexcept
+                         {return impl<U>().nv_max_size();}
+  void                 reserve(std::size_t n){filter(impl().reserve(n));}
+  template<typename U>
+  void                 reserve(std::size_t n){filter(impl<U>().nv_reserve(n));}
+  std::size_t          capacity()const noexcept{return impl().capacity();}
+  template<typename U>
+  std::size_t          capacity()const noexcept
+                         {return impl<U>().nv_capacity();}
+  void                 shrink_to_fit(){filter(impl().shrink_to_fit());}
+  template<typename U>
+  void                 shrink_to_fit(){filter(impl<U>().nv_shrink_to_fit());}
+
+  template<typename U,typename Iterator,typename... Args>
+  base_iterator emplace(Iterator it,Args&&... args)
+  {
+    return filter(impl<U>().nv_emplace(it,std::forward<Args>(args)...));
+  }
+
+  template<typename U,typename... Args>
+  base_iterator emplace_back(Args&&... args)
+  {
+    return filter(impl<U>().nv_emplace_back(std::forward<Args>(args)...));
+  }
+
   template<typename T>
   base_iterator push_back(const T& x)
-                  {return filter(pimpl->push_back(subaddress(x)));}
+  {
+    return filter(impl().push_back(subaddress(x)));
+  }
+
   template<
     typename T,
     typename std::enable_if<
@@ -99,37 +132,123 @@ public:
     >::type* =nullptr
   >
   base_iterator push_back(T&& x)
-                  {return filter(pimpl->push_back_move(subaddress(x)));}
-  template<typename Iterator,typename T>
-  base_iterator insert(Iterator it,const T& x)
-                  {return filter(pimpl->insert(decay(it),subaddress(x)));}
+  {
+    return filter(impl().push_back_move(subaddress(x)));
+  }
+
+  template<typename U>
+  base_iterator push_back_terminal(U&& x)
+  {
+    return filter(
+      impl<typename std::decay<U>::type>().nv_push_back(std::forward<U>(x)));
+  }
+
+  template<typename T>
+  base_iterator insert(const_base_iterator it,const T& x)
+  {
+    return filter(impl().insert(it,subaddress(x)));
+  }
+
+  template<typename U,typename T>
+  base_iterator insert(const_iterator<U> it,const T& x)
+  {
+    return filter(
+      impl<U>().nv_insert(it,*static_cast<const U*>(subaddress(x))));
+  }
+
   template<
-    typename Iterator,typename T,
+    typename T,
     typename std::enable_if<
       !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
     >::type* =nullptr
   >
-  base_iterator insert(Iterator it,T&& x)
-                  {return filter(
-                    pimpl->insert_move(decay(it),subaddress(x)));}
-  template<typename Iterator>
-  base_iterator erase(Iterator it){return filter(pimpl->erase(decay(it)));}
-  template<typename Iterator>
-  base_iterator erase(Iterator f,Iterator l)
-                  {return filter(pimpl->erase(decay(f),decay(l)));}
+  base_iterator insert(const_base_iterator it,T&& x)
+  {
+    return filter(impl().insert_move(it,subaddress(x)));
+  }
+
+  template<
+    typename U,typename T,
+    typename std::enable_if<
+      !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
+    >::type* =nullptr
+  >
+  base_iterator insert(const_iterator<U> it,T&& x)
+  {
+    return filter(
+      impl<U>().nv_insert(it,std::move(*static_cast<U*>(subaddress(x)))));
+  }
+
+  template<typename InputIterator>
+  base_iterator insert(InputIterator first,InputIterator last)
+  {
+    return filter(
+      impl<typename std::iterator_traits<InputIterator>::value_type>().
+        nv_insert(first,last));
+  }
+
+  template<typename InputIterator>
+  base_iterator insert(
+    const_base_iterator it,InputIterator first,InputIterator last)
+  {
+    return insert(
+      const_iterator<
+        typename std::iterator_traits<InputIterator>::value_type>{it},
+      first,last);
+  }
+
+  template<typename U,typename InputIterator>
+  base_iterator insert(
+    const_iterator<U> it,InputIterator first,InputIterator last)
+  {
+    return filter(impl<U>().nv_insert(it,first,last));
+  }
+
+  base_iterator erase(const_base_iterator it)
+  {
+    return filter(impl().erase(it));
+  }
+
+  template<typename U>
+  base_iterator erase(const_iterator<U> it)
+  {
+    return filter(impl<U>().nv_erase(it));
+  }
+
+  base_iterator erase(const_base_iterator f,const_base_iterator l)
+  {
+    return filter(impl().erase(f,l));
+  }
+
+  template<typename U>
+  base_iterator erase(const_iterator<U> f,const_iterator<U> l)
+  {
+    return filter(impl<U>().nv_erase(f,l));
+  }
+
   template<typename Iterator>
   base_iterator erase_till_end(Iterator f)
-                  {return filter(pimpl->erase_till_end(decay(f)));}
+  {
+    return filter(impl().erase_till_end(f));
+  }
+
   template<typename Iterator>
   base_iterator erase_from_begin(Iterator l)
-                  {return filter(pimpl->erase_from_begin(decay(l)));}
-  void          clear()noexcept{filter(pimpl->clear());}
+  {
+    return filter(impl().erase_from_begin(l));
+  }
+  
+  void                 clear()noexcept{filter(impl().clear());}
+  template<typename U>
+  void                 clear()noexcept{filter(impl<U>().nv_clear());}
 
 private:
   using segment_backend=typename Model::segment_backend;
+  template<typename Concrete>
+  using segment_backend_implementation=typename Model::
+    template segment_backend_implementation<Concrete,Allocator>;
   using segment_backend_unique_ptr=
     typename segment_backend::segment_backend_unique_ptr;
-  using position_pointer=typename segment_backend::position_pointer;
   using range=typename segment_backend::range;
 
   struct from_prototype{};
@@ -137,24 +256,30 @@ private:
   segment(segment_backend_unique_ptr&& pimpl):
     pimpl{std::move(pimpl)}{set_sentinel();}
   segment(from_prototype,const segment& x):
-    pimpl{x.pimpl->empty_copy()}{set_sentinel();}
+    pimpl{x.impl().empty_copy()}{set_sentinel();}
+
+  segment_backend&       impl()noexcept{return *pimpl;}
+  const segment_backend& impl()const noexcept{return *pimpl;}
+
+  template<typename Concrete>
+  segment_backend_implementation<Concrete>& impl()noexcept
+  {
+    return static_cast<segment_backend_implementation<Concrete>&>(impl());
+  }
+
+  template<typename Concrete>
+  const segment_backend_implementation<Concrete>& impl()const noexcept
+  {
+    return
+      static_cast<const segment_backend_implementation<Concrete>&>(impl());
+  }
 
   template<typename T>
-  static void*       subaddress(T& x){return Model::subaddress(x);}
+  static void*         subaddress(T& x){return Model::subaddress(x);}
   template<typename T>
-  static const void* subaddress(const T& x)
-                       {return Model::subaddress(x);}
+  static const void*   subaddress(const T& x){return Model::subaddress(x);}
 
-  static const_base_iterator decay(base_iterator it){return it;}
-  static const_base_iterator decay(const_base_iterator it){return it;}
-  template<typename T>
-  static position_pointer    decay(iterator<T> it)
-                               {return static_cast<T*>(it);}
-  template<typename T>
-  static position_pointer    decay(const_iterator<T> it)
-                               {return static_cast<const T*>(it);}
-
-  void          set_sentinel(){filter(pimpl->end());}
+  void          set_sentinel(){filter(impl().end());}
   void          filter(base_sentinel x){snt=x;}
   base_iterator filter(const range& x){snt=x.second;return x.first;}
 

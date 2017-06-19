@@ -38,11 +38,16 @@ namespace detail{
  *    lambda functions, whose assignment operator is deleted by standard
  *    mandate [expr.prim.lambda]/20 even if the compiler generated one would
  *    work (capture by value).
- *  - value_holder<T> supports the type-erased emplace mechanism required
- *    by segment_backend.
  *
- *  A pointer to value_holder_base<T> can be reinterpret_cast'ed to T*.
+ * A pointer to value_holder_base<T> can be reinterpret_cast'ed to T*.
+ * Emplacing is explicitly signalled with value_holder_emplacing_ctor to
+ * protect us from greedy T's constructible from anything (like
+ * boost::type_erasure::any).
  */
+
+struct value_holder_emplacing_ctor_t{};
+constexpr value_holder_emplacing_ctor_t value_holder_emplacing_ctor=
+  value_holder_emplacing_ctor_t();
 
 template<typename T>
 class value_holder_base
@@ -77,8 +82,9 @@ public:
   value_holder(T&& x)
     noexcept(is_nothrow_move_constructible::value)
     {::new (data()) T(std::move(x));}
-  value_holder(void (* emplace)(void*,void*),void* arg)
-    {emplace(data(),arg);}
+  template<typename... Args>
+  value_holder(value_holder_emplacing_ctor_t,Args&&... args)
+    {::new (data()) T(std::forward<Args>(args)...);}
   value_holder(const value_holder& x)
     noexcept(is_nothrow_copy_constructible::value)
     {copy(x.value());}

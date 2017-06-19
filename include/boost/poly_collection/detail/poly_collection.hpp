@@ -59,7 +59,8 @@ class poly_collection
   using enable_if_not_subtype=
     typename std::enable_if<!is_subtype<T>::value>::type*;
   template<typename T>
-  using is_acceptable=detail::is_acceptable<T,Model>;
+  using is_acceptable=
+    detail::is_acceptable<typename std::decay<T>::type,Model>;
   template<typename T>
   using enable_if_acceptable=
     typename std::enable_if<is_acceptable<T>::value>::type*;
@@ -432,7 +433,7 @@ public:
     return is_registered(typeid(T));
   }
 
-  /* iterators*/
+  /* iterators */
 
   iterator       begin()noexcept{return {map.begin(),map.end()};}
   iterator       end()noexcept{return {map.end(),map.end()};}
@@ -474,28 +475,28 @@ public:
   local_iterator<T> begin()
   {
     auto it=get_map_iterator_for(typeid(T));
-    return {it,segment(it).begin()};
+    return {it,segment(it).template begin<T>()};
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
   local_iterator<T> end()
   {
     auto it=get_map_iterator_for(typeid(T));
-    return {it,segment(it).end()};
+    return {it,segment(it).template end<T>()};
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
   const_local_iterator<T> begin()const
   {
     auto it=get_map_iterator_for(typeid(T));
-    return {it,segment(it).begin()};
+    return {it,segment(it).template begin<T>()};
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
   const_local_iterator<T> end()const
   {
     auto it=get_map_iterator_for(typeid(T));
-    return {it,segment(it).end()};
+    return {it,segment(it).template end<T>()};
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -539,7 +540,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   bool empty()const
   {
-    return empty(typeid(T));
+    return segment(get_map_iterator_for(typeid(T))).template empty<T>();
   }
 
   size_type size()const noexcept
@@ -557,7 +558,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   size_type size()const
   {
-    return size(typeid(T));
+    return segment(get_map_iterator_for(typeid(T))).template size<T>();
   }
 
   size_type max_size(const std::type_index& index)const
@@ -568,7 +569,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   size_type max_size()const
   {
-    return max_size(typeid(T));
+    return segment(get_map_iterator_for(typeid(T))).template max_size<T>();
   }
 
   size_type capacity(const std::type_index& index)const
@@ -579,7 +580,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   size_type capacity()const
   {
-    return capacity(typeid(T));
+    return segment(get_map_iterator_for(typeid(T))).template capacity<T>();
   }
 
   void reserve(size_type n)
@@ -597,7 +598,7 @@ public:
   {
     /* note this creates the segment if it didn't previously exist */
 
-    segment(get_map_iterator_for<T>()).reserve(n);
+    segment(get_map_iterator_for<T>()).template reserve<T>(n);
   }
 
   void shrink_to_fit()
@@ -613,7 +614,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   void shrink_to_fit()
   {
-    shrink_to_fit(typeid(T));
+    segment(get_map_iterator_for(typeid(T))).template shrink_to_fit<T>();
   }
 
   /* modifiers */
@@ -624,7 +625,7 @@ public:
     auto it=get_map_iterator_for<T>();
     return {
       it,map.end(),
-      emplace_back_impl<T>(segment(it),std::forward<Args>(args)...)
+      segment(it).template emplace_back<T>(std::forward<Args>(args)...)
     };
   }
 
@@ -635,9 +636,9 @@ public:
     return {
       it,map.end(),
       hint.mapit==it? /* hint in segment */
-        emplace_impl<T>(
-          segment(it),hint.segpos,std::forward<Args>(args)...):
-        emplace_back_impl<T>(segment(it),std::forward<Args>(args)...)
+        segment(it).template emplace<T>(
+          hint.segpos,std::forward<Args>(args)...):
+        segment(it).template emplace_back<T>(std::forward<Args>(args)...)
     };
   }
 
@@ -656,17 +657,7 @@ public:
     BOOST_ASSERT(pos.type_index()==typeid(T));
     return {
       pos.mapit,
-      emplace_impl<T>(pos.segment(),pos.base(),std::forward<Args>(args)...)
-    };
-  }
-
-  template<typename T,typename... Args>
-  local_iterator<T>
-  emplace_pos(const_local_iterator<T> pos,Args&&... args)
-  {
-    return {
-      pos.mapit,
-      emplace_impl<T>(pos.segment(),pos.base(),std::forward<Args>(args)...)
+      pos.segment().template emplace<T>(pos.base(),std::forward<Args>(args)...)
     };
   }
 
@@ -678,11 +669,21 @@ public:
       const_local_iterator<T>{pos},std::forward<Args>(args)...);
   }
 
+  template<typename T,typename... Args>
+  local_iterator<T>
+  emplace_pos(const_local_iterator<T> pos,Args&&... args)
+  {
+    return {
+      pos.mapit,
+      pos.segment().template emplace<T>(pos.base(),std::forward<Args>(args)...)
+    };
+  }
+
   template<typename T,enable_if_subtype<T> =nullptr>
   iterator insert(T&& x)
   {
     auto it=get_map_iterator_for(x);
-    return {it,map.end(),segment(it).push_back(std::forward<T>(x))};
+    return {it,map.end(),push_back(segment(it),std::forward<T>(x))};
   }
 
   template<
@@ -697,7 +698,7 @@ public:
       it,map.end(),
       hint.mapit==it? /* hint in segment */
         segment(it).insert(hint.segpos,std::forward<T>(x)):
-        segment(it).push_back(std::forward<T>(x))
+        push_back(segment(it),std::forward<T>(x))
     };
   }
 
@@ -738,7 +739,7 @@ public:
     /* same segment for all (type is terminal) */
 
     auto& seg=segment(get_map_iterator_for(*first)); 
-    do seg.push_back(*first); while(++first!=last);
+    seg.insert(first,last);
   }
 
   template<bool Const>
@@ -746,7 +747,7 @@ public:
   {
     for(;first!=last;++first){
       auto& seg=segment(get_map_iterator_for(*first,first.segment()));
-      seg.push_back(*first);
+      push_back(seg,*first);
     }
   }
 
@@ -776,7 +777,7 @@ public:
         hint={it,map.end(),segment(it).insert(hint.segpos,*first)};
         ++hint;
       }
-      else segment(it).push_back(*first);
+      else push_back(segment(it),*first);
     }
   }
 
@@ -793,15 +794,8 @@ public:
 
     auto it=get_map_iterator_for(*first);
     auto& seg=segment(it); 
-    if(hint.mapit==it){ /* hint in segment */
-      do{
-        hint={it,map.end(),seg.insert(hint.segpos,*first)};
-        ++hint;
-      }while(++first!=last);
-    }
-    else{
-      do seg.push_back(*first); while(++first!=last);
-    }
+    if(hint.mapit==it)seg.insert(hint.segpos,first,last); /* hint in segment */
+    else seg.insert(first,last);
   }
 
   template<bool Const>
@@ -814,7 +808,7 @@ public:
         hint={it,map.end(),segment(it).insert(hint.segpos,*first)};
         ++hint;
       }
-      else segment(it).push_back(*first);
+      else push_back(segment(it),*first);
     }
   }
 
@@ -837,7 +831,7 @@ public:
       }while(++first!=last);
     }
     else{
-      do seg.push_back(*first); while(++first!=last);
+      do push_back(seg,*first); while(++first!=last);
     }
   }
 
@@ -955,7 +949,7 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   void clear()
   {
-    clear(typeid(T));
+    segment(get_map_iterator_for(typeid(T))).template clear<T>();
   }
 
   void swap(poly_collection& x){map.swap(x.map);}
@@ -1070,41 +1064,35 @@ private:
     return const_cast<segment_type&>(pos->second);
   }
 
-  template<typename T,typename... Args>
-  static segment_base_iterator emplace_back_impl(
-    segment_type& seg,Args&&... args)
+  template<
+    typename T,
+    typename enable_if_not_acceptable<T> =nullptr
+  >
+  segment_base_iterator push_back(segment_type& seg,T&& x)
   {
-    /* emplace_function/emplace_thunk technique described at
-     * http://bannalia.blogspot.com/2016/07/
-     *   passing-capturing-c-lambda-functions-as.html
-     */
-
-    auto  emplace_function=[&](void* p)
-    {
-      ::new (p) T(std::forward<Args>(args)...);
-    };
-    using emplace_function_t=decltype(emplace_function);
-    auto  emplace_thunk=[](void* p,void* arg)
-    {
-      (*static_cast<emplace_function_t*>(arg))(p);
-    };
-    return seg.emplace_back(emplace_thunk,&emplace_function);
+    return seg.push_back(std::forward<T>(x));
   }
 
-  template<typename T,typename BaseIterator,typename... Args>
-  static segment_base_iterator emplace_impl(
-    segment_type& seg,BaseIterator pos,Args&&... args)
+  template<
+    typename T,
+    typename enable_if_acceptable<T> =nullptr,
+    typename enable_if_not_terminal<T> = nullptr
+  >
+  segment_base_iterator push_back(segment_type& seg,T&& x)
   {
-    auto  emplace_function=[&](void* p)
-    {
-      ::new (p) T(std::forward<Args>(args)...);
-    };
-    using emplace_function_t=decltype(emplace_function);
-    auto  emplace_thunk=[](void* p,void* arg)
-    {
-      (*static_cast<emplace_function_t*>(arg))(p);
-    };
-    return seg.emplace(pos,emplace_thunk,&emplace_function);
+    return subtypeid(x)==typeid(T)?
+      seg.push_back_terminal(std::forward<T>(x)):
+      seg.push_back(std::forward<T>(x));
+  }
+
+  template<
+    typename T,
+    typename enable_if_acceptable<T> =nullptr,
+    typename enable_if_terminal<T> = nullptr
+  >
+  segment_base_iterator push_back(segment_type& seg,T&& x)
+  {
+    return seg.push_back_terminal(std::forward<T>(x));
   }
 
   template<
@@ -1128,7 +1116,7 @@ private:
     segment_type& seg,BaseIterator pos,U&& x)
   {
     if(subtypeid(x)==typeid(T))return seg.insert(pos,std::forward<U>(x));
-    else return emplace_impl<T>(seg,pos,std::forward<U>(x));
+    else return seg.template emplace<T>(pos,std::forward<U>(x));
   }
 
   template<
@@ -1139,7 +1127,7 @@ private:
   static segment_base_iterator local_insert(
     segment_type& seg,BaseIterator pos,U&& x)
   {
-    return emplace_impl<T>(seg,pos,std::forward<U>(x));
+    return seg.template emplace<T>(pos,std::forward<U>(x));
   }
 
   template<

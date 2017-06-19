@@ -1093,39 +1093,6 @@ next Boost release.
 
 [endsect]
 
-[section Internal devirtualization]
-
-Consider this piece of code:
-
-``
-boost::base_collection<base> c;
-...
-base& x=...;
-c.insert(x);
-``
-
-Internally, `base_collection::insert` determines the dynamic type of `x`
-through `typeid(x)`, uses that information to locate the corresponding
-segment and forwards the insertion operation to it through a type-erased
-interface based on `virtual` member functions \u2014type erasure is needed
-because the dynamic type of `x` is not known at compile time in the
-moment of insertion.
-
-By contrast, in the following:
-
-``
-c.emplace<derived>(...);
-``
-
-the exact type involved (`derived`) is known at compile time, which allows
-a smart implementation to bypass type erasure and talk directly to the segment
-for `derived` through a non-virtual interface. This devirtualization technique
-(which in fact can be applied to many other public operations of
-Boost.PolyCollection containers) has the potential to increase performance
-significantly and will be implemented in future versions of the library.
-
-[endsect]
-
 [section Alternative RTTI systems]
 
 Boost.PolyCollection can be extended to use _Boost.TypeIndex_ in RTTI-challenged
