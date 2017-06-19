@@ -64,9 +64,9 @@ protected:
 template<typename T>
 class value_holder:public value_holder_base<T>
 {
-  template<typename T>
+  template<typename U>
   using enable_if_not_emplacing_ctor_t=typename std::enable_if<
-    !is_same<T,value_holder_emplacing_ctor_t>::value
+    !is_same<U,value_holder_emplacing_ctor_t>::value
   >::type*;
 
   using is_nothrow_move_constructible=std::is_nothrow_move_constructible<T>;
