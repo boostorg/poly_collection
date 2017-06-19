@@ -18,6 +18,7 @@
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <new>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -38,6 +39,10 @@ namespace detail{
  *    lambda functions, whose assignment operator is deleted by standard
  *    mandate [expr.prim.lambda]/20 even if the compiler generated one would
  *    work (capture by value).
+ *  - To comply with [container.requirements.general]/3 (or, more precisely,
+ *    its natural extension to polymorphic containers), value_holder ctors
+ *    accept a first allocator arg passed by value_holder_allocator_adaptor,
+ *    which must therefore be used in the vectors of value_holder's.
  *
  * A pointer to value_holder_base<T> can be reinterpret_cast'ed to T*.
  * Emplacing is explicitly signalled with value_holder_emplacing_ctor to
@@ -68,23 +73,36 @@ class value_holder:public value_holder_base<T>
   using is_nothrow_equality_comparable=
     detail::is_nothrow_equality_comparable<T>;
 
-  void*       data()noexcept{return reinterpret_cast<void*>(&this->s);}
-  const void* data()const noexcept
-                {return reinterpret_cast<const void*>(&this->s);}
+  T*       data()noexcept{return reinterpret_cast<T*>(&this->s);}
+  const T* data()const noexcept
+                {return reinterpret_cast<const T*>(&this->s);}
 
   T&       value()noexcept{return *static_cast<T*>(data());}
   const T& value()const noexcept{return *static_cast<const T*>(data());}
 
 public:
-  value_holder(const T& x)
+  template<typename Allocator>
+  value_holder(Allocator& al,const T& x)
     noexcept(is_nothrow_copy_constructible::value)
-    {copy(x);}
-  value_holder(T&& x)
+    {copy(al,x);}
+  template<typename Allocator>
+  value_holder(Allocator& al,T&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {::new (data()) T(std::move(x));}
-  template<typename... Args>
-  value_holder(value_holder_emplacing_ctor_t,Args&&... args)
-    {::new (data()) T(std::forward<Args>(args)...);}
+    {std::allocator_traits<Allocator>::construct(al,data(),std::move(x));}
+  template<typename Allocator,typename... Args>
+  value_holder(Allocator& al,value_holder_emplacing_ctor_t,Args&&... args)
+    {std::allocator_traits<Allocator>::construct(
+      al,data(),std::forward<Args>(args)...);}
+  template<typename Allocator>
+  value_holder(Allocator& al,const value_holder& x)
+    noexcept(is_nothrow_copy_constructible::value)
+    {copy(al,x.value());}
+  template<typename Allocator>
+  value_holder(Allocator& al,value_holder&& x)
+    noexcept(is_nothrow_move_constructible::value)
+    {std::allocator_traits<Allocator>::construct(
+      al,data(),std::move(x.value()));}
+
   value_holder(const value_holder& x)
     noexcept(is_nothrow_copy_constructible::value)
     {copy(x.value());}
@@ -110,6 +128,21 @@ public:
   }
 
 private:
+  template<typename Allocator>
+  void copy(Allocator& al,const T& x){copy(al,x,is_copy_constructible{});}
+
+  template<typename Allocator>
+  void copy(Allocator& al,const T& x,std::true_type)
+  {
+    std::allocator_traits<Allocator>::construct(al,data(),x);
+  }
+
+  template<typename Allocator>
+  void copy(Allocator&,const T&,std::false_type)
+  {
+    throw not_copy_constructible{typeid(T)};
+  }
+
   void copy(const T& x){copy(x,is_copy_constructible{});}
 
   void copy(const T& x,std::true_type)
@@ -152,6 +185,63 @@ private:
   bool equal(const T&,std::false_type)const
   {
     throw not_equality_comparable{typeid(T)};
+  }
+};
+
+template<typename Allocator>
+struct value_holder_allocator_adaptor:Allocator
+{
+  using traits=std::allocator_traits<Allocator>;
+
+  using value_type=typename traits::value_type;
+  using size_type=typename traits::size_type;
+  using difference_type=typename traits::difference_type;
+  using pointer=typename traits::pointer;
+  using const_pointer=typename traits::const_pointer;
+  using void_pointer=typename traits::void_pointer;
+  using const_void_pointer=typename traits::const_void_pointer;
+  using propagate_on_container_copy_assignment=
+    typename traits::propagate_on_container_copy_assignment;
+  using propagate_on_container_move_assignment=
+    typename traits::propagate_on_container_move_assignment;
+  using propagate_on_container_swap=
+    typename traits::propagate_on_container_swap;
+
+  template<typename U>
+  struct rebind
+  {
+    using other=value_holder_allocator_adaptor<
+      typename traits::template rebind_alloc<U>>;
+  };
+
+  using Allocator::Allocator;
+
+  value_holder_allocator_adaptor& operator=(
+    const value_holder_allocator_adaptor&)=default;
+
+  template<typename T,typename... Args>
+  void construct(T* p,Args&&... args)
+  {
+    ::new ((void*)p) T(std::forward<Args>(args)...);
+  }
+
+  template<typename T,typename... Args>
+  void construct(value_holder<T>* p,Args&&... args)
+  {
+    ::new ((void*)p) value_holder<T>(
+      static_cast<Allocator&>(*this),std::forward<Args>(args)...);
+  }
+
+  template<typename T>
+  void destroy(T* p)
+  {
+    p->~T();
+  }
+
+  template<typename T>
+  void destroy(value_holder<T>* p)
+  {
+    reinterpret_cast<T*>(static_cast<value_holder_base<T>*>(p))->~T();
   }
 };
 

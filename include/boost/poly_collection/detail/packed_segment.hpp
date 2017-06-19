@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/poly_collection/detail/newdelete_allocator.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
 #include <memory>
@@ -43,8 +44,7 @@ class packed_segment:public segment_backend<Model>
   using store_value_type=value_holder<Concrete>;
   using store=std::vector<
     store_value_type,
-    typename std::allocator_traits<Allocator>::
-      template rebind_alloc<store_value_type>
+    value_holder_allocator_adaptor<Allocator>
   >;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
@@ -58,9 +58,10 @@ class packed_segment:public segment_backend<Model>
     typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
   using typename segment_backend::range;
-  using segment_allocator_type=typename std::allocator_traits<Allocator>::
-    template rebind_alloc<packed_segment>;
-
+  using segment_allocator_type=newdelete_allocator_adaptor<
+    typename std::allocator_traits<Allocator>::
+      template rebind_alloc<packed_segment>
+  >;
 public:
   virtual ~packed_segment()=default;
 

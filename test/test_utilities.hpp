@@ -323,6 +323,7 @@ struct rooted_allocator:std::allocator<T>
   template<typename U>
   struct rebind{using other=rooted_allocator<U>;};
 
+  rooted_allocator()=default;
   explicit rooted_allocator(int):root{this}{}
   template<typename U>
   rooted_allocator(const rooted_allocator<U>& x):root{x.root}{}

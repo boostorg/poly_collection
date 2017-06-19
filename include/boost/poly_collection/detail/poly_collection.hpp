@@ -20,6 +20,7 @@
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
+#include <boost/poly_collection/detail/newdelete_allocator.hpp>
 #include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <iterator>
@@ -118,8 +119,10 @@ class poly_collection
   using segment_map=std::unordered_map<
     std::type_index,segment_type,
     std::hash<std::type_index>,std::equal_to<std::type_index>,
-    typename std::allocator_traits<Allocator>::template
-      rebind_alloc<std::pair<const std::type_index,segment_type>
+    newdelete_allocator_adaptor<
+      typename std::allocator_traits<Allocator>::template
+        rebind_alloc<std::pair<const std::type_index,segment_type>
+      >
     >
   >;
   using segment_map_allocator_type=typename segment_map::allocator_type;

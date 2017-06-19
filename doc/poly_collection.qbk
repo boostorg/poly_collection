@@ -1041,58 +1041,6 @@ The horizontal axis is logarithmic.
 A number of features asked by reviewers and users of Boost.PolyCollection are
 considered for inclusion into future versions of the library.
 
-[section Proper allocator `construct`/`destroy` support]
-
-Section [* [container.requirements.general]/3] of the C++ standard states that,
-for allocator-aware containers,
-
-[' "[...] objects stored in these components shall be constructed using the
-`allocator_traits<allocator_type>::construct` function and
-destroyed using the `allocator_traits<allocator_type>::destroy` function [...]
-These functions are called only for the container’s element type, not for
-internal types used by the container."]
-
-The main practical implication of this condition is that it enables
-the use of
-[@http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor `std::scoped_allocator_adaptor`]:
-
-``
-template<typename T>
-struct arena_allocator
-{
-  arena* pa;
-  arena_allocator(arena* pa):pa{pa}{}
-  template<typename U>
-  arena_allocator(const arena_allocator<U>& x):pa{x.pa}{}
-
-  ...
-};
-
-using string=
-  std::basic_string<char,std::char_traits<char>,arena_allocator<char>>;
-using vector=
-  std::vector<string,std::scoped_allocator_adaptor<arena_allocator<string>>>;
-...
-
-arena a=...;
-
-vector v{arena_allocator<string>{&a}};
-v.emplace_back("boost");
-  
-// vector and string allocated in the same arena
-assert(v.get_allocator().pa==&a);
-assert(v.begin()->get_allocator().pa==&a);
-``
-
-The current implementation of Boost.PolyCollection does not honor
-[container.requirements.general]/3 (or, more precisely, the natural
-extension of this clause to dynamic polymorphism, where
-`construct`/`destroy` is used for construction/destruction of the
-/concrete/ types being stored). This limitation shall be fixed in the
-next Boost release.
-
-[endsect]
-
 [section Alternative RTTI systems]
 
 Boost.PolyCollection can be extended to use _Boost.TypeIndex_ in RTTI-challenged

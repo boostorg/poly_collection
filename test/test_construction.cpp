@@ -12,6 +12,10 @@
 #include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
+#include <boost/type_erasure/any_cast.hpp>
+#include <boost/type_erasure/relaxed.hpp>
+#include <scoped_allocator>
+#include <string>
 #include <utility>
 #include "any_types.hpp"
 #include "base_types.hpp"
@@ -191,6 +195,33 @@ void test_construction()
   }
 }
 
+void test_scoped_allocator()
+{
+  using string_allocator_type=rooted_allocator<char>;
+  using string=
+    std::basic_string<char,std::char_traits<char>,string_allocator_type>;
+  using concept_=boost::type_erasure::relaxed;
+  using element_allocator_type=rooted_allocator<
+    boost::poly_collection::any_collection_value_type<concept_>
+  >;
+  using collection_allocator_type=std::scoped_allocator_adaptor<
+    element_allocator_type,
+    string_allocator_type
+   >;
+  using poly_collection=
+    boost::any_collection<concept_,collection_allocator_type>;
+
+  element_allocator_type     roote{0}; 
+  string_allocator_type      roots{0}; 
+  collection_allocator_type  al{roote,roots};
+  poly_collection            p{al};
+
+  p.emplace<string>("boost");
+  auto& s=boost::type_erasure::any_cast<string&>(*p.begin());
+  BOOST_TEST(p.get_allocator().root==&roote);
+  BOOST_TEST(s.get_allocator().root==&roots);
+}
+
 void test_construction()
 {
   test_construction<
@@ -205,4 +236,5 @@ void test_construction()
     function_types::collection,auto_increment,
     function_types::t1,function_types::t2,function_types::t3,
     function_types::t4,function_types::t5>();
+  test_scoped_allocator();
 }
