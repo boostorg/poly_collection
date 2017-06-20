@@ -227,7 +227,7 @@ private:
     std::allocator_traits<segment_allocator_type>::deallocate(al,q,1);
   }
 
-  packed_segment(const Allocator& al):s{al}{}
+  packed_segment(const Allocator& al):s{typename store::allocator_type{al}}{}
   packed_segment(store&& s):s{std::move(s)}{}
 
   static Concrete& concrete_ref(value_pointer p)noexcept
