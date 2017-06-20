@@ -142,7 +142,8 @@ also applies to other forms of dynamic polymorphism:
 under a common interface. Internally, pointer indirections and virtual-like
 function calls are used. Memory fragmentation is expected to be lower than
 with OOP, though, as implementations usually feature the so-called
-/small buffer optimization/ to avoid heap allocation in some situations.
+[@http://talesofcpp.fusionfenix.com/post-16/episode-nine-erasing-the-concrete#a-note-on-small-buffer-optimization [' small buffer optimization]] 
+to avoid heap allocation in some situations.
 * The case of `std::function` can be seen as a particular example of a
 more general form of polymorphism called _duck_typing_, where unrelated types
 are treated uniformly if they conform to the same given /interface/ (a specified
@@ -303,8 +304,8 @@ the code of the example so that sprites are further segmented according
 to their concrete type.], thus increasing performance (which is the whole
 point of using Boost.PolyCollection), while a vector of `std::function`s
 results in an individual allocation for each entity stored
-[footnote Except when [@http://talesofcpp.fusionfenix.com/post-16/episode-nine-erasing-the-concrete#a-note-on-small-buffer-optimization [' small buffer optimization]]
-applies.]. In fact, the `value_type` elements held by a
+[footnote Except when small buffer optimization applies.].
+In fact, the `value_type` elements held by a
 `boost::function_collection` are actually /not/ `std::function`s,
 although they behave analogously and can be converted to `std::function` if needed:
 
