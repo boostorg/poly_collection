@@ -63,12 +63,12 @@ _EqualityComparable_,  with the following semantic clause: may throw if
 some subobject in the container is not
 _CopyConstructible_ (respectively, _CopyAssignable_, _MoveConstructible_, 
 _MoveAssignable_, _EqualityComparable_).
-* Replace  [container.requirements.general]/3 with: For any any type `T`
+* Replace  [container.requirements.general]/3 with: For any any type `U`
 implementing `I` and the allocator type `A` =
-`std::allocator_traits<allocator_type>::rebind_alloc<T>`, `T` is
+`std::allocator_traits<allocator_type>::rebind_alloc<U>`, `U` is
 _CopyInsertable_ (respectively _MoveInsertable_) with respect to `A` if and
-only if `T` is  _CopyConstructible_ (respectively _MoveConstructible_);
-all subobjects of type `T` stored in these containers shall be constructed
+only if `U` is  _CopyConstructible_ (respectively _MoveConstructible_);
+all subobjects of type `U` stored in these containers shall be constructed
 using the `std::allocator_traits<A>::construct` function and
 destroyed using the `std::allocator_traits<allocator_type>::destroy` function;
 these functions (or their equivalents for a rebound allocator) are not
