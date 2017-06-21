@@ -138,7 +138,7 @@ public:
   }
 
   virtual range push_back_move(value_pointer x)
-  {return nv_emplace_back(std::move(concrete_ref(x)));}
+  {return nv_push_back(std::move(concrete_ref(x)));}
 
   range nv_push_back(Concrete&& x)
   {
