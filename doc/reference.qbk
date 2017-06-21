@@ -70,9 +70,10 @@ _CopyInsertable_ (respectively _MoveInsertable_) with respect to `A` if and
 only if `U` is  _CopyConstructible_ (respectively _MoveConstructible_);
 all subobjects of type `U` stored in these containers shall be constructed
 using the `std::allocator_traits<A>::construct` function and
-destroyed using the `std::allocator_traits<allocator_type>::destroy` function;
-these functions (or their equivalents for a rebound allocator) are not
-called for any other types used by the container.
+destroyed using the `std::allocator_traits<A>::destroy` function;
+these functions (or their equivalents for a rebound allocator) are called
+only for the types of the stored subobjects, not for
+any other type (internal or public) used by the container.
 
 [section Polymorphic collections]
 
