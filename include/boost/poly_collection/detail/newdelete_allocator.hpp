@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/poly_collection/detail/is_constructible.hpp>
 #include <memory>
 #include <new>
 #include <utility>
@@ -55,7 +56,26 @@ struct newdelete_allocator_adaptor:Allocator
       typename traits::template rebind_alloc<U>>;
   };
 
-  using Allocator::Allocator;
+  newdelete_allocator_adaptor()=default;
+  newdelete_allocator_adaptor(const newdelete_allocator_adaptor&)=default;
+
+  template<
+    typename Allocator2,
+    typename std::enable_if<
+      is_constructible<Allocator,Allocator2>::value
+    >::type* =nullptr
+  >
+  newdelete_allocator_adaptor(const Allocator2& x)noexcept:Allocator{x}{}
+
+  template<
+    typename Allocator2,
+    typename std::enable_if<
+      is_constructible<Allocator,Allocator2>::value
+    >::type* =nullptr
+  >
+  newdelete_allocator_adaptor(
+    const newdelete_allocator_adaptor<Allocator2>& x)noexcept:
+    Allocator{static_cast<const Allocator2&>(x)}{}
 
   newdelete_allocator_adaptor& operator=(
     const newdelete_allocator_adaptor&)=default;
