@@ -44,7 +44,10 @@ class packed_segment:public segment_backend<Model>
   using store_value_type=value_holder<Concrete>;
   using store=std::vector<
     store_value_type,
-    value_holder_allocator_adaptor<Allocator>
+    value_holder_allocator_adaptor<
+      typename std::allocator_traits<Allocator>::
+        template rebind_alloc<store_value_type>
+    >
   >;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
