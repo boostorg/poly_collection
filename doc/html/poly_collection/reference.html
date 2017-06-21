@@ -141,9 +141,11 @@
             <a href="http://en.cppreference.com/w/cpp/concept/EqualityComparable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">EqualityComparable</span></code></strong></span></a>).
           </li>
 <li class="listitem">
-            Replace [container.requirements.general]/3 with: For any any type <code class="computeroutput"><span class="identifier">U</span></code> implementing <code class="computeroutput"><span class="identifier">I</span></code>
-            and the allocator type <code class="computeroutput"><span class="identifier">A</span></code>
-            = <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">rebind_alloc</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;</span></code>,
+            Replace [container.requirements.general]/3 with: <code class="computeroutput"><span class="identifier">allocator_type</span></code>
+            must have the property that for any type <code class="computeroutput"><span class="identifier">U</span></code>
+            implementing <code class="computeroutput"><span class="identifier">I</span></code> and the
+            associated type <code class="computeroutput"><span class="identifier">A</span></code> =
+            <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator_traits</span><span class="special">&lt;</span><span class="identifier">allocator_type</span><span class="special">&gt;::</span><span class="identifier">rebind_alloc</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">&gt;</span></code>,
             <code class="computeroutput"><span class="identifier">U</span></code> is <a href="http://en.cppreference.com/w/cpp/concept/CopyInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">CopyInsertable</span></code></strong></span></a>
             (respectively <a href="http://en.cppreference.com/w/cpp/concept/MoveInsertable" target="_top"><span class="bold"><strong><code class="computeroutput"><span class="identifier">MoveInsertable</span></code></strong></span></a>)
             with respect to <code class="computeroutput"><span class="identifier">A</span></code> if
