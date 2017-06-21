@@ -197,23 +197,23 @@ void test_construction()
 
 void test_scoped_allocator()
 {
-  using vector_allocator_type=rooted_allocator<char>;
-  using vector=std::vector<char,vector_allocator_type>;
+  using vector_allocator=rooted_allocator<char>;
+  using vector=std::vector<char,vector_allocator>;
   using concept_=boost::type_erasure::relaxed;
-  using element_allocator_type=rooted_allocator<
+  using element_allocator=rooted_allocator<
     boost::poly_collection::any_collection_value_type<concept_>
   >;
-  using collection_allocator_type=std::scoped_allocator_adaptor<
-    element_allocator_type,
-    vector_allocator_type
+  using collection_allocator=std::scoped_allocator_adaptor<
+    element_allocator,
+    vector_allocator
    >;
   using poly_collection=
-    boost::any_collection<concept_,collection_allocator_type>;
+    boost::any_collection<concept_,collection_allocator>;
 
-  element_allocator_type     roote{0}; 
-  vector_allocator_type      rootv{0}; 
-  collection_allocator_type  al{roote,rootv};
-  poly_collection            p{al};
+  element_allocator    roote{0}; 
+  vector_allocator     rootv{0}; 
+  collection_allocator al{roote,rootv};
+  poly_collection      p{al};
 
   p.emplace<vector>();
   auto& s=boost::type_erasure::any_cast<vector&>(*p.begin());
