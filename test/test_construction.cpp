@@ -218,7 +218,12 @@ void test_scoped_allocator()
   p.emplace<vector>();
   auto& s=boost::type_erasure::any_cast<vector&>(*p.begin());
   BOOST_TEST(p.get_allocator().root==&roote);
-  BOOST_TEST(s.get_allocator().root==&rootv);
+
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
+  /* https://connect.microsoft.com/VisualStudio/feedback/details/3136309 */
+#else
+  BOOST_TEST(s.get_allocator().root==&rootv);  
+#endif
 }
 
 void test_construction()
