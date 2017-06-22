@@ -134,7 +134,7 @@ public:
     if(p!=s.data())try{
       index ii{{},i.get_allocator()};
       ii.reserve(s.capacity()+1);
-      i=std::move(ii);
+      i.swap(ii);
       build_index();
     }
     catch(...){
