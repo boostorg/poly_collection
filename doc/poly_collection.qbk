@@ -179,7 +179,7 @@ conventions of standard library containers.
 [section `boost::base_collection`]
 
 [import ../example/basic_base.cpp]
-(Code samples from [@../../example/basic_base.cpp `basic_base.cpp`].)
+(Code samples from [@boost:/libs/poly_collection/example/basic_base.cpp `basic_base.cpp`].)
 
 Imagine we are developing a role playing game in C++ where sprites are rendered on
 screen; for the purposes of illustration we can model rendering simply as
@@ -255,7 +255,7 @@ juggernaut 0,juggernaut 4,goblin 1,goblin 3,goblin 5,goblin 8,warrior 2,warrior 
 [section `boost::function_collection`]
 
 [import ../example/basic_function.cpp]
-(Code samples from [@../../example/basic_function.cpp `basic_function.cpp`].
+(Code samples from [@boost:/libs/poly_collection/example/basic_function.cpp `basic_function.cpp`].
 C++14 `std::make_unique` is used.)
 
 Well into the development of the game, the product manager requests that two new
@@ -322,7 +322,7 @@ segment of a different type. So, unlike with `std::function`, this will not work
 [section `boost::any_collection`]
 
 [import ../example/basic_any.cpp]
-(Code samples from [@../../example/basic_any.cpp `basic_any.cpp`].)
+(Code samples from [@boost:/libs/poly_collection/example/basic_any.cpp `basic_any.cpp`].)
 
 [note Here we just touch on the bare essentials of _Boost.TypeErasure_ needed
 to present `boost::any_collection`. The reader is advised to read
@@ -379,7 +379,7 @@ each type autonomously: this is left as an exercise to the reader.
 [section Deeper into the segmented nature of Boost.PolyCollection]
 
 [import ../example/segmented_structure.cpp]
-(Code samples from [@../../example/segmented_structure.cpp `segmented_structure.cpp`].
+(Code samples from [@boost:/libs/poly_collection/example/segmented_structure.cpp `segmented_structure.cpp`].
 C++14 `std::make_unique` is used.)
 
 [section Type registration]
@@ -554,7 +554,7 @@ elements and whether they are registered or not.
 [section Insertion and emplacement]
 
 [import ../example/insertion_emplacement.cpp]
-(Code samples from [@../../example/insertion_emplacement.cpp `insertion_emplacement.cpp`].)
+(Code samples from [@boost:/libs/poly_collection/example/insertion_emplacement.cpp `insertion_emplacement.cpp`].)
 
 We already know that `insert(x)`, without further positional information,
 stores `x` at the end of its associated segment. When a regular iterator `it`
@@ -642,7 +642,7 @@ a regular iterator, and for local iterators it is `emplace_pos`.
 [section Exceptions]
 
 [import ../example/exceptions.cpp]
-(Code samples from [@../../example/exceptions.cpp `exceptions.cpp`].)
+(Code samples from [@boost:/libs/poly_collection/example/exceptions.cpp `exceptions.cpp`].)
 
 Besides the usual exceptions like
 [@http://en.cppreference.com/w/cpp/memory/new/bad_alloc `std::bad_alloc`] and
@@ -709,7 +709,7 @@ signature, etc.].
 [section Algorithms]
 
 [import ../example/algorithms.cpp]
-(Code samples from [@../../example/algorithms.cpp `algorithms.cpp`].
+(Code samples from [@boost:/libs/poly_collection/example/algorithms.cpp `algorithms.cpp`].
 C++14 generic lambda expressions are used.)
 
 The ultimate purpose of Boost.PolyCollection is to speed up the processing of
@@ -880,7 +880,7 @@ calls are not needed.
 ]
 
 [import ../example/perf.cpp]
-(Testing program at [@../../example/perf.cpp `perf.cpp`].)
+(Testing program at [@boost:/libs/poly_collection/example/perf.cpp `perf.cpp`].)
 
 We ran tests to measure the performance of the containers of
 Boost.PolyCollection in two scenarios:

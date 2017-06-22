@@ -32,7 +32,7 @@ boostbook standalone
   : 
     <xsl:param>boost.defaults=Boost
     <xsl:param>boost.image.src=poly_collection/img/boost.png
-    <xsl:param>boost.root=http://www.boost.org/doc/libs/release
+    <xsl:param>boost.root=http://www.boost.org/doc/libs/develop
     <dependency>images_standalone
   ;
 
