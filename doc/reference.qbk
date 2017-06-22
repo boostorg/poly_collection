@@ -1076,17 +1076,17 @@ functions and brings `boost::poly_collection::any_collection` to the
 
 `any_collection_value_type<Concept>` is the `value_type` of
 `boost::any_collection<Concept,Allocator>`, where `Concept` is defined according to
-the [@http://www.boost.org/doc/html/boost_typeerasure/conceptdef.html requisites]
+the [@boost:/doc/html/boost_typeerasure/conceptdef.html requisites]
 of _Boost.TypeErasure_ using
-[@http://www.boost.org/doc/html/boost/type_erasure/_self.html `_self`]
-as its [@http://www.boost.org/doc/html/boost/type_erasure/placeholder.html placeholder].
+[@boost:/doc/html/boost/type_erasure/_self.html `_self`]
+as its [@boost:/doc/html/boost/type_erasure/placeholder.html placeholder].
 The alias template definition has the form
 
   template<typename Concept>
   using any_collection_value_type=
-    boost::type_erasure::``[@http://www.boost.org/doc/html/boost/type_erasure/any.html any]``<Concept2,boost::type_erasure::_self&>;
+    boost::type_erasure::``[@boost:/doc/html/boost/type_erasure/any.html any]``<Concept2,boost::type_erasure::_self&>;
 
-with `boost::type_erasure::`[@http://www.boost.org/doc/html/boost/type_erasure/is_subconcept.html `is_subconcept`]`<Concept,Concept2>::value==true`.
+with `boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/is_subconcept.html `is_subconcept`]`<Concept,Concept2>::value==true`.
 The exact definition of `Concept2` is implementation defined.
 
 [endsect]
@@ -1099,15 +1099,15 @@ _Boost.TypeErasure_:
 
 [itemized_list
   [*Interface* = { `Concept` :
-    as [@http://www.boost.org/doc/html/boost_typeerasure/conceptdef.html specified] by _Boost.TypeErasure_,
-    using the [@http://www.boost.org/doc/html/boost/type_erasure/_self.html `_self`]
-    [@http://www.boost.org/doc/html/boost/type_erasure/placeholder.html placeholder] }.]
+    as [@boost:/doc/html/boost_typeerasure/conceptdef.html specified] by _Boost.TypeErasure_,
+    using the [@boost:/doc/html/boost/type_erasure/_self.html `_self`]
+    [@boost:/doc/html/boost/type_erasure/placeholder.html placeholder] }.]
   [*Implementation*(`Concept`) = { `Concrete` : `Concrete` satisfies `Concept` }.]
   [*subobject*(`x`) =[br]
-    `boost::type_erasure::`[@http://www.boost.org/doc/html/boost/type_erasure/any_cast.html `any_cast`]`<T&>(x)`
-    with `typeid(T)==boost::type_erasure::`[@http://www.boost.org/doc/html/boost/type_erasure/typeid_of.html `typeid_of`]`(x)`,
-    if `x` is an instantiation of `boost::type_erasure::`[@http://www.boost.org/doc/html/boost/type_erasure/any.html `any`]
-    including [@http://www.boost.org/doc/html/boost/type_erasure/typeid_.html `typeid_`]`<>`,[br]
+    `boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/any_cast.html `any_cast`]`<T&>(x)`
+    with `typeid(T)==boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/typeid_of.html `typeid_of`]`(x)`,
+    if `x` is an instantiation of `boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/any.html `any`]
+    including [@boost:/doc/html/boost/type_erasure/typeid_.html `typeid_`]`<>`,[br]
     `x`, otherwise.
   ]
 ]

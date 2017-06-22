@@ -15,8 +15,8 @@
   ]
 ]
 
-[def _Boost.TypeErasure_ [@http://www.boost.org/libs/type_erasure Boost.TypeErasure]]
-[def _Boost.TypeIndex_ [@http://www.boost.org/libs/type_index Boost.TypeIndex]]
+[def _Boost.TypeErasure_ [@boost:/libs/type_erasure Boost.TypeErasure]]
+[def _Boost.TypeIndex_ [@boost:/libs/type_index Boost.TypeIndex]]
 [def _CopyConstructible_ [@http://en.cppreference.com/w/cpp/concept/CopyConstructible [* `CopyConstructible`]]]
 [def _duck_typing_ [@https://en.wikipedia.org/wiki/Duck_typing ['duck typing]]]
 [def _EqualityComparable_ [@http://en.cppreference.com/w/cpp/concept/EqualityComparable [* `EqualityComparable`]]]
@@ -83,7 +83,7 @@ Clang 3.7.]
 Suppose we have a `base` abstract class with implementations `derived1`, `derived2`
 and `derived3`. The memory layout of a `std::vector<base*>` (or similar constructs
 such as `std::vector<std::unique_ptr<base>>` or
-[@http://www.boost.org/libs/ptr_container/ `boost::ptr_vector<base>`]) looks like
+[@boost:/libs/ptr_container/ `boost::ptr_vector<base>`]) looks like
 the following:
 
 [$poly_collection/img/ptr_vector.png]
