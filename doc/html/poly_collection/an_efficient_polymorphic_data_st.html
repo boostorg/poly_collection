@@ -31,7 +31,7 @@
       Suppose we have a <code class="computeroutput"><span class="identifier">base</span></code> abstract
       class with implementations <code class="computeroutput"><span class="identifier">derived1</span></code>,
       <code class="computeroutput"><span class="identifier">derived2</span></code> and <code class="computeroutput"><span class="identifier">derived3</span></code>. The memory layout of a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">*&gt;</span></code> (or similar constructs such as <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;&gt;</span></code>
-      or <a href="http://www.boost.org/libs/ptr_container/" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;</span></code></a>) looks like the following:
+      or <a href="http://www.boost.org/doc/libs/release/libs/ptr_container/" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;</span></code></a>) looks like the following:
     </p>
 <p>
       <span class="inlinemediaobject"><img src="img/ptr_vector.png"></span>
@@ -117,7 +117,7 @@
           of OOP while allowing for greater flexibility as polymorphic types need
           not derive from a preexisting base class or in general be designed with
           any particular interface in mind --in fact, the same object can be duck-typed
-          to different interfaces. Among other libraries, <a href="http://www.boost.org/libs/type_erasure" target="_top">Boost.TypeErasure</a>
+          to different interfaces. Among other libraries, <a href="http://www.boost.org/doc/libs/release/libs/type_erasure" target="_top">Boost.TypeErasure</a>
           provides duck typing for C++. Under the hood, duck typing requires pointer
           indirection and virtual call implementation techniques analogous to those
           of OOP, and so there are the same opportunities for efficient container
