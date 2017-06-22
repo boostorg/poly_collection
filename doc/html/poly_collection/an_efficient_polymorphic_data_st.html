@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>An efficient polymorphic data structure</title>
-<link rel="stylesheet" href="http://www.boost.org/doc/libs/release/doc/src/boostbook.css" type="text/css">
+<link rel="stylesheet" href="http://www.boost.org/doc/libs/develop/doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.PolyCollection">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.PolyCollection">
@@ -12,15 +12,15 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="img/boost.png"></td>
-<td align="center"><a href="http://www.boost.org/doc/libs/release/index.html">Home</a></td>
-<td align="center"><a href="http://www.boost.org/doc/libs/release/libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/doc/libs/develop/index.html">Home</a></td>
+<td align="center"><a href="http://www.boost.org/doc/libs/develop/libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
 <td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
-<td align="center"><a href="http://www.boost.org/doc/libs/release/more/index.htm">More</a></td>
+<td align="center"><a href="http://www.boost.org/doc/libs/develop/more/index.htm">More</a></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="tutorial.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="tutorial.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/next.png" alt="Next"></a>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
@@ -31,7 +31,7 @@
       Suppose we have a <code class="computeroutput"><span class="identifier">base</span></code> abstract
       class with implementations <code class="computeroutput"><span class="identifier">derived1</span></code>,
       <code class="computeroutput"><span class="identifier">derived2</span></code> and <code class="computeroutput"><span class="identifier">derived3</span></code>. The memory layout of a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">*&gt;</span></code> (or similar constructs such as <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">unique_ptr</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;&gt;</span></code>
-      or <a href="http://www.boost.org/doc/libs/release/libs/ptr_container/" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;</span></code></a>) looks like the following:
+      or <a href="http://www.boost.org/doc/libs/develop/libs/ptr_container/" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">ptr_vector</span><span class="special">&lt;</span><span class="identifier">base</span><span class="special">&gt;</span></code></a>) looks like the following:
     </p>
 <p>
       <span class="inlinemediaobject"><img src="img/ptr_vector.png"></span>
@@ -117,7 +117,7 @@
           of OOP while allowing for greater flexibility as polymorphic types need
           not derive from a preexisting base class or in general be designed with
           any particular interface in mind --in fact, the same object can be duck-typed
-          to different interfaces. Among other libraries, <a href="http://www.boost.org/doc/libs/release/libs/type_erasure" target="_top">Boost.TypeErasure</a>
+          to different interfaces. Among other libraries, <a href="http://www.boost.org/doc/libs/develop/libs/type_erasure" target="_top">Boost.TypeErasure</a>
           provides duck typing for C++. Under the hood, duck typing requires pointer
           indirection and virtual call implementation techniques analogous to those
           of OOP, and so there are the same opportunities for efficient container
@@ -155,7 +155,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="tutorial.html"><img src="http://www.boost.org/doc/libs/release/doc/src/images/next.png" alt="Next"></a>
+<a accesskey="p" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="tutorial.html"><img src="http://www.boost.org/doc/libs/develop/doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>
