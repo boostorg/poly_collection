@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cmath>
 #include <numeric> 
 
 std::chrono::high_resolution_clock::time_point measure_start,measure_pause;
@@ -394,16 +395,17 @@ template<
   typename... Container
 >
 void insert_perf(
-  unsigned int n0,unsigned int n1,unsigned int dn,
+  unsigned int n0,unsigned int n1,unsigned int dsav,
   element_sequence<Element...> elements,label<Container>... labels)
 {
-  double fdn=1.1;
-
   std::cout<<"insert:\n";
   print("n",labels...);
   
-  for(unsigned int n=n0;n<=n1;n+=dn,dn=(unsigned int)(dn*fdn)){
-    unsigned int m=n/sizeof...(Element),nn=m*sizeof...(Element);
+  for(unsigned int s=0,n=n0;
+      (n=(unsigned int)std::round(n0*std::pow(10.0,s/1000.0)))<=n1;
+      s+=dsav){
+    unsigned int m=(unsigned int)std::round(n/sizeof...(Element)),
+                 nn=m*sizeof...(Element);
     print(nn,insert_perf(nn,elements,labels)...);
   }
 }
@@ -439,16 +441,17 @@ template<
   typename... Container
 >
 void for_each_perf(
-  unsigned int n0,unsigned int n1,unsigned int dn,
+  unsigned int n0,unsigned int n1,unsigned int dsav,
   element_sequence<Element...> elements,F f,label<Container>... labels)
 {
-  double fdn=1.1;
-
   std::cout<<"for_each:\n";
   print("n",labels...);
   
-  for(unsigned int n=n0;n<=n1;n+=dn,dn=(unsigned int)(dn*fdn)){
-    unsigned int m=n/sizeof...(Element),nn=m*sizeof...(Element);
+  for(unsigned int s=0,n=n0;
+      (n=(unsigned int)std::round(n0*std::pow(10.0,s/1000.0)))<=n1;
+      s+=dsav){
+    unsigned int m=(unsigned int)std::round(n/sizeof...(Element)),
+                 nn=m*sizeof...(Element);
     print(nn,for_each_perf(nn,elements,f,labels)...);
   }
 }
@@ -520,7 +523,7 @@ int main(int argc, char *argv[])
     it->second=true;
   }
 
-  unsigned int n0=1000,n1=11000000,dn=1000;
+  unsigned int n0=100,n1=10000000,dsav=50; /* sav for savart */
 
   {
     auto seq=  element_sequence<
@@ -541,9 +544,9 @@ int main(int argc, char *argv[])
                >
                {"base_collection (restituted poly::for_each)"};
 
-    if(all||insert_base)insert_perf(n0,n1,dn,seq,pv,bc);
+    if(all||insert_base)insert_perf(n0,n1,dsav,seq,pv,bc);
     if(all||for_each_base)for_each_perf(
-      n0,n1,dn,seq,f,pv,spv,shpv,bc,fbc,rfbc);
+      n0,n1,dsav,seq,f,pv,spv,shpv,bc,fbc,rfbc);
   }
   {
     using signature=int(int);
@@ -565,9 +568,9 @@ int main(int argc, char *argv[])
                  signature,concrete1,concrete2,concrete3>>
                {"function_collection (restituted poly::for_each)"};
 
-    if(all||insert_function)insert_perf(n0,n1,dn,seq,fv,fc);
+    if(all||insert_function)insert_perf(n0,n1,dsav,seq,fv,fc);
     if(all||for_each_function)for_each_perf(
-      n0,n1,dn,seq,f,fv,sfv,shfv,fc,ffc,rffc);
+      n0,n1,dsav,seq,f,fv,sfv,shfv,fc,ffc,rffc);
   }
   {
 //[perf_any_types
@@ -594,7 +597,8 @@ int main(int argc, char *argv[])
     auto rfac= label<poly_for_each_any_collection<concept_,int,double,char>>
                {"any_collection (restituted poly::for_each)"};
 
-    if(all||insert_any)insert_perf(n0,n1,dn,seq,av,ac);
-    if(all||for_each_any)for_each_perf(n0,n1,dn,seq,f,av,sav,shav,ac,fac,rfac);
+    if(all||insert_any)insert_perf(n0,n1,dsav,seq,av,ac);
+    if(all||for_each_any)for_each_perf(
+      n0,n1,dsav,seq,f,av,sav,shav,ac,fac,rfac);
   }
 }
