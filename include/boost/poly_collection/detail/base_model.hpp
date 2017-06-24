@@ -38,38 +38,38 @@ struct base_model
   using is_subtype=std::is_base_of<Base,Derived>;
   template<typename T>
   using is_terminal=is_final<T>; //TODO: should we say !is_polymorhpic||is_final?
+
+private:
   template<typename T>
+  using enable_if_not_terminal=
+    typename std::enable_if<!is_terminal<T>::value>::type*;
+  template<typename T>
+  using enable_if_terminal=
+    typename std::enable_if<is_terminal<T>::value>::type*;
+
+public:
+  template<typename T,enable_if_not_terminal<T> =nullptr>
   static const std::type_info& subtypeid(const T& x){return typeid(x);}
 
-  template<
-    typename T,
-    typename std::enable_if<!is_terminal<T>::value>::type* =nullptr
-  >
+  template<typename T,enable_if_terminal<T> =nullptr>
+  static const std::type_info& subtypeid(const T&){return typeid(T);}
+
+  template<typename T,enable_if_not_terminal<T> =nullptr>
   static void* subaddress(T& x)
   {
     return dynamic_cast<void*>(boost::addressof(x));
   }
 
-  template<
-    typename T,
-    typename std::enable_if<!is_terminal<T>::value>::type* =nullptr
-  >
+  template<typename T,enable_if_not_terminal<T> =nullptr>
   static const void* subaddress(const T& x)
   {
     return dynamic_cast<const void*>(boost::addressof(x));
   }
 
-  template<
-    typename T,
-    typename std::enable_if<is_terminal<T>::value>::type* =nullptr
-  >
+  template<typename T,enable_if_terminal<T> =nullptr>
   static void* subaddress(T& x){return boost::addressof(x);}
 
-
-  template<
-    typename T,
-    typename std::enable_if<is_terminal<T>::value>::type* =nullptr
-  >
+  template<typename T,enable_if_terminal<T> =nullptr>
   static const void* subaddress(const T& x){return boost::addressof(x);}
 
   using base_iterator=stride_iterator<Base>;
