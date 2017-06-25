@@ -22,12 +22,11 @@
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/newdelete_allocator.hpp>
 #include <boost/poly_collection/detail/segment.hpp>
+#include <boost/poly_collection/detail/type_info_map.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <iterator>
-#include <new>
 #include <type_traits>
 #include <typeinfo>
-#include <unordered_map>
 #include <utility>
 
 namespace boost{
@@ -39,17 +38,6 @@ namespace detail{
 namespace poly_collection_impl{
 
 /* common implementation for all polymorphic collections */
-
-struct type_info_ptr_hash
-{
-  std::size_t operator()(const std::type_info* p)const{return p->hash_code();}
-};
-
-struct type_info_ptr_equal_to
-{
-  bool operator()(const std::type_info* p,const std::type_info* q)const
-  {return *p==*q;}
-};
 
 template<typename Model,typename Allocator>
 class poly_collection
@@ -127,13 +115,11 @@ class poly_collection
   template<typename T>
   using const_segment_iterator=
     typename segment_type::template const_iterator<T>;
-  using segment_map=std::unordered_map<
-    const std::type_info*,segment_type,
-    type_info_ptr_hash,type_info_ptr_equal_to,
+  using segment_map=type_info_map<
+    segment_type,
     newdelete_allocator_adaptor<
       typename std::allocator_traits<Allocator>::template
-        rebind_alloc<std::pair<const std::type_info* const,segment_type>
-      >
+        rebind_alloc<segment_type>
     >
   >;
   using segment_map_allocator_type=typename segment_map::allocator_type;
@@ -432,13 +418,13 @@ public:
     (void)seq{
       0,
       (map.insert(
-        {&typeid(T),segment_type::template make<T>(get_allocator())}),0)...
+        typeid(T),segment_type::template make<T>(get_allocator())),0)...
     };
   }
 
   bool is_registered(const std::type_info& info)const
   {
-    return map.find(&info)!=map.end();
+    return map.find(info)!=map.end();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -981,11 +967,11 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T& x)
   {
     const auto& id=subtypeid(x);
-    auto        it=map.find(&id);
+    auto        it=map.find(id);
     if(it!=map.end())return it;
     else if(id!=typeid(T))throw unregistered_type{id};
     else return map.insert(
-      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      typeid(T),segment_type::template make<T>(get_allocator())).first;
   }
 
   template<
@@ -995,10 +981,10 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T&)
   {
-    auto it=map.find(&typeid(T));
+    auto it=map.find(typeid(T));
     if(it!=map.end())return it;
     else return map.insert(
-      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      typeid(T),segment_type::template make<T>(get_allocator())).first;
   }
 
   template<
@@ -1009,7 +995,7 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T& x)const
   {
     const auto& id=subtypeid(x);
-    auto it=map.find(&id);
+    auto it=map.find(id);
     if(it!=map.end())return it;
     else throw unregistered_type{id};
   }
@@ -1032,18 +1018,18 @@ private:
     const T& x,const segment_type& seg)
   {
     const auto& id=subtypeid(x);
-    auto        it=map.find(&id);
+    auto        it=map.find(id);
     if(it!=map.end())return it;
-    else return map.insert({&id,segment_type::make_from_prototype(seg)}).first;
+    else return map.insert(id,segment_type::make_from_prototype(seg)).first;
   }
 
   template<typename T>
   const_segment_map_iterator get_map_iterator_for()
   {
-    auto it=map.find(&typeid(T));
+    auto it=map.find(typeid(T));
     if(it!=map.end())return it;
     else return map.insert(
-      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      typeid(T),segment_type::template make<T>(get_allocator())).first;
   }
 
   const_segment_map_iterator get_map_iterator_for(const std::type_info& info)
@@ -1055,7 +1041,7 @@ private:
   const_segment_map_iterator get_map_iterator_for(
     const std::type_info& info)const
   {
-    auto it=map.find(&info);
+    auto it=map.find(info);
     if(it!=map.end())return it;
     else throw unregistered_type{info};
   }
@@ -1157,7 +1143,7 @@ bool operator==(
   const auto &mapx=x.map,&mapy=y.map;
   for(const auto& p:mapx){
     auto ss=p.second.size();
-    auto it=mapy.find(p.first);
+    auto it=mapy.find(*p.first);
     if(it==mapy.end()?ss!=0:p.second!=it->second)return false;
     s+=ss;
   }
