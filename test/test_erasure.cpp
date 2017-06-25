@@ -66,9 +66,9 @@ void test_erasure()
 
   fill<constraints<is_copy_constructible>,Types...>(p2,v,5);
   auto sit=p2.segment_traversal().begin();
-  p2.clear(sit->type_index());
+  p2.clear(sit->type_info());
   ++sit;++sit;
-  p2.clear(sit->type_index());
+  p2.clear(sit->type_info());
 
   for(size_type i=0;i<p2.size();++i){
     p=p2;
@@ -78,12 +78,12 @@ void test_erasure()
   }
 
   for(auto s:p2.segment_traversal()){
-    auto index=s.type_index();
-    for(size_type i=0;i<p2.size(index);++i){
+    auto& info=s.type_info();
+    for(size_type i=0;i<p2.size(info);++i){
       p=p2;
-      auto it=p.erase(p.cbegin(index)+i);
-      BOOST_TEST(it-p.begin(index)==(std::ptrdiff_t)i);
-      BOOST_TEST(p.size(index)==p2.size(index)-1);
+      auto it=p.erase(p.cbegin(info)+i);
+      BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+      BOOST_TEST(p.size(info)==p2.size(info)-1);
     }
   }
 
@@ -102,15 +102,15 @@ void test_erasure()
   }
 
   for(auto s:p2.segment_traversal()){
-    auto index=s.type_index();
-    for(size_type i=0;i<=p2.size(index);++i){
-      for(size_type j=i;j<=p2.size(index);++j){
+    auto& info=s.type_info();
+    for(size_type i=0;i<=p2.size(info);++i){
+      for(size_type j=i;j<=p2.size(info);++j){
         p=p2;
-        auto first=p.cbegin(index)+i,
-              last=p.cbegin(index)+j;
+        auto first=p.cbegin(info)+i,
+              last=p.cbegin(info)+j;
         auto it=p.erase(first,last);
-        BOOST_TEST(it-p.begin(index)==(std::ptrdiff_t)i);
-        BOOST_TEST(p.size(index)==p2.size(index)-(j-i));
+        BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+        BOOST_TEST(p.size(info)==p2.size(info)-(j-i));
       }
     }
   }
@@ -123,11 +123,11 @@ void test_erasure()
   BOOST_TEST(p.empty());
 
   for(auto s:p2.segment_traversal()){
-    auto index=s.type_index();
+    auto& info=s.type_info();
     p=p2;
-    p.clear(index);
-    BOOST_TEST(p.empty(index));
-    BOOST_TEST(p.size()==p2.size()-p2.size(index));
+    p.clear(info);
+    BOOST_TEST(p.empty(info));
+    BOOST_TEST(p.size()==p2.size()-p2.size(info));
   }
 
   do_((p2.template is_registered<Types>()?

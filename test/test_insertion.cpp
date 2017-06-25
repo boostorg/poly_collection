@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -105,9 +105,9 @@ void test_insertion()
 
     fill<constraints<>,Types...>(p,v,2);
 
-    auto index=p.segment_traversal().begin()->type_index();
+    auto& info=p.segment_traversal().begin()->type_info();
     do_((BOOST_TEST(
-      index==typeid(Types)?
+      info==typeid(Types)?
         is_first(
           p,typeid(Types),
           p.insert(
@@ -161,11 +161,11 @@ void test_insertion()
 
     for(auto s:p2.segment_traversal()){
       p.insert(s.begin(),s.end());
-      BOOST_TEST(p.size()==p2.size(s.type_index()));
+      BOOST_TEST(p.size()==p2.size(s.type_info()));
       p.clear();
 
       p.insert(s.cbegin(),s.cend());
-      BOOST_TEST(p.size()==p2.size(s.type_index()));
+      BOOST_TEST(p.size()==p2.size(s.type_info()));
       p.clear();
     }
 

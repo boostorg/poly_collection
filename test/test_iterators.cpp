@@ -127,7 +127,7 @@ void test_iterators(PolyCollection& p)
     (std::ptrdiff_t)n==p.template end<Type>()-p.template begin<Type>());
 
   for(auto s:p.segment_traversal()){
-    if(s.type_index()==typeid(Type)){
+    if(s.type_info()==typeid(Type)){
       const auto& cs=s;
 
       BOOST_TEST(
@@ -248,12 +248,12 @@ void test_iterators()
 
       BOOST_TEST(clbfirst==cfirst->cbegin());
       BOOST_TEST(clblast==cfirst->cend());
-      BOOST_TEST(lbfirst==p.begin(first->type_index()));
-      BOOST_TEST(lblast==p.end(first->type_index()));
-      BOOST_TEST(clbfirst==cp.begin(first->type_index()));
-      BOOST_TEST(clblast==cp.end(first->type_index()));
-      BOOST_TEST(clbfirst==cp.cbegin(first->type_index()));
-      BOOST_TEST(clblast==cp.cend(first->type_index()));
+      BOOST_TEST(lbfirst==p.begin(first->type_info()));
+      BOOST_TEST(lblast==p.end(first->type_info()));
+      BOOST_TEST(clbfirst==cp.begin(first->type_info()));
+      BOOST_TEST(clblast==cp.end(first->type_info()));
+      BOOST_TEST(clbfirst==cp.cbegin(first->type_info()));
+      BOOST_TEST(clblast==cp.cend(first->type_info()));
 
       for(;lbfirst!=lblast;++lbfirst,++clbfirst){
         BOOST_TEST(lbfirst==clbfirst);

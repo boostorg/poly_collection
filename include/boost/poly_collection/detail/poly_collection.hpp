@@ -26,7 +26,7 @@
 #include <iterator>
 #include <new>
 #include <type_traits>
-#include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 #include <utility>
 
@@ -39,6 +39,17 @@ namespace detail{
 namespace poly_collection_impl{
 
 /* common implementation for all polymorphic collections */
+
+struct type_info_ptr_hash
+{
+  std::size_t operator()(const std::type_info* p)const{return p->hash_code();}
+};
+
+struct type_info_ptr_equal_to
+{
+  bool operator()(const std::type_info* p,const std::type_info* q)const
+  {return *p==*q;}
+};
 
 template<typename Model,typename Allocator>
 class poly_collection
@@ -117,11 +128,11 @@ class poly_collection
   using const_segment_iterator=
     typename segment_type::template const_iterator<T>;
   using segment_map=std::unordered_map<
-    std::type_index,segment_type,
-    std::hash<std::type_index>,std::equal_to<std::type_index>,
+    const std::type_info*,segment_type,
+    type_info_ptr_hash,type_info_ptr_equal_to,
     newdelete_allocator_adaptor<
       typename std::allocator_traits<Allocator>::template
-        rebind_alloc<std::pair<const std::type_index,segment_type>
+        rebind_alloc<std::pair<const std::type_info* const,segment_type>
       >
     >
   >;
@@ -187,7 +198,7 @@ public:
     template<typename T>
     const_local_iterator<T> cend()const noexcept{return end<T>();}
 
-    std::type_index type_index()const{return it->first;}
+    const std::type_info& type_info()const{return *it->first;}
 
   protected:
     friend class poly_collection;
@@ -421,13 +432,13 @@ public:
     (void)seq{
       0,
       (map.insert(
-        {typeid(T),segment_type::template make<T>(get_allocator())}),0)...
+        {&typeid(T),segment_type::template make<T>(get_allocator())}),0)...
     };
   }
 
-  bool is_registered(const std::type_index& index)const
+  bool is_registered(const std::type_info& info)const
   {
-    return map.find(index)!=map.end();
+    return map.find(&info)!=map.end();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -445,34 +456,34 @@ public:
   const_iterator cbegin()const noexcept{return begin();}
   const_iterator cend()const noexcept{return end();}
 
-  local_base_iterator begin(const std::type_index& index)
+  local_base_iterator begin(const std::type_info& info)
   {
-    auto it=get_map_iterator_for(index);
+    auto it=get_map_iterator_for(info);
     return {it,segment(it).begin()};
   }
 
-  local_base_iterator end(const std::type_index& index)
+  local_base_iterator end(const std::type_info& info)
   {
-    auto it=get_map_iterator_for(index);
+    auto it=get_map_iterator_for(info);
     return {it,segment(it).end()};
   }
 
-  const_local_base_iterator begin(const std::type_index& index)const
+  const_local_base_iterator begin(const std::type_info& info)const
   {
-    auto it=get_map_iterator_for(index);
+    auto it=get_map_iterator_for(info);
     return {it,segment(it).begin()};
   }
 
-  const_local_base_iterator end(const std::type_index& index)const
+  const_local_base_iterator end(const std::type_info& info)const
   {
-    auto it=get_map_iterator_for(index);
+    auto it=get_map_iterator_for(info);
     return {it,segment(it).end()};
   }
 
-  const_local_base_iterator cbegin(const std::type_index& index)const
-    {return begin(index);}
-  const_local_base_iterator cend(const std::type_index& index)const
-    {return end(index);}
+  const_local_base_iterator cbegin(const std::type_info& info)const
+    {return begin(info);}
+  const_local_base_iterator cend(const std::type_info& info)const
+    {return end(info);}
 
   template<typename T,enable_if_acceptable<T> =nullptr>
   local_iterator<T> begin()
@@ -508,14 +519,14 @@ public:
   template<typename T,enable_if_acceptable<T> =nullptr>
   const_local_iterator<T> cend()const{return end<T>();}
 
-  base_segment_info segment(const std::type_index& index)
+  base_segment_info segment(const std::type_info& info)
   {
-    return get_map_iterator_for(index);
+    return get_map_iterator_for(info);
   }
 
-  const_base_segment_info segment(const std::type_index& index)const
+  const_base_segment_info segment(const std::type_info& info)const
   {
-    return get_map_iterator_for(index);
+    return get_map_iterator_for(info);
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -535,9 +546,9 @@ public:
     return true;
   }
 
-  bool empty(const std::type_index& index)const
+  bool empty(const std::type_info& info)const
   {
-    return segment(get_map_iterator_for(index)).empty();
+    return segment(get_map_iterator_for(info)).empty();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -553,9 +564,9 @@ public:
     return res;
   }
 
-  size_type size(const std::type_index& index)const
+  size_type size(const std::type_info& info)const
   {
-    return segment(get_map_iterator_for(index)).size();
+    return segment(get_map_iterator_for(info)).size();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -564,9 +575,9 @@ public:
     return segment(get_map_iterator_for(typeid(T))).template size<T>();
   }
 
-  size_type max_size(const std::type_index& index)const
+  size_type max_size(const std::type_info& info)const
   {
-    return segment(get_map_iterator_for(index)).max_size();
+    return segment(get_map_iterator_for(info)).max_size();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -575,9 +586,9 @@ public:
     return segment(get_map_iterator_for(typeid(T))).template max_size<T>();
   }
 
-  size_type capacity(const std::type_index& index)const
+  size_type capacity(const std::type_info& info)const
   {
-    return segment(get_map_iterator_for(index)).capacity();
+    return segment(get_map_iterator_for(info)).capacity();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -591,9 +602,9 @@ public:
     for(auto& x:map)x.second.reserve(n);
   }
 
-  void reserve(const std::type_index& index,size_type n)
+  void reserve(const std::type_info& info,size_type n)
   {
-    segment(get_map_iterator_for(index)).reserve(n);
+    segment(get_map_iterator_for(info)).reserve(n);
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -609,9 +620,9 @@ public:
     for(auto& x:map)x.second.shrink_to_fit();
   }
 
-  void shrink_to_fit(const std::type_index& index)
+  void shrink_to_fit(const std::type_info& info)
   {
-    segment(get_map_iterator_for(index)).shrink_to_fit();
+    segment(get_map_iterator_for(info)).shrink_to_fit();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -657,7 +668,7 @@ public:
   local_base_iterator
   emplace_pos(const_local_base_iterator pos,Args&&... args)
   {
-    BOOST_ASSERT(pos.type_index()==typeid(T));
+    BOOST_ASSERT(pos.type_info()==typeid(T));
     return {
       pos.mapit,
       pos.segment().template emplace<T>(pos.base(),std::forward<Args>(args)...)
@@ -713,7 +724,7 @@ public:
   nonconst_version<local_iterator_impl<BaseIterator>>
   insert(local_iterator_impl<BaseIterator> pos,T&& x)
   {
-    BOOST_ASSERT(pos.type_index()==subtypeid(x));
+    BOOST_ASSERT(pos.type_info()==subtypeid(x));
     return {
       pos.mapit,
       pos.segment().insert(pos.base(),std::forward<T>(x))
@@ -850,7 +861,7 @@ public:
     size_type n=0;
 
     for(;first!=last;++first){
-      BOOST_ASSERT(pos.type_index()==subtypeid(*first));
+      BOOST_ASSERT(pos.type_info()==subtypeid(*first));
       it=std::next(seg.insert(it,*first));
       ++n;
     }
@@ -944,9 +955,9 @@ public:
     for(auto& x:map)x.second.clear();
   }
 
-  void clear(const std::type_index& index)
+  void clear(const std::type_info& info)
   {
-    segment(get_map_iterator_for(index)).clear();
+    segment(get_map_iterator_for(info)).clear();
   }
 
   template<typename T,enable_if_acceptable<T> =nullptr>
@@ -970,11 +981,11 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T& x)
   {
     const auto& id=subtypeid(x);
-    auto        it=map.find(id);
+    auto        it=map.find(&id);
     if(it!=map.end())return it;
     else if(id!=typeid(T))throw unregistered_type{id};
     else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
   }
 
   template<
@@ -984,10 +995,10 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T&)
   {
-    auto it=map.find(typeid(T));
+    auto it=map.find(&typeid(T));
     if(it!=map.end())return it;
     else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
   }
 
   template<
@@ -998,7 +1009,7 @@ private:
   const_segment_map_iterator get_map_iterator_for(const T& x)const
   {
     const auto& id=subtypeid(x);
-    auto it=map.find(id);
+    auto it=map.find(&id);
     if(it!=map.end())return it;
     else throw unregistered_type{id};
   }
@@ -1021,18 +1032,18 @@ private:
     const T& x,const segment_type& seg)
   {
     const auto& id=subtypeid(x);
-    auto        it=map.find(id);
+    auto        it=map.find(&id);
     if(it!=map.end())return it;
-    else return map.insert({id,segment_type::make_from_prototype(seg)}).first;
+    else return map.insert({&id,segment_type::make_from_prototype(seg)}).first;
   }
 
   template<typename T>
   const_segment_map_iterator get_map_iterator_for()
   {
-    auto it=map.find(typeid(T));
+    auto it=map.find(&typeid(T));
     if(it!=map.end())return it;
     else return map.insert(
-      {typeid(T),segment_type::template make<T>(get_allocator())}).first;
+      {&typeid(T),segment_type::template make<T>(get_allocator())}).first;
   }
 
   const_segment_map_iterator get_map_iterator_for(const std::type_info& info)
@@ -1044,22 +1055,9 @@ private:
   const_segment_map_iterator get_map_iterator_for(
     const std::type_info& info)const
   {
-    return get_map_iterator_for(std::type_index{info});
-  }
-
-  const_segment_map_iterator get_map_iterator_for(
-    const std::type_index& index)
-  {
-    return const_cast<const poly_collection*>(this)->
-      get_map_iterator_for(index);
-  }
-
-  const_segment_map_iterator get_map_iterator_for(
-    const std::type_index& index)const
-  {
-    auto it=map.find(index);
+    auto it=map.find(&info);
     if(it!=map.end())return it;
-    else throw unregistered_type{index};
+    else throw unregistered_type{info};
   }
 
   static segment_type& segment(const_segment_map_iterator pos)

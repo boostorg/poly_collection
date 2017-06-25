@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,7 @@
 #endif
 
 #include <boost/poly_collection/function_collection.hpp>
-#include <typeindex>
+#include <typeinfo>
 
 namespace function_types{
 
@@ -80,19 +80,20 @@ using t5=function5;
 inline bool operator==(
   const collection::value_type& x,const collection::value_type& y)
 {
-  std::type_index xt=x.target_type(),yt=y.target_type();
-  if(xt==yt){
-    if(xt==typeid(t1))return (*x.target<t1>())==(*y.target<t1>());
-    if(xt==typeid(t2))return (*x.target<t2>()).operator==(*y.target<t2>());
-    if(xt==typeid(t4))return (*x.target<t4>()).operator==(*y.target<t4>());
+  const std::type_info& xi=x.target_type();
+  const std::type_info& yi=y.target_type();
+  if(xi==yi){
+    if(xi==typeid(t1))return (*x.target<t1>())==(*y.target<t1>());
+    if(xi==typeid(t2))return (*x.target<t2>()).operator==(*y.target<t2>());
+    if(xi==typeid(t4))return (*x.target<t4>()).operator==(*y.target<t4>());
   }
   return false;
 }
 
 inline bool operator==(const collection::value_type& x,const t1& y)
 {
-  std::type_index xt=x.target_type();
-  if(xt==typeid(t1))return (*x.target<t1>())==y;
+  const std::type_info& xi=x.target_type();
+  if(xi==typeid(t1))return (*x.target<t1>())==y;
   return false;
 }
 
@@ -103,8 +104,8 @@ inline bool operator==(const t1& x,const collection::value_type& y)
 
 inline bool operator==(const collection::value_type& x,const t2& y)
 {
-  std::type_index xt=x.target_type();
-  if(xt==typeid(t2))return (*x.target<t2>())==y;
+  const std::type_info& xi=x.target_type();
+  if(xi==typeid(t2))return (*x.target<t2>())==y;
   return false;
 }
 
@@ -115,8 +116,8 @@ inline bool operator==(const t2& x,const collection::value_type& y)
 
 inline bool operator==(const collection::value_type& x,const t4& y)
 {
-  std::type_index xt=x.target_type();
-  if(xt==typeid(t4))return (*x.target<t4>())==y;
+  const std::type_info& xi=x.target_type();
+  if(xi==typeid(t4))return (*x.target<t4>())==y;
   return false;
 }
 

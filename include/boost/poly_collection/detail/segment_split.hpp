@@ -15,7 +15,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
-#include <typeindex>
+#include <typeinfo>
 #include <utility>
 
 namespace boost{
@@ -36,12 +36,12 @@ class segment_splitter
 public:
   struct info
   {
-    std::type_index     type_index()const noexcept{return index_;}
-    local_base_iterator begin()const noexcept{return begin_;}
-    local_base_iterator end()const noexcept{return end_;}
+    const std::type_info& type_info()const noexcept{return *pinfo_;}
+    local_base_iterator   begin()const noexcept{return begin_;}
+    local_base_iterator   end()const noexcept{return end_;}
 
-    std::type_index     index_;
-    local_base_iterator begin_,end_;
+    const std::type_info* pinfo_;
+    local_base_iterator   begin_,end_;
   };
 
   struct iterator:iterator_facade<iterator,info,std::input_iterator_tag,info>
@@ -65,7 +65,7 @@ public:
     info dereference()const noexcept
     {
       return {
-        it->type_index(),
+        &it->type_info(),
         it==traits::base_segment_info_iterator_from(*first)?
           traits::local_base_iterator_from(*first):it->begin(),
         it==traits::base_segment_info_iterator_from(*last)?
@@ -125,15 +125,15 @@ void for_each_segment(
 
   if(sfirst!=slast){
     for(;;){
-      f(info{sfirst->type_index(),lbfirst,sfirst->end()});
+      f(info{&sfirst->type_info(),lbfirst,sfirst->end()});
       ++sfirst;
       if(sfirst==slast)break;
       lbfirst=sfirst->begin();
     }
-    if(sfirst!=send)f(info{sfirst->type_index(),sfirst->begin(),lblast});
+    if(sfirst!=send)f(info{&sfirst->type_info(),sfirst->begin(),lblast});
   }
   else if(sfirst!=send){
-    f(info{sfirst->type_index(),lbfirst,lblast});
+    f(info{&sfirst->type_info(),lbfirst,lblast});
   }
 }
 #else

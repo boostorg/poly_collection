@@ -144,7 +144,7 @@ we use the following notation:
 * `C` is a polymorphic collection type,
 * `c` is an object of type `C`, `cc` is a possibly `const` object of type `C`,
 * `al` is a value of type `C::allocator_type`,
-* `index` is a value of `std::type_index`,
+* `info` is a `const std::type_info&`,
 * `U` is an acceptable type, `Us...` is a template parameter pack of
 acceptable types, 
 * `n` is a value of `size_type`,
@@ -227,7 +227,7 @@ segment of a collection. If `ci` is a possibly `const` object of type
 * `ci.cend()==c.cend(typeid(U))`
 * `ci.end<U>()==c.cend<U>()`
 * `ci.cend<U>()==c.cend<U>()`
-* `ci.type_index()==std::type_index(typeid(U))`
+* `ci.type_info()==typeid(U)`
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info]
 [def _base_segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info `base_segment_info`]]
@@ -343,7 +343,7 @@ collection.
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.type_registration.is_registered]
 [def _is_registered_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.type_registration.is_registered `is_registered`]]
 
-`cc.is_registered(index)`[br]
+`cc.is_registered(info)`[br]
 `cc.is_registered<U>()`
 
 [*Returns:] `true` iff the indicated type is registered in the collection.
@@ -356,10 +356,10 @@ collection.
 [def _begin_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.begin `begin`]]
 [def _cbegin_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.begin `cbegin`]]
 
-(1) `c.begin(index)`[br]
+(1) `c.begin(info)`[br]
 (2) `c.begin<U>()`[br]
-(3) `const_cast<const C&>(c).begin(index)`[br]
-(4) `cc.cbegin(index)`[br]
+(3) `const_cast<const C&>(c).begin(info)`[br]
+(4) `cc.cbegin(info)`[br]
 (5) `const_cast<const C&>(c).begin<U>()`[br]
 (6) `cc.cbegin<U>()`
 
@@ -372,10 +372,10 @@ beginning of the segment for the indicated type.[br]
 [def _end_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.end `end`]]
 [def _cend_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.end `cend`]]
 
-(1) `c.end(index)`[br]
+(1) `c.end(info)`[br]
 (2) `c.end<U>()`[br]
-(3) `const_cast<const C&>(c).end(index)`[br]
-(4) `cc.cend(index)`[br]
+(3) `const_cast<const C&>(c).end(info)`[br]
+(4) `cc.cend(info)`[br]
 (5) `const_cast<const C&>(c).end<U>()`[br]
 (6) `cc.cend<U>()`
 
@@ -387,9 +387,9 @@ end of the segment for the indicated type.[br]
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment]
 [def _segment_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators.segment `segment`]]
 
-(1) `c.segment(index)`[br]
+(1) `c.segment(info)`[br]
 (2) `c.segment<U>()`[br]
-(3) `const_cast<const C&>(c).segment(index)`[br]
+(3) `const_cast<const C&>(c).segment(info)`[br]
 (4) `const_cast<const C&>(c).segment<U>()`[br]
 
 [*Returns:] A `base_segment_info` (1) or `segment_info<U>` (2) or
@@ -415,7 +415,7 @@ The order in which segments are visited matches that of
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.empty]
 [def _empty_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.empty `empty`]]
 
-`cc.empty(index)`[br]
+`cc.empty(info)`[br]
 `cc.empty<U>()`
 
 [*Returns:] `true` iff the segment for the indicated type exists and
@@ -425,7 +425,7 @@ is empty.[br]
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size]
 [def _size_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.size `size`]]
 
-`cc.size(index)`[br]
+`cc.size(info)`[br]
 `cc.size<U>()`
 
 [*Returns:] The size of the segment for the indicated type.[br]
@@ -434,7 +434,7 @@ is empty.[br]
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size]
 [def _max_size_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.max_size `max_size`]]
 
-`cc.max_size(index)`[br]
+`cc.max_size(info)`[br]
 `cc.max_size<U>()`
 
 [*Returns:] The maximum size attainable by the segment for
@@ -444,7 +444,7 @@ the indicated type.[br]
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity]
 [def _capacity_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.capacity `capacity`]]
 
-`cc.capacity(index)`[br]
+`cc.capacity(info)`[br]
 `cc.capacity<U>()`[br]
 
 [*Returns:] The maximum size that the segment for the indicated type can
@@ -459,10 +459,10 @@ attain without requiring reallocation.[br]
 [*Effects:] Calls `reserve` with `n` for each of the segments of the
 collection.
 
-(1) `c.reserve(index,n)`[br]
+(1) `c.reserve(info,n)`[br]
 (2) `c.reserve<U>(n)`
 
-[*Effects:] Throws if the type indicated by `index` is not registered (1)
+[*Effects:] Throws if the type indicated by `info` is not registered (1)
 or registers `U` if needed (2). If `n` is greater than the current
 capacity of the segment for the indicated type, new storage space is allocated
 with a capacity of at least `n` and elements are moved there.[br]
@@ -479,7 +479,7 @@ constant otherwise.[br]
 [*Effects:] Calls `shrink_to_fit` for each of the segments of the
 collection.
 
-`c.shrink_to_fit(index)`[br]
+`c.shrink_to_fit(info)`[br]
 `c.shrink_to_fit<U>()`
 
 [*Effects:] Non-binding request to reduce memory usage while preserving the
@@ -632,7 +632,7 @@ from the last one to the end of its segment.
 [*Effects:] Erases all the elements of the container.[br]
 [*Complexity:] Linear.
 
-`c.clear(index)`[br]
+`c.clear(info)`[br]
 `c.clear<U>()`
 
 [*Effects:] Erases all the elements of the segment for the indicated type.[br]
@@ -668,15 +668,15 @@ All the collections in Boost.PolyCollection use the following exceptions
 
   struct unregistered_type:std::logic_error
   {
-    unregistered_type(const std::type_index& info);
+    unregistered_type(const std::type_info& info);
 
-    std::type_index info;
+    const std::type_info* pinfo;
   };
 
 `unregistered_type` is thrown when an operation is requested on a type which
 does not yet have an associated segment.
 
-`unregistered_type(const std::type_index& info);`
+`unregistered_type(const std::type_info& info);`
 
 [*Effects:] Constructs an `unregistered_type` object with the specified type
 information.
@@ -687,15 +687,15 @@ information.
 
   struct not_copy_constructible:std::logic_error
   {
-    not_copy_constructible(const std::type_index& info);
+    not_copy_constructible(const std::type_info& info);
 
-    std::type_index info;
+    const std::type_info* pinfo;
   };
 
 `not_copy_constructible` is thrown when a copy operation is tried that
 involves a non-_CopyConstructible_ type.
 
-`not_copy_constructible(const std::type_index& info);`
+`not_copy_constructible(const std::type_info& info);`
 
 [*Effects:] Constructs a `not_copy_constructible` object with the specified
 type information.
@@ -706,15 +706,15 @@ type information.
 
   struct not_equality_comparable:std::logic_error
   {
-    not_equality_comparable(const std::type_index& info);
+    not_equality_comparable(const std::type_info& info);
 
-    std::type_index info;
+    const std::type_info* pinfo;
   };
 
 `not_equality_comparable` is thrown when comparing two collections
 for (in)equality involves a non-_EqualityComparable_ type.
 
-`not_equality_comparable(const std::type_index& info);`
+`not_equality_comparable(const std::type_info& info);`
 
 [*Effects:] Constructs a `not_equality_comparable` object with the specified
 type information.

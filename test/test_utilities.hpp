@@ -20,7 +20,7 @@
 #include <iterator>
 #include <memory>
 #include <type_traits>
-#include <typeindex>
+#include <typeinfo>
 
 namespace test_utilities{
 
@@ -244,15 +244,15 @@ bool is_first(
 }
 
 template<typename PolyCollection,typename Iterator>
-bool is_first(const PolyCollection& p,std::type_index index,Iterator it)
+bool is_first(const PolyCollection& p,const std::type_info& info,Iterator it)
 {
-  return &*it==&*p.begin(index);
+  return &*it==&*p.begin(info);
 }
 
 template<typename PolyCollection,typename Iterator>
-bool is_last(const PolyCollection& p,std::type_index index,Iterator it)
+bool is_last(const PolyCollection& p,const std::type_info& info,Iterator it)
 {
-  return &*it==&*(p.end(index)-1);
+  return &*it==&*(p.end(info)-1);
 }
 
 template<typename T,typename PolyCollection,typename Iterator>

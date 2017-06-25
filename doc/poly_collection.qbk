@@ -122,8 +122,8 @@ available /at compile time/ at the point of insertion in the vector:
 
 A suitably designed container can take advantage of this information to
 arrange elements contiguously according to their exact type, which results
-in an internal data structure (a map of
-[@http://en.cppreference.com/w/cpp/types/type_index `std::type_index`] objects,
+in an internal data structure (a map of pointers to
+[@http://en.cppreference.com/w/cpp/types/type_info `std::type_info`] objects,
 actually) pointing to as many vectors or /segments/ as there are derived classes:
 
 [$poly_collection/img/segment_map.png]
@@ -1049,7 +1049,7 @@ scenarios. Taking this idea further, it is not unusual that some environments
 (game engines, for instance) provide their own RTTI framework: an even more
 ambitious extension to Boost.PolyCollection would then be to make it configurable
 for user-provided RTTI through some sort of traits class specifying replacements for
-[@http://en.cppreference.com/w/cpp/types/type_info `std::type_info`]/[@http://en.cppreference.com/w/cpp/types/type_index `std::type_index`]
+[@http://en.cppreference.com/w/cpp/types/type_info `std::type_info`]
 and [@http://en.cppreference.com/w/cpp/language/typeid `typeid`].
 
 [endsect]
