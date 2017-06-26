@@ -298,7 +298,9 @@ struct value_holder_allocator_adaptor:Allocator
   template<typename T>
   void destroy(value_holder<T>* p)
   {
-    reinterpret_cast<T*>(static_cast<value_holder_base<T>*>(p))->~T();
+    traits::destroy(
+      static_cast<Allocator&>(*this),
+      reinterpret_cast<T*>(static_cast<value_holder_base<T>*>(p)));
   }
 };
 
