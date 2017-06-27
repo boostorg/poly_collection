@@ -863,7 +863,7 @@ calls are not needed.
 
 [def _vs2015_x86_ Visual Studio 2015 x86]
 [def _vs2015_x64_ Visual Studio 2015 x64]
-[def _gcc60_x64_ GCC 6.0 x64]
+[def _gcc63_x64_ GCC 6.3 x64]
 [def _clang40_x64_ Clang 4.0 x64]
 
 [template perf_fig[name environment file]
@@ -896,7 +896,7 @@ following environments:
 
 * *_vs2015_x86_*: Visual C++ 2015 in 32-bit (x86) release mode, Windows 7 64-bit, Intel Core i5-2520M @2.5GHz
 * *_vs2015_x64_*: Visual C++ 2015 in 64-bit (x64) release mode, same machine
-* *_gcc60_x64_*: GCC 6.0 release mode, Xubuntu 17.04 x64, Intel Core i7-5820 @3.3GHz
+* *_gcc63_x64_*: GCC 6.3 release mode, Xubuntu 17.04 x64, Intel Core i7-5820 @3.3GHz
 * *_clang40_x64_*: Clang 4.0 release mode, same machine
 
 [section Container definitions]
@@ -948,21 +948,21 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_base_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_base_vs2015_x64]
-[perf_fig Insertion.._gcc60_x64_..insert_base_gcc60_x64]
+[perf_fig Insertion.._gcc63_x64_..insert_base_gcc63_x64]
 [perf_fig Insertion.._clang40_x64_..insert_base_clang40_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_function_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_function_vs2015_x64]
-[perf_fig Insertion.._gcc60_x64_..insert_function_gcc60_x64]
+[perf_fig Insertion.._gcc63_x64_..insert_function_gcc63_x64]
 [perf_fig Insertion.._clang40_x64_..insert_function_clang40_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_any_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_any_vs2015_x64]
-[perf_fig Insertion.._gcc60_x64_..insert_any_gcc60_x64]
+[perf_fig Insertion.._gcc63_x64_..insert_any_gcc63_x64]
 [perf_fig Insertion.._clang40_x64_..insert_any_clang40_x64]
 [endsect]
 
@@ -1013,21 +1013,21 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_base_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_base_vs2015_x64]
-[perf_fig Processing.._gcc60_x64_..for_each_base_gcc60_x64]
+[perf_fig Processing.._gcc63_x64_..for_each_base_gcc63_x64]
 [perf_fig Processing.._clang40_x64_..for_each_base_clang40_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_function_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_function_vs2015_x64]
-[perf_fig Processing.._gcc60_x64_..for_each_function_gcc60_x64]
+[perf_fig Processing.._gcc63_x64_..for_each_function_gcc63_x64]
 [perf_fig Processing.._clang40_x64_..for_each_function_clang40_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_any_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_any_vs2015_x64]
-[perf_fig Processing.._gcc60_x64_..for_each_any_gcc60_x64]
+[perf_fig Processing.._gcc63_x64_..for_each_any_gcc63_x64]
 [perf_fig Processing.._clang40_x64_..for_each_any_clang40_x64]
 [endsect]
 
