@@ -863,8 +863,8 @@ calls are not needed.
 
 [def _vs2015_x86_ Visual Studio 2015 x86]
 [def _vs2015_x64_ Visual Studio 2015 x64]
-[def _gcc52_x64_ GCC 5.2 x64]
-[def _clang39_x64_ Clang 3.9 x64]
+[def _gcc60_x64_ GCC 6.0 x64]
+[def _clang40_x64_ Clang 4.0 x64]
 
 [template perf_fig[name environment file]
 [section [environment]]
@@ -896,8 +896,8 @@ following environments:
 
 * *_vs2015_x86_*: Visual C++ 2015 in 32-bit (x86) release mode, Windows 7 64-bit, Intel Core i5-2520M @2.5GHz
 * *_vs2015_x64_*: Visual C++ 2015 in 64-bit (x64) release mode, same machine
-* *_gcc52_x64_*: GCC 5.2 release mode, Linux 64 bit, Intel Core i7-3770K @3.5HGz
-* *_clang39_x64_*: Clang 3.9 release mode, Xubuntu 16.04 x64, Intel Core i7-5820 @3.3GHz 
+* *_gcc60_x64_*: GCC 6.0 release mode, Xubuntu 17.04 x64, Intel Core i7-5820 @3.3GHz
+* *_clang40_x64_*: Clang 4.0 release mode, same machine
 
 [section Container definitions]
 
@@ -936,7 +936,7 @@ following environments:
 [section Insertion tests]
 
 Tests measure the time taken to insert /n/ elements (/n/ between
-10'''<superscript>3</superscript>''' and 10'''<superscript>7</superscript>''')
+10'''<superscript>2</superscript>''' and 10'''<superscript>7</superscript>''')
 from a source of values with types following the cyclic sequence
 
 `T1` `T1` `T2`  `T2` `T3` `T1` `T1` `T2`  `T2` `T3` ···
@@ -948,22 +948,22 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_base_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_base_vs2015_x64]
-[perf_fig Insertion.._gcc52_x64_..insert_base_gcc52_x64]
-[perf_fig Insertion.._clang39_x64_..insert_base_clang39_x64]
+[perf_fig Insertion.._gcc60_x64_..insert_base_gcc60_x64]
+[perf_fig Insertion.._clang40_x64_..insert_base_clang40_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_function_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_function_vs2015_x64]
-[perf_fig Insertion.._gcc52_x64_..insert_function_gcc52_x64]
-[perf_fig Insertion.._clang39_x64_..insert_function_clang39_x64]
+[perf_fig Insertion.._gcc60_x64_..insert_function_gcc60_x64]
+[perf_fig Insertion.._clang40_x64_..insert_function_clang40_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Insertion.._vs2015_x86_..insert_any_vs2015_x86]
 [perf_fig Insertion.._vs2015_x64_..insert_any_vs2015_x64]
-[perf_fig Insertion.._gcc52_x64_..insert_any_gcc52_x64]
-[perf_fig Insertion.._clang39_x64_..insert_any_clang39_x64]
+[perf_fig Insertion.._gcc60_x64_..insert_any_gcc60_x64]
+[perf_fig Insertion.._clang40_x64_..insert_any_clang40_x64]
 [endsect]
 
 [endsect]
@@ -972,7 +972,7 @@ The horizontal axis is logarithmic.
 
 Tests measure the time taken to traverse a container of size
 /n/ (/n/ between
-10'''<superscript>3</superscript>''' and 10'''<superscript>7</superscript>''')
+10'''<superscript>2</superscript>''' and 10'''<superscript>7</superscript>''')
 and execute an operation on each of its elements. The operation for
 `boost::base_collection` and `boost::function_collection` (and the associated
 baseline containers) is defined as
@@ -1013,22 +1013,22 @@ The horizontal axis is logarithmic.
 [section Results for `boost::base_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_base_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_base_vs2015_x64]
-[perf_fig Processing.._gcc52_x64_..for_each_base_gcc52_x64]
-[perf_fig Processing.._clang39_x64_..for_each_base_clang39_x64]
+[perf_fig Processing.._gcc60_x64_..for_each_base_gcc60_x64]
+[perf_fig Processing.._clang40_x64_..for_each_base_clang40_x64]
 [endsect]
 
 [section Results for `boost::function_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_function_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_function_vs2015_x64]
-[perf_fig Processing.._gcc52_x64_..for_each_function_gcc52_x64]
-[perf_fig Processing.._clang39_x64_..for_each_function_clang39_x64]
+[perf_fig Processing.._gcc60_x64_..for_each_function_gcc60_x64]
+[perf_fig Processing.._clang40_x64_..for_each_function_clang40_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
 [perf_fig Processing.._vs2015_x86_..for_each_any_vs2015_x86]
 [perf_fig Processing.._vs2015_x64_..for_each_any_vs2015_x64]
-[perf_fig Processing.._gcc52_x64_..for_each_any_gcc52_x64]
-[perf_fig Processing.._clang39_x64_..for_each_any_clang39_x64]
+[perf_fig Processing.._gcc60_x64_..for_each_any_gcc60_x64]
+[perf_fig Processing.._clang40_x64_..for_each_any_clang40_x64]
 [endsect]
 
 [endsect]
