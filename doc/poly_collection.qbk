@@ -30,9 +30,6 @@
 
 [section Introduction]
 
-[warning Boost.PolyCollection has been accepted into Boost but
-it is yet to be released as part of an official Boost distribution.]
-
 Dynamic polymorphism in C++ requires that objects (such as instances
 of classes derived from an abstract base) be accessed through an indirection pointer
 because their actual /type/ and /size/ are not known at the point of usage. As a
