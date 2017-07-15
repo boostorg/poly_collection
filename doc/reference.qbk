@@ -979,7 +979,7 @@ a dynamic _polymorphism_model_ based on call signature compatibility:
 
 [itemized_list
   [*Interface* = { `Signature` : `Signature` = `R(Args...)` }.]
-  [*Implementation*(`Signature`) = { `Callable` : `std::callable_v<Callable(Args...),R>` }.]
+  [*Implementation*(`Signature`) = { `Callable` : `std::is_invocable_r_v<R,Callable,Args...>` }.]
   [*subobject*(`x`) =[br]
     `x.target<T>()` with `typeid(T)==x.target_type()`, if `x` is an instantiation of _function_collection_value_type_,[br]
     `x`, otherwise.
