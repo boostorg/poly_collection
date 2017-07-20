@@ -91,9 +91,8 @@ public:
   type_info_map& operator=(const type_info_map& x)
   {
     if(this!=&x){
-      map=x.map;
-      cache=cache_type{x.cache.get_allocator()};
-      build_cache(x.cache);
+      type_info_map c{x};
+      swap(c);
     }
     return *this;
   }
