@@ -5,21 +5,21 @@ develop branch &nbsp;&nbsp; [![Build Status](https://travis-ci.org/boostorg/poly
 
 **Boost.PolyCollection**: fast containers of polymorphic objects.
 
-[Online docs](http://boost.org/doc/libs/master/libs/poly_collection)  
+[Online docs](http://boost.org/libs/poly_collection)  
 [Seminal article at bannalia.blogspot.com](http://bannalia.blogspot.com/2014/05/fast-polymorphic-collections.html)
 
 Typically, polymorphic objects cannot be stored *directly* in regular containers
 and need be accessed through an indirection pointer, which introduces performance
 problems related to CPU caching and branch prediction. Boost.PolyCollection
 implements a
-[novel data structure](http://www.boost.org/doc/libs/master/doc/html/poly_collection/an_efficient_polymorphic_data_st.html)
+[novel data structure](http://www.boost.org/doc/html/poly_collection/an_efficient_polymorphic_data_st.html)
 that is able to contiguously store polymorphic objects without such indirection,
 thus providing a value-semantics user interface and better performance.
 Three *polymorphic collections* are provided:
 
-* [`boost::base_collection`](http://www.boost.org/doc/libs/master/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection) 
-* [`boost::function_collection`](http://www.boost.org/doc/libs/master/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection)
-* [`boost::any_collection`](http://www.boost.org/doc/libs/master/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection)
+* [`boost::base_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection) 
+* [`boost::function_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection)
+* [`boost::any_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection)
 
 dealing respectively with classic base/derived or OOP polymorphism, function wrapping
 in the spirit of `std::function` and so-called
