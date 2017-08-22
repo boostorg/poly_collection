@@ -46,14 +46,16 @@ void test_iterators(PolyCollection& p)
   using base_segment_info=typename PolyCollection::base_segment_info;
   using const_base_segment_info=
     typename PolyCollection::const_base_segment_info;
-  using segment_info=typename PolyCollection::template segment_info<Type>;
   using const_segment_info=
     typename PolyCollection::template const_segment_info<Type>;
+  using segment_info=typename PolyCollection::template segment_info<Type>;
 
   static_assert(is_random_access<local_iterator>::value,
                 "local_iterator must be random access");
   static_assert(is_random_access<const_local_iterator>::value,
                 "const_local_iterator must be random access");
+  static_assert(std::is_base_of<const_segment_info,segment_info>::value,
+                "segment_info must derive from const_segment_info");
 
   {
     local_iterator       lit;
@@ -161,13 +163,17 @@ void test_iterators()
   using local_base_iterator=typename PolyCollection::local_base_iterator;
   using const_local_base_iterator=
     typename PolyCollection::const_local_base_iterator;
+  using const_base_segment_info=
+    typename PolyCollection::const_base_segment_info;
+  using base_segment_info=typename PolyCollection::base_segment_info;
   using base_segment_info_iterator=
     typename PolyCollection::base_segment_info_iterator;
   using const_base_segment_info_iterator=
     typename PolyCollection::const_base_segment_info_iterator;
-  using base_segment_info=typename PolyCollection::base_segment_info;
-  using const_base_segment_info=
-    typename PolyCollection::const_base_segment_info;
+  using const_segment_traversal_info=
+    typename PolyCollection::const_segment_traversal_info;
+  using segment_traversal_info=
+    typename PolyCollection::segment_traversal_info;
 
   static_assert(is_forward<iterator>::value,
                 "iterator must be forward");
@@ -177,13 +183,17 @@ void test_iterators()
                 "local_base_iterator must be random access");
   static_assert(is_random_access<const_local_base_iterator>::value,
                 "const_local_base_iterator must be random access");
+  static_assert(std::is_base_of<
+                  const_base_segment_info,base_segment_info>::value,
+                "base_segment_info must derive from const_base_segment_info");
   static_assert(is_input<base_segment_info_iterator>::value,
                 "base_segment_info_iterator must be input");
   static_assert(is_input<const_base_segment_info_iterator>::value,
                 "const_base_segment_info_iterator must be input");
   static_assert(std::is_base_of<
-                  const_base_segment_info,base_segment_info>::value,
-                "base_segment_info must derive from const_base_segment_info");
+                  const_segment_traversal_info,segment_traversal_info>::value,
+                "const_segment_traversal_info must derive "\
+                "from segment_traversal_info");
 
   {
     iterator                         it;
