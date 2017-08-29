@@ -109,6 +109,12 @@ void test_construction()
       BOOST_TEST(p2==p);
       BOOST_TEST(p2.get_allocator().root==&root2);
     }
+
+#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
+    /* Limitations from libstdc++-v3 make move construction with allocator
+     * decay to copy construction with allocator.
+     */
+#else
     {
       rooted_poly_collection p2{cp};
       auto                   d2=get_layout_data<Types...>(p2);
@@ -119,6 +125,7 @@ void test_construction()
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
       BOOST_TEST(p3.get_allocator().root==&root2);
     }
+#endif
     {
       rooted_poly_collection p2{cp};
       auto                   d2=get_layout_data<Types...>(p2);
