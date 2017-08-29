@@ -69,14 +69,14 @@ public:
 
   type_info_map()=default;
   type_info_map(const type_info_map& x):
-    map{x.map},cache{{},x.cache.get_allocator()}{build_cache(x.cache);}
+    map{x.map},cache{x.cache.get_allocator()}{build_cache(x.cache);}
   type_info_map(type_info_map&& x)=default;
   type_info_map(const allocator_type& al):
-    map{{},al},cache{{},cache_allocator_type{al}}{}
+    map{al},cache{cache_allocator_type{al}}{}
   type_info_map(const type_info_map& x,const allocator_type& al):
-    map{x.map,al},cache{{},cache_allocator_type{al}}{build_cache(x.cache);}
+    map{x.map,al},cache{cache_allocator_type{al}}{build_cache(x.cache);}
   type_info_map(type_info_map&& x,const allocator_type& al):
-    map{std::move(x.map),al},cache{{},cache_allocator_type{al}}
+    map{std::move(x.map),al},cache{cache_allocator_type{al}}
   {
     if(al==x.map.get_allocator()&&
        cache_allocator_type{al}==x.cache.get_allocator()){
