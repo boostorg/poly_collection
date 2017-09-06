@@ -157,6 +157,11 @@ void test_construction()
       Types...
     >(p,v,2);
 
+#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
+    /* std::unordered_map copy construction and assigment crash when elements
+     * throw on copy construction.
+     */
+#else
     check_throw<not_copy_constructible>([&]{
       PolyCollection p2{cp};
       (void)p2;      
@@ -165,6 +170,8 @@ void test_construction()
       PolyCollection p2;
       p2=cp;
     });
+#endif
+
     {
       PolyCollection p2{std::move(p)};
       BOOST_TEST(!p2.empty());
