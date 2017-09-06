@@ -506,6 +506,24 @@ void test_partition_copy_algorithms(
     to_int,const_cast<const PolyCollection&>(p),pred),0)...);
 }
 
+template<typename ToInt>
+struct poly_accumulator_class
+{
+  poly_accumulator_class(const ToInt& to_int):res{0},to_int{to_int}{};
+  bool operator==(const poly_accumulator_class& x)const{return res==x.res;}
+
+  template<typename T> void operator()(const T& x){res+=to_int(x);}
+
+  int   res;
+  ToInt to_int;
+};
+
+template<typename ToInt>
+poly_accumulator_class<ToInt> poly_accumulator(const ToInt& to_int)
+{
+  return to_int;
+}
+
 template<
   typename PolyCollection,typename ValueFactory,typename ToInt,
   typename... Types
@@ -545,21 +563,8 @@ void test_algorithm()
       p,pred);
   }
   {
-    struct acc_t
-    {
-      acc_t():res{0}{}
-      void operator()(int x){res+=x;}
-      int res;
-    } acc;
-    using poly_acc_base=decltype(compose(to_int,acc));
-    struct poly_acc_t:poly_acc_base
-    {
-      poly_acc_t(const poly_acc_base& x):poly_acc_base{x}{};
-      bool operator==(const poly_acc_t& x)const{return this->f2.res==x.f2.res;}
-    } poly_acc{compose(to_int,acc)};
-
     test_algorithms<std_for_each<>,poly_for_each<>,poly_for_each<Types...>>(
-      p,poly_acc);
+      p,poly_accumulator(to_int));
   }
   {
     for(const auto& x:p){
