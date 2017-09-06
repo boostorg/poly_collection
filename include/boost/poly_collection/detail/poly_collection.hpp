@@ -33,11 +33,11 @@ namespace boost{
 
 namespace poly_collection{
 
-namespace detail{
-
-namespace poly_collection_impl{
+namespace common_impl{
 
 /* common implementation for all polymorphic collections */
+
+using namespace detail;
 
 template<typename Model,typename Allocator>
 class poly_collection
@@ -1165,9 +1165,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace poly_collection::detail::poly_collection_impl */
-
-} /* namespace poly_collection::detail */
+} /* namespace poly_collection::common_impl */
 
 } /* namespace poly_collection */
 
