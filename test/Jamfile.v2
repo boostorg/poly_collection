@@ -10,7 +10,7 @@ import ../../config/checks/config : requires ;
 
 project
     : requirements
-      [ requires cxx11_noexcept ]
+      [ requires cxx11_noexcept ] # used as a proxy for C++11 support
       <toolset>msvc:<cxxflags>-D_SCL_SECURE_NO_WARNINGS
     ;
 
@@ -20,13 +20,21 @@ test-suite "poly_collection" :
           test_algorithm_main.cpp
         :
         :                            
-        : <toolset>msvc:<cxxflags>/bigobj                    ]
+        : <toolset>msvc:<cxxflags>/bigobj
+          <toolset>gcc:<inlining>on
+          <toolset>gcc:<optimization>space
+          <toolset>clang:<inlining>on
+          <toolset>clang:<optimization>space                 ]
     [ run test_capacity.cpp       test_capacity_main.cpp     ]
     [ run test_comparison.cpp     test_comparison_main.cpp   ]
     [ run test_construction.cpp   test_construction_main.cpp
         :
         :                            
-        : <toolset>msvc:<cxxflags>/bigobj                    ]
+        : <toolset>msvc:<cxxflags>/bigobj
+          <toolset>gcc:<inlining>on
+          <toolset>gcc:<optimization>space
+          <toolset>clang:<inlining>on
+          <toolset>clang:<optimization>space                 ]
     [ run test_emplacement.cpp    test_emplacement_main.cpp  ]
     [ run test_erasure.cpp        test_erasure_main.cpp      ]
     [ run test_insertion.cpp      test_insertion_main.cpp    ]
