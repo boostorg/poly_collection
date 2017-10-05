@@ -1111,7 +1111,7 @@ ordered within their segment and optionally duplicates are excluded, much like
 [@http://boost.org/doc/html/container/non_standard_containers.html#container.non_standard_containers.flat_xxx `boost::flat_set`/`boost::flat_multiset`]
 do over their internal data vector. The open question remains of whether these
 collections should also guarantee some order between segments (current ones don't)
-to allow for the definition of container-level `operator::<` and related operators.
+to allow for the definition of container-level `operator<` and related operators.
 
 [endsect]
 
