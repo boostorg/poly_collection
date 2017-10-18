@@ -136,7 +136,7 @@ void test_construction()
       BOOST_TEST(p2.empty());
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
 
-#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)|| \
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)||\
     BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
 #else
       BOOST_TEST(p3.get_allocator().root==&root1);
