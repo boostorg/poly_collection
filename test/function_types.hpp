@@ -135,10 +135,12 @@ inline bool operator==(const t4&,const t2&){return false;}
 
 struct to_int
 {
+  to_int(){};
+
   template<typename F>
   int operator()(const F& f)const{return f(1);}
 };
 
-} /* namespace function_types*/
+} /* namespace function_types */
 
 #endif

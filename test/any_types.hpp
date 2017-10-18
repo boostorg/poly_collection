@@ -66,6 +66,8 @@ using t5=boost::type_erasure::any<
 
 struct to_int
 {
+  to_int(){};
+
   template<typename Concept,typename Tag>
   int operator()(const boost::type_erasure::any<Concept,Tag>& x)const
   {
@@ -89,6 +91,6 @@ struct to_int
   }
 };
 
-} /* namespace any_types*/
+} /* namespace any_types */
 
 #endif

@@ -83,10 +83,12 @@ using t5=derived5;
 
 struct to_int
 {
+  to_int(){};
+
   template<typename F>
   int operator()(const F& f)const{return f(1);}
 };
 
-} /* namespace base_types*/
+} /* namespace base_types */
 
 #endif
