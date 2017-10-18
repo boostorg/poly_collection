@@ -161,6 +161,8 @@ void test_construction()
     /* std::unordered_map copy construction and assigment crash when elements
      * throw on copy construction.
      */
+
+    (void)cp;
 #else
     check_throw<not_copy_constructible>([&]{
       PolyCollection p2{cp};
