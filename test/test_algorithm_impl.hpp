@@ -29,8 +29,11 @@
 
 using namespace test_utilities;
 
-#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
-/* https://lists.boost.org/Archives/boost/2017/06/235687.php */
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)||\
+    BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+/* MSVC: https://lists.boost.org/Archives/boost/2017/06/235687.php
+ * GCC: Similar problem and same fix (no bug report found)
+ */
 
 #define DEFINE_ALGORITHM(name,f)                    \
 template<typename... Ts>                            \
