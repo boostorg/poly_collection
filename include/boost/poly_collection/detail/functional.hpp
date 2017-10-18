@@ -35,6 +35,21 @@ struct name                                               \
     return f(std::forward<Args>(args)...);                \
   }                                                       \
 };
+#elif BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+/* buggy implicit copy ctor if default ctor not explicitly defined */
+
+#define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
+struct name                                               \
+{                                                         \
+  name(){};                                               \
+                                                          \
+  template<typename... Args>                              \
+  auto operator()(Args&&... args)const->                  \
+    decltype(f(std::forward<Args>(args)...))              \
+  {                                                       \
+    return f(std::forward<Args>(args)...);                \
+  }                                                       \
+};
 #else
 #define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
 struct name                                               \
