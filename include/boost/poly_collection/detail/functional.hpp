@@ -73,9 +73,9 @@ template<typename F,typename Tuple>
 struct tail_closure_class
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  tail_closure_class(){}
+  tail_closure_class(const F& f,Tuple&& t):f{f},t{std::move(t)}{}
 #endif
 
   template<typename... Args,std::size_t... I>
@@ -113,9 +113,9 @@ template<typename F,typename Tuple>
 struct head_closure_class
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  head_closure_class(){}
+  head_closure_class(const F& f,Tuple&& t):f{f},t{std::move(t)}{}
 #endif
 
   template<typename... Args,std::size_t... I>
@@ -152,9 +152,9 @@ template<typename ReturnType,typename F>
 struct cast_return_class
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  cast_return_class(){}
+  cast_return_class(const F& f):f{f}{}
 #endif
 
   template<typename... Args>
@@ -176,9 +176,9 @@ template<typename F>
 struct deref_to_class
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  deref_to_class(){}
+  deref_to_class(const F& f):f{f}{}
 #endif
 
   template<typename... Args>
@@ -200,9 +200,9 @@ template<typename F>
 struct deref_1st_to_class
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  deref_1st_to_class(){}
+  deref_1st_to_class(const F& f):f{f}{}
 #endif
 
   template<typename Arg,typename... Args>
