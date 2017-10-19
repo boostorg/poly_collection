@@ -1028,9 +1028,9 @@ template<typename Predicate,typename... Ts>
 struct partition_point_pred
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* aggregate initialization fails */
 
-  partition_point_pred(){}
+  partition_point_pred(const Predicate& pred):pred{pred}{}
 #endif
 
   template<typename Iterator>
