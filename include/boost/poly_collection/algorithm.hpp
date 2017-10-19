@@ -14,6 +14,8 @@
 #endif
 
 #include <algorithm>
+#include <boost/config.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/poly_collection/detail/auto_iterator.hpp>
 #include <boost/poly_collection/detail/functional.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
@@ -90,6 +92,12 @@ bool none_of(const Iterator& first,const Iterator& last,Predicate pred)
 
 struct for_each_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  for_each_alg(){}
+#endif
+
   template<typename InputIterator,typename Function>
   void operator()(
     InputIterator first,InputIterator last,Function& f)const /* note the & */
@@ -194,6 +202,12 @@ Iterator find_first_of(
 template<typename... Ts>
 struct adjacent_find_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  adjacent_find_alg(){}
+#endif
+
   template<
     typename LocalIterator,typename BinaryPredicate,typename LocalBaseIterator
   >
@@ -284,6 +298,12 @@ std::ptrdiff_t count_if(
 
 struct mismatch_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  mismatch_alg(){}
+#endif
+
   template<
     typename InputIterator1,
     typename InputIterator2,typename BinaryPredicate
@@ -367,6 +387,12 @@ std::pair<Iterator,InputIterator> mismatch(
 
 struct equal_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  equal_alg(){}
+#endif
+
   template<
     typename InputIterator1,
     typename InputIterator2,typename BinaryPredicate
@@ -594,6 +620,12 @@ Iterator find_end(
 
 struct search_n_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  search_n_alg(){}
+#endif
+
   template<
     typename ForwardIterator,typename Size,
     typename T,typename BinaryPredicate
@@ -753,6 +785,12 @@ OutputIterator transform(
 
 struct transform2_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  transform2_alg(){}
+#endif
+
   template<
     typename InputIterator1,typename InputIterator2,
     typename OutputIterator,typename BinaryOperation
@@ -786,6 +824,12 @@ struct replace_copy_alg
    * conditional operator".
    */
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  replace_copy_alg(){}
+#endif
+
   template<typename InputIterator,typename OutputIterator,typename T>
   OutputIterator operator()(
     InputIterator first,InputIterator last,OutputIterator res,
@@ -816,6 +860,12 @@ struct replace_copy_if_alg
    * "<algorithm>: replace_copy() and replace_copy_if() shouldn't use the
    * conditional operator".
    */
+
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  replace_copy_if_alg(){}
+#endif
 
   template<
     typename InputIterator,typename OutputIterator,
@@ -873,6 +923,12 @@ OutputIterator remove_copy_if(
 template<typename... Ts>
 struct unique_copy_alg
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  unique_copy_alg(){}
+#endif
+
   template<
     typename LocalIterator,typename OutputIterator,
     typename BinaryPredicate,typename LocalBaseIterator
@@ -971,6 +1027,12 @@ std::pair<OutputIterator1,OutputIterator2> partition_copy(
 template<typename Predicate,typename... Ts>
 struct partition_point_pred
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  partition_point_pred(){}
+#endif
+
   template<typename Iterator>
   bool operator()(const Iterator& it)const
   {
