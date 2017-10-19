@@ -72,6 +72,12 @@ namespace detail{
 template<typename F,typename Tuple>
 struct tail_closure_class
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  tail_closure_class(){}
+#endif
+
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
     ->decltype(std::declval<F>()(
@@ -106,6 +112,12 @@ auto tail_closure(const F& f,Args&&... args)
 template<typename F,typename Tuple>
 struct head_closure_class
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  head_closure_class(){}
+#endif
+
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
     ->decltype(std::declval<F>()(
@@ -139,6 +151,12 @@ auto head_closure(const F& f,Args&&... args)
 template<typename ReturnType,typename F>
 struct cast_return_class
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  cast_return_class(){}
+#endif
+
   template<typename... Args>
   ReturnType operator()(Args&&... args)const
   {
@@ -157,6 +175,12 @@ cast_return_class<ReturnType,F> cast_return(const F& f)
 template<typename F>
 struct deref_to_class
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  deref_to_class(){}
+#endif
+
   template<typename... Args>
   auto operator()(Args&&... args)->decltype(std::declval<F>()(*args...))
   {
@@ -175,6 +199,12 @@ deref_to_class<F> deref_to(const F& f)
 template<typename F>
 struct deref_1st_to_class
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  deref_1st_to_class(){}
+#endif
+
   template<typename Arg,typename... Args>
   auto operator()(Arg&& arg,Args&&... args)
     ->decltype(std::declval<F>()(*arg,std::forward<Args>(args)...))
