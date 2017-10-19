@@ -189,6 +189,47 @@ struct std_is_permutation:std_cpp11_is_permutation<Ts...>
 {
   using std_cpp11_is_permutation<Ts...>::operator();
 
+  /* The implementation of predicate-based std::is_permutation in GCC<=4.8
+   * version of libstdc++-v3 incorrectly triggers the instantiation of
+   * ForwardIterator2::value_type, which fails when this is an abstract class.
+   * The implementation below ripped from libc++ source code.
+   */
+
+  template<
+    typename ForwardIterator1,typename ForwardIterator2,typename Predicate
+  >
+  bool operator()(
+    ForwardIterator1 first1,ForwardIterator1 last1,
+    ForwardIterator2 first2,Predicate pred)const
+  {
+    for(;first1!=last1;++first1,(void)++first2){
+      if(!pred(*first1,*first2))goto not_done;
+    }
+    return true;
+
+  not_done:
+    using difference_type=
+      typename std::iterator_traits<ForwardIterator1>::difference_type;
+
+    difference_type l1=std::distance(first1,last1);
+    if(l1==difference_type(1))return false;
+
+    ForwardIterator2 last2=std::next(first2,l1);
+    for(ForwardIterator1 i=first1;i!= last1;++i){
+      for(ForwardIterator1 j=first1;j!=i;++j)if(pred(*j,*i))goto next_iter;
+      {
+        difference_type c2=0;
+        for(ForwardIterator2 j=first2;j!=last2;++j)if(pred(*i,*j))++c2;
+        if(c2==0)return false;
+        difference_type c1=1;
+        for(ForwardIterator1 j=std::next(i);j!=last1;++j)if(pred(*i,*j))++c1;
+        if(c1!=c2)return false;
+      }
+  next_iter:;
+    }
+    return true;
+  }
+
   /* C++14 variants */
 
   template<typename ForwardIterator1,typename ForwardIterator2>
@@ -197,7 +238,7 @@ struct std_is_permutation:std_cpp11_is_permutation<Ts...>
     ForwardIterator2 first2,ForwardIterator2 last2)const
   {
     if(std::distance(first1,last1)!=std::distance(first2,last2))return false;
-    return std::is_permutation(first1,last1,first2);
+    return (*this)(first1,last1,first2);
   }
 
   template<
@@ -208,7 +249,7 @@ struct std_is_permutation:std_cpp11_is_permutation<Ts...>
     ForwardIterator2 first2,ForwardIterator2 last2,Predicate pred)const
   {
     if(std::distance(first1,last1)!=std::distance(first2,last2))return false;
-    return std::is_permutation(first1,last1,first2,pred);
+    return (*this)(first1,last1,first2,pred);
   }
 };
 
