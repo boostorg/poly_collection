@@ -50,6 +50,8 @@ struct compose_class
   F1 f1;
   F2 f2;
 
+  compose_class(const F1& f1,const F2& f2):f1{f1},f2{f2}{}
+
   template<typename T,typename... Args>
   auto operator()(T&& x,Args&&... args)
     ->decltype((this->f2)((this->f1)(
@@ -70,6 +72,8 @@ struct compose_all_class
 {
   F1 f1;
   F2 f2;
+
+  compose_all_class(const F1& f1,const F2& f2):f1{f1},f2{f2}{}
 
   template<typename... Args>
   auto operator()(Args&&... args)
