@@ -75,7 +75,7 @@ struct tail_closure_class
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
   /* aggregate initialization fails */
 
-  tail_closure_class(const F& f,Tuple&& t):f{f},t{std::move(t)}{}
+  tail_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
 #endif
 
   template<typename... Args,std::size_t... I>
@@ -115,7 +115,7 @@ struct head_closure_class
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
   /* aggregate initialization fails */
 
-  head_closure_class(const F& f,Tuple&& t):f{f},t{std::move(t)}{}
+  head_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
 #endif
 
   template<typename... Args,std::size_t... I>
