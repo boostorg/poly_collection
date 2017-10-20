@@ -223,6 +223,12 @@ deref_1st_to_class<F> deref_1st_to(const F& f)
 
 struct transparent_equal_to
 {
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* buggy implicit copy ctor if default ctor not explicitly defined */
+
+  transparent_equal_to(){}
+#endif
+
   template<typename T,typename U>
   auto operator()(T&& x,U&& y)const
     noexcept(noexcept(std::forward<T>(x)==std::forward<U>(y)))
