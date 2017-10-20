@@ -83,6 +83,28 @@ public:
     const PolyCollectionIterator* last;
   };
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* GCC produces crashing code when a temporary segment_splitter is used in a
+   * range-for. Avoiding reference data members fixes the issue.
+   */
+
+  segment_splitter(
+    const PolyCollectionIterator& first,const PolyCollectionIterator& last):
+    first{&first},last{&last}{}
+
+  iterator begin()const noexcept{return {*first,*last};}
+
+  iterator end()const noexcept
+  {
+    auto slast=traits::base_segment_info_iterator_from(*last);
+    if(slast!=traits::end_base_segment_info_iterator_from(*last))++slast;
+    return {slast,*last,*last};
+  }
+
+private:
+  const PolyCollectionIterator* first;
+  const PolyCollectionIterator* last;
+#else
   segment_splitter(
     const PolyCollectionIterator& first,const PolyCollectionIterator& last):
     first{first},last{last}{}
@@ -97,14 +119,6 @@ public:
   }
 
 private:
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* GCC produces crashing code when a temporary segment_splitter is used in a
-   * range-for.
-   */
-
-  PolyCollectionIterator first;
-  PolyCollectionIterator last;
-#else
   const PolyCollectionIterator& first;
   const PolyCollectionIterator& last;
 #endif
