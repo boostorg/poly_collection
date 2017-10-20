@@ -13,6 +13,8 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <typeinfo>
@@ -95,8 +97,17 @@ public:
   }
 
 private:
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* GCC produces crashing code when a temporary segment_splitter is used in a
+   * range-for.
+   */
+
+  PolyCollectionIterator first;
+  PolyCollectionIterator last;
+#else
   const PolyCollectionIterator& first;
   const PolyCollectionIterator& last;
+#endif
 };
 
 template<typename PolyCollectionIterator>
