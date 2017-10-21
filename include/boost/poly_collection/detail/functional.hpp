@@ -36,7 +36,7 @@ struct name                                               \
   }                                                       \
 };
 #elif BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-/* buggy implicit copy ctor if default ctor not explicitly defined */
+/* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
 #define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
 struct name                                               \
@@ -72,11 +72,7 @@ namespace detail{
 template<typename F,typename Tuple>
 struct tail_closure_class
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   tail_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
-#endif
 
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
@@ -112,11 +108,7 @@ auto tail_closure(const F& f,Args&&... args)
 template<typename F,typename Tuple>
 struct head_closure_class
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   head_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
-#endif
 
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
@@ -151,11 +143,7 @@ auto head_closure(const F& f,Args&&... args)
 template<typename ReturnType,typename F>
 struct cast_return_class
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   cast_return_class(const F& f):f{f}{}
-#endif
 
   template<typename... Args>
   ReturnType operator()(Args&&... args)const
@@ -175,11 +163,7 @@ cast_return_class<ReturnType,F> cast_return(const F& f)
 template<typename F>
 struct deref_to_class
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   deref_to_class(const F& f):f{f}{}
-#endif
 
   template<typename... Args>
   auto operator()(Args&&... args)->decltype(std::declval<F>()(*args...))
@@ -199,11 +183,7 @@ deref_to_class<F> deref_to(const F& f)
 template<typename F>
 struct deref_1st_to_class
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   deref_1st_to_class(const F& f):f{f}{}
-#endif
 
   template<typename Arg,typename... Args>
   auto operator()(Arg&& arg,Args&&... args)
@@ -224,7 +204,7 @@ deref_1st_to_class<F> deref_1st_to(const F& f)
 struct transparent_equal_to
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   transparent_equal_to(){}
 #endif

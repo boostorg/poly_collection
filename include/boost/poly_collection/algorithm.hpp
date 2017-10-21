@@ -93,7 +93,7 @@ bool none_of(const Iterator& first,const Iterator& last,Predicate pred)
 struct for_each_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   for_each_alg(){}
 #endif
@@ -203,7 +203,7 @@ template<typename... Ts>
 struct adjacent_find_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   adjacent_find_alg(){}
 #endif
@@ -299,7 +299,7 @@ std::ptrdiff_t count_if(
 struct mismatch_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   mismatch_alg(){}
 #endif
@@ -388,7 +388,7 @@ std::pair<Iterator,InputIterator> mismatch(
 struct equal_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   equal_alg(){}
 #endif
@@ -621,7 +621,7 @@ Iterator find_end(
 struct search_n_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   search_n_alg(){}
 #endif
@@ -786,7 +786,7 @@ OutputIterator transform(
 struct transform2_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   transform2_alg(){}
 #endif
@@ -825,7 +825,7 @@ struct replace_copy_alg
    */
 
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   replace_copy_alg(){}
 #endif
@@ -862,7 +862,7 @@ struct replace_copy_if_alg
    */
 
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   replace_copy_if_alg(){}
 #endif
@@ -924,7 +924,7 @@ template<typename... Ts>
 struct unique_copy_alg
 {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* buggy implicit copy ctor if default ctor not explicitly defined */
+  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
 
   unique_copy_alg(){}
 #endif
@@ -1027,11 +1027,7 @@ std::pair<OutputIterator1,OutputIterator2> partition_copy(
 template<typename Predicate,typename... Ts>
 struct partition_point_pred
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* aggregate initialization fails */
-
   partition_point_pred(const Predicate& pred):pred{pred}{}
-#endif
 
   template<typename Iterator>
   bool operator()(const Iterator& it)const

@@ -162,7 +162,9 @@ void test_construction()
      * throw on copy construction.
      */
 
-    (void)cp;
+    static_assert(
+      sizeof(not_copy_constructible)>0,""); /* Wunused-local-typedefs */
+    (void)cp;                               /* Wunused-variable       */
 #else
     check_throw<not_copy_constructible>([&]{
       PolyCollection p2{cp};

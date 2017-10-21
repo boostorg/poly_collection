@@ -13,8 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/config.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <typeinfo>
@@ -57,21 +55,21 @@ public:
     iterator(
       base_segment_info_iterator it,
       const PolyCollectionIterator& first,const PolyCollectionIterator& last):
-      it{it},first{&first},last{&last}{}
+      it{it},pfirst{&first},plast{&last}{}
     iterator(
       const PolyCollectionIterator& first,const PolyCollectionIterator& last):
       it{traits::base_segment_info_iterator_from(first)},
-         first{&first},last{&last}
+      pfirst{&first},plast{&last}
       {}
 
     info dereference()const noexcept
     {
       return {
         &it->type_info(),
-        it==traits::base_segment_info_iterator_from(*first)?
-          traits::local_base_iterator_from(*first):it->begin(),
-        it==traits::base_segment_info_iterator_from(*last)?
-          traits::local_base_iterator_from(*last):it->end()
+        it==traits::base_segment_info_iterator_from(*pfirst)?
+          traits::local_base_iterator_from(*pfirst):it->begin(),
+        it==traits::base_segment_info_iterator_from(*plast)?
+          traits::local_base_iterator_from(*plast):it->end()
       };
     }
 
@@ -79,49 +77,26 @@ public:
     void increment()noexcept{++it;}
 
     base_segment_info_iterator    it;
-    const PolyCollectionIterator* first;
-    const PolyCollectionIterator* last;
+    const PolyCollectionIterator* pfirst;
+    const PolyCollectionIterator* plast;
   };
 
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* GCC produces crashing code when a temporary segment_splitter is used in a
-   * range-for. Avoiding reference data members fixes the issue.
-   */
-
   segment_splitter(
     const PolyCollectionIterator& first,const PolyCollectionIterator& last):
-    first{&first},last{&last}{}
+    pfirst{&first},plast{&last}{}
 
-  iterator begin()const noexcept{return {*first,*last};}
+  iterator begin()const noexcept{return {*pfirst,*plast};}
 
   iterator end()const noexcept
   {
-    auto slast=traits::base_segment_info_iterator_from(*last);
-    if(slast!=traits::end_base_segment_info_iterator_from(*last))++slast;
-    return {slast,*last,*last};
+    auto slast=traits::base_segment_info_iterator_from(*plast);
+    if(slast!=traits::end_base_segment_info_iterator_from(*plast))++slast;
+    return {slast,*plast,*plast};
   }
 
 private:
-  const PolyCollectionIterator* first;
-  const PolyCollectionIterator* last;
-#else
-  segment_splitter(
-    const PolyCollectionIterator& first,const PolyCollectionIterator& last):
-    first{first},last{last}{}
-
-  iterator begin()const noexcept{return {first,last};}
-
-  iterator end()const noexcept
-  {
-    auto slast=traits::base_segment_info_iterator_from(last);
-    if(slast!=traits::end_base_segment_info_iterator_from(last))++slast;
-    return {slast,last,last};
-  }
-
-private:
-  const PolyCollectionIterator& first;
-  const PolyCollectionIterator& last;
-#endif
+  const PolyCollectionIterator* pfirst;
+  const PolyCollectionIterator* plast;
 };
 
 template<typename PolyCollectionIterator>
