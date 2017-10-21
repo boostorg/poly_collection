@@ -16,6 +16,7 @@
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/poly_collection/detail/integer_sequence.hpp>
+#include <boost/poly_collection/detail/workaround_dr1467.hpp>
 #include <tuple>
 #include <utility>
 
@@ -35,25 +36,12 @@ struct name                                               \
     return f(std::forward<Args>(args)...);                \
   }                                                       \
 };
-#elif BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-/* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
-
-#define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
-struct name                                               \
-{                                                         \
-  name(){};                                               \
-                                                          \
-  template<typename... Args>                              \
-  auto operator()(Args&&... args)const->                  \
-    decltype(f(std::forward<Args>(args)...))              \
-  {                                                       \
-    return f(std::forward<Args>(args)...);                \
-  }                                                       \
-};
 #else
 #define BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(name,f) \
 struct name                                               \
 {                                                         \
+  BOOST_POLY_COLLECTION_WORKAROUND_DR1467(name)           \
+                                                          \
   template<typename... Args>                              \
   auto operator()(Args&&... args)const->                  \
     decltype(f(std::forward<Args>(args)...))              \
@@ -203,11 +191,7 @@ deref_1st_to_class<F> deref_1st_to(const F& f)
 
 struct transparent_equal_to
 {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
-  /* http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1467 */
-
-  transparent_equal_to(){}
-#endif
+  BOOST_POLY_COLLECTION_WORKAROUND_DR1467(transparent_equal_to)
 
   template<typename T,typename U>
   auto operator()(T&& x,U&& y)const
