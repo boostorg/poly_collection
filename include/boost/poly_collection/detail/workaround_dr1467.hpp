@@ -17,7 +17,7 @@
 #include <boost/detail/workaround.hpp>
 
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)||\
-    defined(__clang__)&&\
+    defined(BOOST_CLANG)&&\
       (__clang_major__<3||(__clang_major__==3&&__clang_minor__<=6))
 /* Defect report 1467 denounces that for aggregate types an intended {}-style
  * copy construction will be mistaken for aggregate initialization:
