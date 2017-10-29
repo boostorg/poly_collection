@@ -86,7 +86,7 @@ int main()
 
 //[insertion_emplacement_6]
 //<-
-  // same as line at beginning of of revious snippet
+  // same as line at beginning of previous snippet
 //->
   c2.insert(c.begin(),c.end());
 //]
