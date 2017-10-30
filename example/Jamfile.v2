@@ -8,14 +8,12 @@
 project
     : requirements
       <include>$(BOOST_ROOT)
-      <toolset>gcc:<cxxflags>-std=c++11
-      <toolset>clang:<cxxflags>-std=c++11
+      <cxxstd>11
     ;
 
 exe algorithms
     : algorithms.cpp
-    : <toolset>gcc:<cxxflags>-std=c++14
-      <toolset>clang:<cxxflags>-std=c++14
+    : <cxxstd>14
     ;
 
 exe basic_any
@@ -28,8 +26,7 @@ exe basic_base
 
 exe basic_function
     : basic_function.cpp
-    : <toolset>gcc:<cxxflags>-std=c++14
-      <toolset>clang:<cxxflags>-std=c++14
+    : <cxxstd>14
     ;
 
 exe exceptions
@@ -48,6 +45,5 @@ exe perf
 
 exe segmented_structure
     : segmented_structure.cpp
-    : <toolset>gcc:<cxxflags>-std=c++14
-      <toolset>clang:<cxxflags>-std=c++14
+    : <cxxstd>14
     ;
