@@ -60,7 +60,7 @@ namespace detail{
 template<typename F,typename Tuple>
 struct tail_closure_class
 {
-  tail_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
+  tail_closure_class(const F& f,Tuple&& t):f(f),t(std::move(t)){}
 
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
@@ -96,7 +96,7 @@ auto tail_closure(const F& f,Args&&... args)
 template<typename F,typename Tuple>
 struct head_closure_class
 {
-  head_closure_class(const F& f,Tuple&& t):f{f},t(std::move(t)){}
+  head_closure_class(const F& f,Tuple&& t):f(f),t(std::move(t)){}
 
   template<typename... Args,std::size_t... I>
   auto call(index_sequence<I...>,Args&&... args)
@@ -131,7 +131,7 @@ auto head_closure(const F& f,Args&&... args)
 template<typename ReturnType,typename F>
 struct cast_return_class
 {
-  cast_return_class(const F& f):f{f}{}
+  cast_return_class(const F& f):f(f){}
 
   template<typename... Args>
   ReturnType operator()(Args&&... args)const
@@ -151,7 +151,7 @@ cast_return_class<ReturnType,F> cast_return(const F& f)
 template<typename F>
 struct deref_to_class
 {
-  deref_to_class(const F& f):f{f}{}
+  deref_to_class(const F& f):f(f){}
 
   template<typename... Args>
   auto operator()(Args&&... args)->decltype(std::declval<F>()(*args...))
@@ -171,7 +171,7 @@ deref_to_class<F> deref_to(const F& f)
 template<typename F>
 struct deref_1st_to_class
 {
-  deref_1st_to_class(const F& f):f{f}{}
+  deref_1st_to_class(const F& f):f(f){}
 
   template<typename Arg,typename... Args>
   auto operator()(Arg&& arg,Args&&... args)

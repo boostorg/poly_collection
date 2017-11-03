@@ -564,7 +564,7 @@ void test_partition_copy_algorithms(
 template<typename ToInt>
 struct poly_accumulator_class
 {
-  poly_accumulator_class(const ToInt& to_int):res{0},to_int{to_int}{}
+  poly_accumulator_class(const ToInt& to_int):res{0},to_int(to_int){}
   bool operator==(const poly_accumulator_class& x)const{return res==x.res;}
 
   template<typename T> void operator()(const T& x){res+=to_int(x);}

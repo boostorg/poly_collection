@@ -990,7 +990,7 @@ std::pair<OutputIterator1,OutputIterator2> partition_copy(
 template<typename Predicate,typename... Ts>
 struct partition_point_pred
 {
-  partition_point_pred(const Predicate& pred):pred{pred}{}
+  partition_point_pred(const Predicate& pred):pred(pred){}
 
   template<typename Iterator>
   bool operator()(const Iterator& it)const
