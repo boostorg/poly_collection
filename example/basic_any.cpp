@@ -43,7 +43,7 @@ int main()
 //[basic_any_3
   // populate with sprites
   std::mt19937                 gen{92748}; // some arbitrary random seed
-  std::discrete_distribution<> rnd({1,1,1});
+  std::discrete_distribution<> rnd{{1,1,1}};
   for(int i=0;i<4;++i){        // assign each type with 1/3 probability
     switch(rnd(gen)){ 
       case 0: c.insert(warrior{i});break;

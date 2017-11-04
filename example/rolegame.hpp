@@ -22,7 +22,7 @@
 //[rolegame_1
 struct sprite
 {
-  sprite(int id):id(id){}
+  sprite(int id):id{id}{}
   virtual ~sprite()=default;
   virtual void render(std::ostream& os)const=0;
 

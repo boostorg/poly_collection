@@ -39,7 +39,7 @@ int main()
   auto make_sprite=[]()->std::unique_ptr<sprite>{
 //->
     static std::mt19937                 gen{92748};
-    static std::discrete_distribution<> rnd({1,1,1});
+    static std::discrete_distribution<> rnd{{1,1,1}};
     static int                          id=0;
 
     switch(rnd(gen)){ 
