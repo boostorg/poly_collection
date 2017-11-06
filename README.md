@@ -28,4 +28,4 @@ in the spirit of `std::function` and so-called
 
 ## Requirements
 
-Boost.PolyCollection is a header-only library. C++11 support is required. The library has been verified to work with Visual Studio 2015, GCC 5.2 and Clang 3.7.
+Boost.PolyCollection is a header-only library. C++11 support is required. The library has been verified to work with Visual Studio 2015, GCC 4.8 and Clang 3.3.

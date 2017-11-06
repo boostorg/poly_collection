@@ -70,8 +70,8 @@ stored for further opportunities of increased efficiency related to inlining and
 [@http://hubicka.blogspot.com.es/2014/01/devirtualization-in-c-part-1.html ['devirtualization]].
 
 [note Boost.PolyCollection is a header-only library. C++11 support is required.
-The library has been verified to work with Visual Studio 2015, GCC 5.2 and
-Clang 3.7.]
+The library has been verified to work with Visual Studio 2015, GCC 4.8 and
+Clang 3.3.]
 
 [endsect]
 
