@@ -1121,9 +1121,10 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Boost 1.66]
 
-* Boost.PolyCollection has been backported to GCC 4.8-9. In the case of GCC 4.8,
-there are some limitations coming from deficiencies in the version of libstdc++-v3
-this compiler uses:
+* Boost.PolyCollection has been backported to GCC 4.8 to 4.9 and Clang 3.3 to 3.6.
+The version of libstdc++-v3 shipped with GCC 4.8 (which can also be used by Clang)
+has deficiencies that result in the following limitations when using
+Boost.PolyCollection:
   * Stateful allocators are not properly supported.
   * Allocator-extended move construction decays to allocator-extended copy construction.
   * Copy construction crashes if an exception is thrown during element copying.
