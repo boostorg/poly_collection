@@ -73,7 +73,7 @@ struct tail_closure_class
 
   template<typename... Args>
   auto operator()(Args&&... args)
-    ->decltype(this->call(
+    ->decltype(std::declval<tail_closure_class>().call(
       make_index_sequence<std::tuple_size<Tuple>::value>{},
       std::forward<Args>(args)...))
   {
@@ -108,7 +108,7 @@ struct head_closure_class
 
   template<typename... Args>
   auto operator()(Args&&... args)
-    ->decltype(this->call(
+    ->decltype(std::declval<head_closure_class>().call(
       make_index_sequence<std::tuple_size<Tuple>::value>{},
       std::forward<Args>(args)...))
   {
