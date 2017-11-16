@@ -70,7 +70,7 @@ int main()
         s.render(std::cout);
         comma=",";
       }
-    };
+    }
     std::cout<<"\n";
 //]
   };

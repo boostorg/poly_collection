@@ -36,7 +36,7 @@ struct warrior:sprite
   using sprite::sprite;
   warrior(std::string rank,int id):sprite{id},rank{std::move(rank)}{}
 
-  void render(std::ostream& os)const override{os<<rank<<" "<<id;};
+  void render(std::ostream& os)const override{os<<rank<<" "<<id;}
 
   std::string rank="warrior";
 };
@@ -49,7 +49,7 @@ struct juggernaut:warrior
 struct goblin:sprite
 {
   using sprite::sprite;
-  void render(std::ostream& os)const override{os<<"goblin "<<id;};
+  void render(std::ostream& os)const override{os<<"goblin "<<id;}
 };
 //]
 
@@ -70,7 +70,7 @@ struct elf:sprite
   using sprite::sprite;
   elf(const elf&)=delete; // not copyable
   elf(elf&&)=default;     // but moveable
-  void render(std::ostream& os)const override{os<<"elf "<<id;};
+  void render(std::ostream& os)const override{os<<"elf "<<id;}
 };
 //]
 

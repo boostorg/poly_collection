@@ -58,21 +58,21 @@ int main()
 //->
 //=  auto render_sprite(const sprite& s){
     return [&](std::ostream& os){s.render(os);};
-  };
+  }/*<-*/;/*->*/
 
 //<-
   auto render_message=[](const std::string& m){
 //->
 //=  auto render_message(const std::string& m){
     return [&](std::ostream& os){os<<m;};
-  };
+  }/*<-*/;/*->*/
 
 //<-
   auto render_window=[](const window& w){
 //->
 //=  auto render_window(const window& w){
     return [&](std::ostream& os){w.display(os);};
-  };
+  }/*<-*/;/*->*/
 //=  ...
 //=
   for(const auto& ps:sprs)c.insert(render_sprite(*ps)); 
