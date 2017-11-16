@@ -131,6 +131,7 @@ public:
   {
     auto p=s.data();
     s.shrink_to_fit();
+    s.reserve(1); /* --> s.data()!=nullptr */
     if(p!=s.data())try{
       index ii{{},i.get_allocator()};
       ii.reserve(s.capacity()+1);
@@ -296,7 +297,12 @@ private:
 
   split_segment(const Allocator& al):
     s{typename store::allocator_type{al}},
-    i{{},typename index::allocator_type{al}}{build_index();}
+    i{{},typename index::allocator_type{al}}
+  {
+    s.reserve(1); /* --> s.data()!=nullptr */
+    build_index();
+  }
+
   split_segment(store&& s_):
     s{std::move(s_)},i{{},typename index::allocator_type{s.get_allocator()}}
     {build_index();}
