@@ -57,73 +57,66 @@ namespace poly_collection{
 
 namespace detail{
 
-template<typename F,typename Tuple>
+template<typename F,typename... TailArgs>
 struct tail_closure_class
 {
-  tail_closure_class(const F& f,Tuple&& t):f(f),t(std::move(t)){}
+  tail_closure_class(const F& f,std::tuple<TailArgs...> t):f(f),t(t){}
+
+  template<typename... Args>
+  using return_type=decltype(
+    std::declval<F>()(std::declval<Args>()...,std::declval<TailArgs>()...));
 
   template<typename... Args,std::size_t... I>
-  auto call(index_sequence<I...>,Args&&... args)
-    ->decltype(std::declval<F>()(
-      std::forward<Args>(args)...,
-      std::get<I>(std::declval<Tuple>())...))
+  return_type<Args&&...> call(index_sequence<I...>,Args&&... args)
   {
     return f(std::forward<Args>(args)...,std::get<I>(t)...);
   }
 
   template<typename... Args>
-  auto operator()(Args&&... args)
-    ->decltype(std::declval<tail_closure_class>().call(
-      make_index_sequence<std::tuple_size<Tuple>::value>{},
-      std::forward<Args>(args)...))
+  return_type<Args&&...> operator()(Args&&... args)
   {
     return call(
-      make_index_sequence<std::tuple_size<Tuple>::value>{},
-      std::forward<Args>(args)...);
+      make_index_sequence<sizeof...(TailArgs)>{},std::forward<Args>(args)...);
   }
   
-  F     f;
-  Tuple t; 
+  F                       f;
+  std::tuple<TailArgs...> t; 
 };
 
 template<typename F,typename... Args>
-auto tail_closure(const F& f,Args&&... args)
-  ->tail_closure_class<F,std::tuple<Args&&...>>
+tail_closure_class<F,Args&&...> tail_closure(const F& f,Args&&... args)
 {
   return {f,std::forward_as_tuple(std::forward<Args>(args)...)};
 }
 
-template<typename F,typename Tuple>
+template<typename F,typename... HeadArgs>
 struct head_closure_class
 {
-  head_closure_class(const F& f,Tuple&& t):f(f),t(std::move(t)){}
+  head_closure_class(const F& f,std::tuple<HeadArgs...> t):f(f),t(t){}
+
+  template<typename... Args>
+  using return_type=decltype(
+    std::declval<F>()(std::declval<HeadArgs>()...,std::declval<Args>()...));
 
   template<typename... Args,std::size_t... I>
-  auto call(index_sequence<I...>,Args&&... args)
-    ->decltype(std::declval<F>()(
-      std::get<I>(std::declval<Tuple>())...,std::forward<Args>(args)...))
+  return_type<Args&&...> call(index_sequence<I...>,Args&&... args)
   {
     return f(std::get<I>(t)...,std::forward<Args>(args)...);
   }
 
   template<typename... Args>
-  auto operator()(Args&&... args)
-    ->decltype(std::declval<head_closure_class>().call(
-      make_index_sequence<std::tuple_size<Tuple>::value>{},
-      std::forward<Args>(args)...))
+  return_type<Args&&...> operator()(Args&&... args)
   {
     return call(
-      make_index_sequence<std::tuple_size<Tuple>::value>{},
-      std::forward<Args>(args)...);
+      make_index_sequence<sizeof...(HeadArgs)>{},std::forward<Args>(args)...);
   }
   
-  F     f;
-  Tuple t; 
+  F                       f;
+  std::tuple<HeadArgs...> t; 
 };
 
 template<typename F,typename... Args>
-auto head_closure(const F& f,Args&&... args)
-  ->head_closure_class<F,std::tuple<Args&&...>>
+head_closure_class<F,Args&&...> head_closure(const F& f,Args&&... args)
 {
   return {f,std::forward_as_tuple(std::forward<Args>(args)...)};
 }
