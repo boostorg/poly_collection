@@ -767,7 +767,7 @@ Versions of other standard algorithms are provided as well:
 In fact, variants are given of most (though not all) of the algorithms in
 [@http://en.cppreference.com/w/cpp/algorithm `<algorithm>`]
 among those that are compatible with polymorphic collections 
-[footnote For example, algorithms requiring bidrectional iterators or a higher
+[footnote For example, algorithms requiring bidirectional iterators or a higher
 category are not provided because polymorphic collections have forward-only
 iterators.].
 Check the [link poly_collection.reference.header_boost_poly_collection_alg reference]
