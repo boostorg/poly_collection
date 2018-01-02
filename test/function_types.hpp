@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -135,8 +135,6 @@ inline bool operator==(const t4&,const t2&){return false;}
 
 struct to_int
 {
-  to_int(){};
-
   template<typename F>
   int operator()(const F& f)const{return f(1);}
 };

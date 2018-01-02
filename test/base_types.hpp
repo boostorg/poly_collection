@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -83,8 +83,6 @@ using t5=derived5;
 
 struct to_int
 {
-  to_int(){};
-
   template<typename F>
   int operator()(const F& f)const{return f(1);}
 };

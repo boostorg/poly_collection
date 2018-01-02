@@ -1119,6 +1119,10 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Release notes]
 
+[section Boost 1.67]
+
+* Maintenance fixes.
+
 [section Boost 1.66]
 
 * Boost.PolyCollection has been backported to GCC 4.8 to 4.9 and Clang 3.3 to 3.6.
