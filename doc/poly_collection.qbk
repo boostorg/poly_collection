@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2017 Joaquín M López Muñoz]
+  [copyright 2016-2018 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -1122,6 +1122,8 @@ to allow for the definition of container-level `operator<` and related operators
 [section Boost 1.67]
 
 * Maintenance fixes.
+
+[endsect]
 
 [section Boost 1.66]
 
