@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -115,7 +115,7 @@ using is_not_copy_assignable=std::integral_constant<
 template<typename T>
 using is_equality_comparable=std::integral_constant<
   bool,
-  boost::has_equal_to<T,T>::value
+  boost::has_equal_to<T,T,bool>::value
 >;
 
 template<typename T>

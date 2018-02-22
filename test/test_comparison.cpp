@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -139,6 +139,22 @@ void test_comparison()
   }
 }
 
+void test_stateless_lambda_comparability_check()
+{
+  /* https://svn.boost.org/trac10/ticket/13012 */
+
+  {
+    boost::function_collection<void()> c1,c2;
+    c1.insert([]{});
+    BOOST_TEST(c1!=c2);
+  }
+  {
+    boost::function_collection<int(int)> c1,c2;
+    c1.insert([](int){return 0;});
+    BOOST_TEST(c1!=c2);
+  }
+}
+
 void test_comparison()
 {
   test_comparison<
@@ -153,4 +169,5 @@ void test_comparison()
     function_types::collection,auto_increment,
     function_types::t1,function_types::t2,function_types::t3,
     function_types::t4,function_types::t5>();
+  test_stateless_lambda_comparability_check();
 }
