@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -213,15 +213,15 @@ struct std_is_permutation:std_cpp11_is_permutation<Ts...>
     ForwardIterator1 first1,ForwardIterator1 last1,
     ForwardIterator2 first2,Predicate pred)const
   {
+    using difference_type=
+      typename std::iterator_traits<ForwardIterator1>::difference_type;
+
     for(;first1!=last1;++first1,(void)++first2){
       if(!pred(*first1,*first2))goto not_done;
     }
     return true;
 
   not_done:
-    using difference_type=
-      typename std::iterator_traits<ForwardIterator1>::difference_type;
-
     difference_type l1=std::distance(first1,last1);
     if(l1==difference_type(1))return false;
 
