@@ -28,7 +28,7 @@ install:
   - git rm --ignore-unmatch libs/poly_collection/
   - bootstrap
   - b2 headers
-  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\poly_collection
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\poly_collection\
 
 build: off
 
