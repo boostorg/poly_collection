@@ -1,7 +1,9 @@
 # Boost PolyCollection library
 
-develop branch &nbsp;&nbsp; [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=develop)](https://travis-ci.org/boostorg/poly_collection) | master branch &nbsp;&nbsp; [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=master)](https://travis-ci.org/boostorg/poly_collection)
--|-
+Branch   | Travis | AppVeyor
+---------|--------|---------
+develop  | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=develop)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=develop&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection)
+master   | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=master)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=master&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection)
 
 **Boost.PolyCollection**: fast containers of polymorphic objects.
 
