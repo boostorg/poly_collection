@@ -5,7 +5,6 @@
 #
 # See http://www.boost.org/libs/poly_collection for library home page.
 
-
 sudo: false
 
 language: cpp
@@ -182,7 +181,7 @@ install:
   - git rm --ignore-unmatch libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
-  - rcp -r $TRAVIS_BUILD_DIR libs/poly_collection/
+  - cp -r $TRAVIS_BUILD_DIR/* libs/poly_collection
 
 script:
   - |-
