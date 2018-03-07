@@ -181,6 +181,7 @@ install:
   - git rm --ignore-unmatch libs/poly_collection/
   - ./bootstrap.sh
   - ./b2 headers
+  - mkdir libs/poly_collection
   - cp -r $TRAVIS_BUILD_DIR/* libs/poly_collection
 
 script:
