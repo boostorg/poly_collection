@@ -477,8 +477,7 @@ Even more powerful than `local_base_iterator` is `local_iterator<T>`:
 
 [segmented_structure_8]
 
-This changes the `rank` data member of existing warriors to append it a
-`"super"` prefix:
+This appends a `"super"` prefix to the `rank` data member of existing warriors:
 
 [pre
 superwarrior 2,superwarrior 6
