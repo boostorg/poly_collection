@@ -273,10 +273,11 @@ void test_algorithm(PolyCollection& p,Args&&... args)
   Algorithm        alg;
   ControlAlgorithm control;
   for(auto first=p.begin(),end=p.end();;++first){
-    for(auto last=first;last!=end;++last){
+    for(auto last=first;;++last){
       BOOST_TEST(
         alg(first,last,std::forward<Args>(args)...)==
         control(first,last,std::forward<Args>(args)...));
+      if(last==end)break;
     }
     if(first==end)break;
   }
@@ -334,7 +335,7 @@ void test_copy_algorithm(ToInt to_int,PolyCollection& p,Args&&... args)
   Algorithm        alg;
   ControlAlgorithm control;
   for(auto first=p.begin(),end=p.end();;++first){
-    for(auto last=first;last!=end;++last){
+    for(auto last=first;;++last){
       using vector=std::vector<int>;
 
       vector v1,v2;
@@ -346,6 +347,7 @@ void test_copy_algorithm(ToInt to_int,PolyCollection& p,Args&&... args)
       out1=alg(first,last,out1,std::forward<Args>(args)...);
       out2=control(first,last,out2,std::forward<Args>(args)...);
       BOOST_TEST(v1==v2);
+      if(last==end)break;
     }
     if(first==end)break;
   }
@@ -444,7 +446,7 @@ void test_transform2_algorithm(ToInt to_int,PolyCollection& p)
   Algorithm        alg;
   ControlAlgorithm control;
   for(auto first=p.begin(),end=p.end();;++first){
-    for(auto last=first;last!=end;++last){
+    for(auto last=first;;++last){
       using vector=std::vector<int>;
 
       auto   op=compose_all(to_int,[](int x,int y){return x+y;});
@@ -457,6 +459,7 @@ void test_transform2_algorithm(ToInt to_int,PolyCollection& p)
       out1=alg(first,last,p.begin(),out1,op);
       out2=control(first,last,p.begin(),out2,op);
       BOOST_TEST(v1==v2);
+      if(last==end)break;
     }
     if(first==end)break;
   }
@@ -483,7 +486,7 @@ void test_rotate_copy_algorithm(ToInt to_int,PolyCollection& p)
   Algorithm        alg;
   ControlAlgorithm control;
   for(auto first=p.begin(),end=p.end();;++first){
-    for(auto last=first;last!=end;++last){
+    for(auto last=first;;++last){
       for(auto middle=first;;++middle){
         using vector=std::vector<int>;
 
@@ -499,6 +502,7 @@ void test_rotate_copy_algorithm(ToInt to_int,PolyCollection& p)
 
         if(middle==last)break;
       }
+      if(last==end)break;
     }
     if(first==end)break;
   }
@@ -526,7 +530,7 @@ void test_partition_copy_algorithm(
   Algorithm        alg;
   ControlAlgorithm control;
   for(auto first=p.begin(),end=p.end();;++first){
-    for(auto last=first;last!=end;++last){
+    for(auto last=first;;++last){
       using vector=std::vector<int>;
 
       vector v11,v12,v21,v22;
@@ -543,6 +547,7 @@ void test_partition_copy_algorithm(
       std::tie(out21,out22)=control(first,last,out21,out22,pred);
       BOOST_TEST(v11==v21);
       BOOST_TEST(v12==v22);
+      if(last==end)break;
     }
     if(first==end)break;
   }
@@ -687,13 +692,15 @@ void test_algorithm()
       }
     }
 
-    for(auto first=v.begin(),end=v.end();first!=end;++first){
-      for(auto last=first;last!=end;++last){
+    for(auto first=v.begin(),end=v.end();;++first){
+      for(auto last=first;;++last){
         test_algorithms_with_equality<
           std_find_first_of<>,poly_find_first_of<>,
           only_eq_comparable<poly_find_first_of,Types...>
         >(p,first,last);        
+        if(last==end)break;
       }
+      if(first==end)break;
     }
   }
   {
@@ -706,12 +713,14 @@ void test_algorithm()
       }
     }
 
-    for(auto first=v.begin(),end=v.end();first!=end;++first){
-      for(auto last=first;last!=end;++last){
+    for(auto first=v.begin(),end=v.end();;++first){
+      for(auto last=first;;++last){
         test_algorithms<
           std_find_first_of<>,poly_find_first_of<>,poly_find_first_of<Types...>
         >(p,first,last,compose(to_int,std::equal_to<int>{}));        
+        if(last==end)break;
       }
+      if(first==end)break;
     }
   }
   {
