@@ -315,7 +315,7 @@ struct auto_increment
 struct jammed_auto_increment
 {
   template<typename T>
-  T make(){return T(n++/10);}
+  T make(){return T(n++/7);}
 
   int n=0;
 };
