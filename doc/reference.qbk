@@ -1142,6 +1142,13 @@ _Boost.TypeErasure_:
   Function for_each(
     PolyCollectionIterator first,PolyCollectionIterator last,Function f);
 
+  template<
+    typename... Ts,typename PolyCollectionIterator,
+    typename Size,typename Function
+  >
+  Iterator for_each_n(
+    PolyCollectionIterator first,Size n,Function f);
+
   template<typename... Ts,typename PolyCollectionIterator,typename T>
   PolyCollectionIterator find(
     PolyCollectionIterator first,PolyCollectionIterator last,const T& x);
@@ -1424,6 +1431,14 @@ _Boost.TypeErasure_:
     PolyCollectionIterator first,PolyCollectionIterator middle,
     PolyCollectionIterator last,OutputIterator res);
 
+  template<
+    typename... Ts,typename PolyCollectionIterator,typename OutputIterator,
+    typename Distance,typename UniformRandomBitGenerator
+  >
+  OutputIterator sample(
+    PolyCollectionIterator first,PolyCollectionIterator last,
+    OutputIterator res,Distance n,UniformRandomBitGenerator&& g);
+  
   template<typename... Ts,typename PolyCollectionIterator,typename Predicate>
   bool is_partitioned(
     PolyCollectionIterator first,PolyCollectionIterator last,Predicate pred);
@@ -1461,27 +1476,31 @@ of a collection of Boost.PolyCollection such that \[`first`, `middle`) and
 * `Ts...` is a template parameter pack of arbitrary types. 
 
 (1) [' `alg`]`(first,last,args...)`[br]
-(2) `copy_n(first,args...)`[br]
-(3) `rotate_copy(first,middle,last,args...)`
+(2) `for_each_n(first,args...)`[br]
+(3) `copy_n(first,args...)`[br]
+(4) `rotate_copy(first,middle,last,args...)`
 
 [*Requires:] The expression `expr` is well-formed, where `expr` is defined
 as:[br]
 (1) `std::`[' `alg`]`(first,last,args...)`,[br]
-(2) `std::copy_n(first,args...)`,[br]
-(3) `std::rotate_copy(first,middle,last,args...)`.[br]
+(2) `std::for_each_n(first,args...)`,[br]
+(3) `std::copy_n(first,args...)`,[br]
+(4) `std::rotate_copy(first,middle,last,args...)`.[br]
 [*Effects:] Equivalent to `expr`.[br]
 [*Returns:] `expr`.[br]
 [*Complexity:] That of `expr`.
 
 (1) [' `alg`]`<Ts...>(first,last,args...)`[br]
-(2) `copy_n<Ts...>(first,args...)`[br]
-(3) `rotate_copy<Ts...>(first,middle,last,args...)`
+(2) `for_each_n<Ts...>(first,args...)`[br]
+(3) `copy_n<Ts...>(first,args...)`[br]
+(4) `rotate_copy<Ts...>(first,middle,last,args...)`
 
 [*Requires:] The expression `expr` is well-formed, where `expr` is defined
 as:[br]
 (1) `std::`[' `alg`]`(rfirst,rlast,args...)`,[br]
-(2) `std::copy_n(rfirst,args...)`,[br]
-(3) `std::rotate_copy(rfirst,rmiddle,rlast,args...)`,[br]
+(2) `std::for_each_n(rfirst,args...)`,[br]
+(3) `std::copy_n(rfirst,args...)`,[br]
+(4) `std::rotate_copy(rfirst,rmiddle,rlast,args...)`,[br]
 and `rfirst`, `rmiddle` and `rlast` are iterator-like objects behaving like
 their `first`, `middle` and `last` counterparts except that they
 dereference to the corresponding subobject (`const`) `T&` if pointing to a

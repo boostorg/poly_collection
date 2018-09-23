@@ -1118,6 +1118,13 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Release notes]
 
+[section Boost 1.69]
+
+* Added Bost.PolyCollection-specific versions of algorithms
+`std::for_each_n` and `std::sample`.
+
+[endsect]
+
 [section Boost 1.67]
 
 * Maintenance fixes.

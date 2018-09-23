@@ -78,6 +78,7 @@ DEFINE_ALGORITHM(std_none_of,std::none_of)
 DEFINE_ALGORITHM(poly_none_of,boost::poly_collection::none_of)
 DEFINE_ALGORITHM(std_for_each,std::for_each)
 DEFINE_ALGORITHM(poly_for_each,boost::poly_collection::for_each)
+DEFINE_ALGORITHM(poly_for_each_n,boost::poly_collection::for_each_n)
 DEFINE_ALGORITHM(std_find,std::find)
 DEFINE_ALGORITHM(poly_find,boost::poly_collection::find)
 DEFINE_ALGORITHM(std_find_if,std::find_if)
@@ -124,6 +125,7 @@ DEFINE_ALGORITHM(std_remove_copy_if,std::remove_copy_if)
 DEFINE_ALGORITHM(poly_remove_copy_if,boost::poly_collection::remove_copy_if)
 DEFINE_ALGORITHM(std_unique_copy,std::unique_copy)
 DEFINE_ALGORITHM(poly_unique_copy,boost::poly_collection::unique_copy)
+DEFINE_ALGORITHM(poly_sample,boost::poly_collection::sample)
 DEFINE_ALGORITHM(std_rotate_copy,std::rotate_copy)
 DEFINE_ALGORITHM(poly_rotate_copy,boost::poly_collection::rotate_copy)
 DEFINE_ALGORITHM(std_is_partitioned,std::is_partitioned)
@@ -132,6 +134,19 @@ DEFINE_ALGORITHM(std_partition_copy,std::partition_copy)
 DEFINE_ALGORITHM(poly_partition_copy,boost::poly_collection::partition_copy)
 DEFINE_ALGORITHM(std_partition_point,std::partition_point)
 DEFINE_ALGORITHM(poly_partition_point,boost::poly_collection::partition_point)
+
+template<typename...>
+struct std_for_each_n
+{
+  /* implemented here as the algorithm is C++17 */
+
+  template<typename InputIterator,typename Size,typename Function>
+  InputIterator operator()(InputIterator first,Size n,Function f)const
+  {
+    for(;n>0;++first,(void)--n)f(*first);
+    return first;
+  }
+};
 
 template<typename... Ts>
 struct std_mismatch:std_cpp11_mismatch<Ts...>
@@ -264,6 +279,34 @@ struct std_is_permutation:std_cpp11_is_permutation<Ts...>
   }
 };
 
+template<typename...>
+struct std_sample
+{
+  /* Implemented here as the algorithm is C++17 and because we need to control
+   * the implementation to do white-box testing. Only the ForwardIterator
+   * version required.
+   */
+
+  template<
+    typename ForwardIterator,typename OutputIterator,
+    typename Distance, typename UniformRandomBitGenerator
+  >
+  OutputIterator operator()(
+    ForwardIterator first,ForwardIterator last,
+    OutputIterator res, Distance n,UniformRandomBitGenerator&& g)const
+  {
+    Distance m=std::distance(first,last);
+    for(n=(std::min)(n,m);n!=0;++first){
+      auto r=std::uniform_int_distribution<Distance>(0,--m)(g);
+      if (r<n){
+        *res++=*first;
+        --n;
+      }
+    }
+    return res;
+  }
+};
+
 template<
   typename ControlAlgorithm,typename Algorithm,
   typename PolyCollection,typename... Args
@@ -324,6 +367,40 @@ void test_algorithms_with_equality(PolyCollection& p,Args&&... args)
   test_algorithms_with_equality_impl<ControlAlgorithm,Algorithms...>(
     is_equality_comparable<typename PolyCollection::value_type>{},
     p,std::forward<Args>(args)...);
+}
+
+template<
+  typename ControlAlgorithm,typename Algorithm,
+  typename ToInt,typename PolyCollection
+>
+void test_for_each_n_algorithm(ToInt to_int,PolyCollection& p)
+{
+  Algorithm        alg;
+  ControlAlgorithm control;
+  for(auto first=p.begin(),end=p.end();;++first){
+    for(auto n=std::distance(first,end);n>=0;--n){
+      int  res1=0,res2=0;
+      auto acc1=compose(to_int,[&](int x){res1+=x;});
+      auto acc2=compose(to_int,[&](int x){res2+=x;});
+      auto it1=alg(first,n,acc1),
+           it2=control(first,n,acc2);
+      BOOST_TEST(it1==it2);
+      BOOST_TEST(res1==res2);
+    }
+    if(first==end)break;
+  }
+}
+
+template<
+  typename ControlAlgorithm,typename... Algorithms,
+  typename ToInt,typename PolyCollection
+>
+void test_for_each_n_algorithms(ToInt to_int,PolyCollection& p)
+{
+  do_((test_for_each_n_algorithm<ControlAlgorithm,Algorithms>(
+    to_int,p),0)...);
+  do_((test_for_each_n_algorithm<ControlAlgorithm,Algorithms>(
+    to_int,const_cast<const PolyCollection&>(p)),0)...);
 }
 
 template<
@@ -584,6 +661,22 @@ poly_accumulator_class<ToInt> poly_accumulator(const ToInt& to_int)
   return to_int;
 }
 
+template<typename Algorithm>
+struct force_arg_copying
+{
+  Algorithm alg;
+
+  template<typename T>
+  static T copy(const T& x){return x;}
+
+  template<typename... Args>
+  auto operator()(Args&&... args)const
+    ->decltype(std::declval<Algorithm>()(copy(args)...))
+  {
+    return alg(copy(args)...);
+  }
+};
+
 template<
   typename PolyCollection,typename ValueFactory,typename ToInt,
   typename... Types
@@ -625,6 +718,10 @@ void test_algorithm()
   {
     test_algorithms<std_for_each<>,poly_for_each<>,poly_for_each<Types...>>(
       p,poly_accumulator(to_int));
+
+    test_for_each_n_algorithms<
+      std_for_each_n<>,poly_for_each_n<>,poly_for_each_n<Types...>
+    >(to_int,p);
   }
   {
     for(const auto& x:p){
@@ -988,6 +1085,17 @@ void test_algorithm()
     test_rotate_copy_algorithms<
       std_rotate_copy<>,poly_rotate_copy<>,poly_rotate_copy<Types...>
     >(to_int,p);
+  }
+  {
+    /* force_arg_copying used to avoid sharing mt19937's state */
+
+    for(auto n=p.size()+1;n-->0;){
+      test_copy_algorithms<
+        force_arg_copying<std_sample<>>,
+        force_arg_copying<poly_sample<>>,
+        force_arg_copying<poly_sample<Types...>>
+      >(to_int,p,n,std::mt19937{});
+    }
   }
   {
     for(int n=0;n<6;++n){
