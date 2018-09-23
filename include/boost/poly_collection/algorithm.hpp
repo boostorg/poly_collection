@@ -1017,7 +1017,7 @@ struct sample_alg
 {
   template<
     typename InputIterator,typename OutputIterator,
-    typename Distance,typename typename UniformRandomBitGenerator
+    typename Distance,typename UniformRandomBitGenerator
   >
   OutputIterator operator()(
     InputIterator first,InputIterator last,
