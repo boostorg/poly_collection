@@ -496,7 +496,7 @@ template<
   typename Iterator,
   enable_if_poly_collection_iterator<Iterator> =nullptr
 >
-std::ptrdiff_t fast_fwd_distance(const Iterator& first,const Iterator& last)
+std::ptrdiff_t fast_distance(const Iterator& first,const Iterator& last)
 {
   using traits=iterator_traits<Iterator>;
 
@@ -557,7 +557,7 @@ bool is_permutation(
   Iterator first1,Iterator last1,ForwardIterator first2,BinaryPredicate pred)
 {
   std::tie(first1,first2)=algorithm::mismatch<Ts...>(first1,last1,first2,pred);
-  auto last2=std::next(first2,algorithm::fast_fwd_distance(first1,last1));
+  auto last2=std::next(first2,algorithm::fast_distance(first1,last1));
   return is_permutation_suffix<Ts...>(first1,last1,first2,last2,pred);
 }
 
@@ -583,7 +583,7 @@ bool is_permutation(
 {
   std::tie(first1,first2)=algorithm::mismatch<Ts...>(
     first1,last1,first2,last2,pred);
-  if(algorithm::fast_fwd_distance(first1,last1)!=std::distance(first2,last2))
+  if(algorithm::fast_distance(first1,last1)!=std::distance(first2,last2))
     return false;
   else return is_permutation_suffix<Ts...>(first1,last1,first2,last2,pred);
 }
@@ -1044,7 +1044,7 @@ OutputIterator sample(
   const Iterator& first,const Iterator& last,
   OutputIterator res,Distance n,UniformRandomBitGenerator&& g)
 {
-  Distance m=algorithm::fast_fwd_distance(first,last);
+  Distance m=algorithm::fast_distance(first,last);
   n=(std::min)(n,m);
 
   for(auto i:detail::segment_split(first,last)){
