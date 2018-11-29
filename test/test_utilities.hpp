@@ -326,6 +326,7 @@ struct rooted_allocator:std::allocator<T>
   using propagate_on_container_copy_assignment=std::false_type;
   using propagate_on_container_move_assignment=std::true_type;
   using propagate_on_container_swap=std::false_type;
+  using is_always_equal=std::false_type;
   template<typename U>
   struct rebind{using other=rooted_allocator<U>;};
 
@@ -333,6 +334,10 @@ struct rooted_allocator:std::allocator<T>
   explicit rooted_allocator(int):root{this}{}
   template<typename U>
   rooted_allocator(const rooted_allocator<U>& x):root{x.root}{}
+  template<typename U>
+  bool operator==(const rooted_allocator<U>& x) const {return root == x.root;}
+  template<typename U>
+  bool operator!=(const rooted_allocator<U>& x) const {return root != x.root;}
 
   const void* root;
 };
