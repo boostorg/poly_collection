@@ -51,6 +51,9 @@ namespace detail{
  */
 
 template<typename T>
+class value_holder_base;
+
+template<typename T>
 class value_holder;
 
 template<typename T,typename Allocator,typename... Args>
