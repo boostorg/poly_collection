@@ -28,6 +28,10 @@
 [def _std::unordered_multiset_ [@http://en.cppreference.com/w/cpp/container/unordered_multiset `std::unordered_multiset`]]
 [def _RandomAccessIterator_ [@http://en.cppreference.com/w/cpp/concept/RandomAccessIterator [* `RandomAccessIterator`]]]
 
+[template ticket[number]'''<ulink url="https://svn.boost.org/trac/boost/ticket/'''[number]'''">'''#[number]'''</ulink>''']
+[template github[module number]'''<ulink url="https://github.com/boostorg/'''[module]'''/issues/'''[number]'''">'''#[number]'''</ulink>''']
+[template github_pr[module number]'''<ulink url="https://github.com/boostorg/'''[module]'''/pull/'''[number]'''">'''PR#[number]'''</ulink>''']
+
 [section Introduction]
 
 Dynamic polymorphism in C++ requires that objects (such as instances
@@ -1118,9 +1122,17 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Release notes]
 
+[section Boost 1.70]
+
+* Improved handling of stateful allocators and allocator propagation traits,
+after an error reported by Billy O'Neal ([github_pr poly_collection 9]).
+* Fixed a potentially serious bug with an internal cache structure.
+
+[endsect]
+
 [section Boost 1.69]
 
-* Added Bost.PolyCollection-specific versions of algorithms
+* Added Boost.PolyCollection-specific versions of algorithms
 `std::for_each_n` and `std::sample`.
 
 [endsect]

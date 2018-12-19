@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -24,9 +24,166 @@
 
 using namespace test_utilities;
 
+template<
+  bool Propagate,bool AlwaysEqual,
+  typename PolyCollection,typename ValueFactory,typename... Types
+>
+void test_allocator_aware_construction()
+{
+  using rooted_poly_collection=realloc_poly_collection<
+    PolyCollection,rooted_allocator,
+    std::integral_constant<bool,Propagate>,
+    std::integral_constant<bool,AlwaysEqual>>;
+  using allocator_type=typename rooted_poly_collection::allocator_type;
+
+  allocator_type                root1{0},root2{0};
+  rooted_poly_collection        p{root1};
+  const rooted_poly_collection& cp=p;
+  ValueFactory                  v;
+
+  fill<
+    constraints<is_equality_comparable,is_copy_constructible>,
+    Types...
+  >(p,v,2);
+
+  {
+    rooted_poly_collection p2{cp};
+    BOOST_TEST(p2==p);
+    BOOST_TEST(p2.get_allocator().comes_from(root1));
+  }
+  {
+    rooted_poly_collection p2{cp};
+    auto                   d2=get_layout_data<Types...>(p2);
+    rooted_poly_collection p3{std::move(p2)};
+    auto                   d3=get_layout_data<Types...>(p3);
+    BOOST_TEST(d2==d3);
+    BOOST_TEST(p2.empty());
+    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+    BOOST_TEST(p2.get_allocator().comes_from(root1));
+  }
+  {
+    rooted_poly_collection p2{cp,root2};
+    BOOST_TEST(p2==p);
+    BOOST_TEST(p2.get_allocator().comes_from(root2));
+  }
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+  /* std::unordered_map allocator move ctor does not work when source and
+   * and target allocators are not equal.
+   */
+
+  if(AlwaysEqual)
+#endif
+  {
+    rooted_poly_collection p2{cp};
+    auto                   d2=get_layout_data<Types...>(p2);
+    rooted_poly_collection p3{std::move(p2),root2};
+    auto                   d3=get_layout_data<Types...>(p3);
+
+#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
+    /* Limitations from libstdc++-v3 force move construction with allocator
+     * to decay to copy construction with allocator.
+     */
+
+    (void)(d2==d3); /* Wunused-variable */
+#else
+    BOOST_TEST(d2==d3);
+#endif
+
+    BOOST_TEST(p2.empty());
+    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+    BOOST_TEST(p3.get_allocator().comes_from(root2));
+  }
+  {
+    rooted_poly_collection p2{root2};
+    p2=cp;
+    BOOST_TEST(p2==p);
+
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+    /* std::unordered_map copy assignment does not propagate allocators */
+  
+    if(!Propagate)
+#endif
+    BOOST_TEST(p2.get_allocator().comes_from(Propagate?root1:root2));
+  }
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+  /* std::unordered_map move asignment does not propagate allocators */
+
+  if(!Propagate&&AlwaysEqual)
+#endif
+  {
+    rooted_poly_collection p2{cp};
+    auto                   d2=get_layout_data<Types...>(p2);
+    rooted_poly_collection p3{root2};
+    p3=std::move(p2);
+    auto                   d3=get_layout_data<Types...>(p3);
+    BOOST_TEST(d2==d3);
+    BOOST_TEST(p2.empty());
+    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+    BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
+  }
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+  /* std::unordered_map::swap does not correctly swap control information when
+   * swapping allocators, which causes crashes on "Checked Iterators" mode.
+   */
+
+  if(!(Propagate&&!AlwaysEqual))
+#endif
+  {
+    constexpr bool use_same_allocator=!Propagate&&!AlwaysEqual;
+
+    rooted_poly_collection p2{cp},
+                           p3{use_same_allocator?root1:root2};
+
+    auto d2=get_layout_data<Types...>(p2),
+         d3=get_layout_data<Types...>(p3);
+
+    p2.swap(p3);
+    auto e2=get_layout_data<Types...>(p2),
+         e3=get_layout_data<Types...>(p3);
+    BOOST_TEST(d2==e3);
+    BOOST_TEST(d3==e2);
+    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+    if(!use_same_allocator
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+       /* std::unordered_map::swap does not swap equal allocators */
+
+       &&!(Propagate&&AlwaysEqual)
+#endif
+    ){
+      BOOST_TEST(p2.get_allocator().comes_from(Propagate?root2:root1));
+      BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
+    }
+
+    using std::swap;
+    swap(p2,p3);
+    auto f2=get_layout_data<Types...>(p2),
+         f3=get_layout_data<Types...>(p3);
+    BOOST_TEST(e2==f3);
+    BOOST_TEST(e3==f2);
+    do_((BOOST_TEST(!p3.template is_registered<Types>()),0)...);
+    if(!use_same_allocator){
+      BOOST_TEST(p2.get_allocator().comes_from(root1));
+      BOOST_TEST(p3.get_allocator().comes_from(root2));
+    }
+  }
+}
+
 template<typename PolyCollection,typename ValueFactory,typename... Types>
 void test_construction()
 {
+  {
+    constexpr bool propagate=true,always_equal=true;
+
+    test_allocator_aware_construction<
+      !propagate,!always_equal,PolyCollection,ValueFactory,Types...>();
+    test_allocator_aware_construction<
+      !propagate, always_equal,PolyCollection,ValueFactory,Types...>();
+    test_allocator_aware_construction<
+       propagate,!always_equal,PolyCollection,ValueFactory,Types...>();
+    test_allocator_aware_construction<
+       propagate, always_equal,PolyCollection,ValueFactory,Types...>();
+  }
+
   {
     PolyCollection        p;
     const PolyCollection& cp=p;
@@ -37,34 +194,6 @@ void test_construction()
       Types...
     >(p,v,2);
 
-    {
-      PolyCollection p2{cp};
-      BOOST_TEST(p2==p);
-    }
-    {
-      PolyCollection p2;
-      p2=cp;
-      BOOST_TEST(p2==p);
-    }
-    {
-      PolyCollection p2{cp};
-      auto           d2=get_layout_data<Types...>(p2);
-      PolyCollection p3{std::move(p2)};
-      auto           d3=get_layout_data<Types...>(p3);
-      BOOST_TEST(d2==d3);
-      BOOST_TEST(p2.empty());
-      do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-    }
-    {
-      PolyCollection p2{cp};
-      auto           d2=get_layout_data<Types...>(p2);
-      PolyCollection p3;
-      p3={std::move(p2)};
-      auto           d3=get_layout_data<Types...>(p3);
-      BOOST_TEST(d2==d3);
-      BOOST_TEST(p2.empty());
-      do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-    }
     {
       PolyCollection p2{cp.begin(),cp.end()};
       BOOST_TEST(p2==p);
@@ -80,67 +209,6 @@ void test_construction()
         std::equal(
           p2.template begin<type>(),p2.template end<type>(),
           cp.template begin<type>()));
-    }
-  }
-
-  {
-    using rooted_poly_collection=
-      realloc_poly_collection<PolyCollection,rooted_allocator>;
-    using allocator_type=typename rooted_poly_collection::allocator_type;
-
-    allocator_type                root1{0},root2{0};
-    rooted_poly_collection        p{root1};
-    const rooted_poly_collection& cp=p;
-    ValueFactory                  v;
-
-    fill<
-      constraints<is_equality_comparable,is_copy_constructible>,
-      Types...
-    >(p,v,2);
-
-    {
-      rooted_poly_collection p2{cp,root2};
-      BOOST_TEST(p2==p);
-      BOOST_TEST(p2.get_allocator()==root2);
-    }
-    {
-      rooted_poly_collection p2{root2};
-      p2=cp;
-      BOOST_TEST(p2==p);
-      BOOST_TEST(p2.get_allocator().root==&root2);
-    }
-
-#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
-    /* Limitations from libstdc++-v3 make move construction with allocator
-     * decay to copy construction with allocator.
-     */
-#else
-    {
-      rooted_poly_collection p2{cp};
-      auto                   d2=get_layout_data<Types...>(p2);
-      rooted_poly_collection p3{std::move(p2),root2};
-      auto                   d3=get_layout_data<Types...>(p3);
-      BOOST_TEST(d2==d3);
-      BOOST_TEST(p2.empty());
-      do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-      BOOST_TEST(p3.get_allocator().root==&root2);
-    }
-#endif
-    {
-      rooted_poly_collection p2{cp};
-      auto                   d2=get_layout_data<Types...>(p2);
-      rooted_poly_collection p3{root2};
-      p3=std::move(p2);
-      auto                   d3=get_layout_data<Types...>(p3);
-      BOOST_TEST(d2==d3);
-      BOOST_TEST(p2.empty());
-      do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-
-#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)||\
-    BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
-#else
-      BOOST_TEST(p3.get_allocator().root==&root1);
-#endif
     }
   }
 
@@ -188,30 +256,6 @@ void test_construction()
       do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
     }
   }
-
-  {
-    PolyCollection p1,p2;
-    ValueFactory   v;
-
-    fill<constraints<>,Types...>(p1,v,2);
-    auto d1=get_layout_data<Types...>(p1),
-         d2=get_layout_data<Types...>(p2);
-
-    p1.swap(p2);
-    auto e1=get_layout_data<Types...>(p1),
-         e2=get_layout_data<Types...>(p2);
-    BOOST_TEST(d1==e2);
-    BOOST_TEST(d2==e1);
-    do_((BOOST_TEST(!p1.template is_registered<Types>()),0)...);
-
-    using std::swap;
-    swap(p1,p2);
-    auto f1=get_layout_data<Types...>(p1),
-         f2=get_layout_data<Types...>(p2);
-    BOOST_TEST(e1==f2);
-    BOOST_TEST(e2==f1);
-    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
-  }
 }
 
 void test_scoped_allocator()
@@ -236,12 +280,14 @@ void test_scoped_allocator()
 
   p.emplace<vector>();
   auto& s=boost::type_erasure::any_cast<vector&>(*p.begin());
-  BOOST_TEST(p.get_allocator().root==&roote);
+  BOOST_TEST(p.get_allocator().comes_from(roote));
 
 #if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
-  /* https://connect.microsoft.com/VisualStudio/feedback/details/3136309 */
+  /* https://developercommunity.visualstudio.com/content/problem/246251/
+   *   3136309.html
+   */
 #else
-  BOOST_TEST(s.get_allocator().root==&rootv);  
+  BOOST_TEST(s.get_allocator().comes_from(rootv));  
 #endif
 }
 

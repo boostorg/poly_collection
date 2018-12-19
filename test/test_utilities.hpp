@@ -320,41 +320,66 @@ struct jammed_auto_increment
   int n=0;
 };
 
-template<typename T>
+template<
+  typename T,
+  typename Propagate=std::true_type,typename AlwaysEqual=std::true_type
+>
 struct rooted_allocator:std::allocator<T>
 {
-  using propagate_on_container_copy_assignment=std::false_type;
-  using propagate_on_container_move_assignment=std::true_type;
-  using propagate_on_container_swap=std::false_type;
+  using propagate_on_container_copy_assignment=Propagate;
+  using propagate_on_container_move_assignment=Propagate;
+  using propagate_on_container_swap=Propagate;
+  using is_always_equal=AlwaysEqual; /* for C++17 forward compatibility */
   template<typename U>
-  struct rebind{using other=rooted_allocator<U>;};
+  struct rebind{using other=rooted_allocator<U,Propagate,AlwaysEqual>;};
 
-  rooted_allocator()=default;
+  rooted_allocator():root{nullptr}{}
   explicit rooted_allocator(int):root{this}{}
   template<typename U>
-  rooted_allocator(const rooted_allocator<U>& x):root{x.root}{}
+  rooted_allocator(const rooted_allocator<U,Propagate,AlwaysEqual>& x):
+    root{x.root}{}
+
+  template<typename U>
+  bool operator==(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
+    {return AlwaysEqual::value?true:root==x.root;}
+  template<typename U>
+  bool operator!=(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
+    {return AlwaysEqual::value?false:root!=x.root;}
+
+  template<typename U>
+  bool comes_from(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
+    {return root==&x;}
+
+private:
+  template<typename,typename,typename> friend struct rooted_allocator;
 
   const void* root;
 };
 
-template<typename PolyCollection,template<typename> class Allocator>
+template<
+  typename PolyCollection,
+  template<typename...> class Allocator,typename... Args
+>
 struct realloc_poly_collection_class;
 
-template<typename PolyCollection,template<typename> class Allocator>
-using realloc_poly_collection=
-  typename realloc_poly_collection_class<PolyCollection,Allocator>::type;
+template<
+  typename PolyCollection,
+  template<typename...> class Allocator,typename... Args
+>
+using realloc_poly_collection=typename realloc_poly_collection_class<
+  PolyCollection,Allocator,Args...>::type;
 
 template<
   template<typename,typename> class PolyCollection,
   typename T,typename OriginalAllocator,
-  template<typename> class Allocator
+  template<typename...> class Allocator,typename... Args
 >
 struct realloc_poly_collection_class<
-  PolyCollection<T,OriginalAllocator>,Allocator
+  PolyCollection<T,OriginalAllocator>,Allocator,Args...
 >
 {
   using value_type=typename PolyCollection<T,OriginalAllocator>::value_type;
-  using type=PolyCollection<T,Allocator<value_type>>;
+  using type=PolyCollection<T,Allocator<value_type,Args...>>;
 };
 
 template<std::size_t N>

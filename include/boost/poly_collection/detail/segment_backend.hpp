@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -31,7 +31,7 @@ namespace detail{
  * Passed elements are type erased with [const_]value_pointer.
  */
 
-template<typename Model>
+template<typename Model,typename Allocator>
 struct segment_backend
 {
   using segment_backend_unique_ptr=
@@ -50,8 +50,9 @@ struct segment_backend
   segment_backend& operator=(const segment_backend&)=delete;
 
   virtual                            ~segment_backend()=default;
-  virtual segment_backend_unique_ptr copy()const=0;
-  virtual segment_backend_unique_ptr empty_copy()const=0;
+  virtual segment_backend_unique_ptr copy(const Allocator&)const=0;
+  virtual segment_backend_unique_ptr empty_copy(const Allocator&)const=0;
+  virtual segment_backend_unique_ptr move(const Allocator&)const=0;
   virtual bool                       equal(const segment_backend&)const=0;
 
   virtual base_iterator begin()const noexcept=0;
