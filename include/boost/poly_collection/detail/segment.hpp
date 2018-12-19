@@ -51,25 +51,25 @@ public:
   using const_iterator=typename Model::template const_iterator<T>;
 
   template<typename T>
-  static segment make(const Allocator& al)
+  static segment make(const allocator_type& al)
   {
     return segment_backend_implementation<T>::make(al);
   }
 
   /* clones the implementation of x with no elements */
 
-  static segment make_from_prototype(const segment& x,const Allocator& al)
+  static segment make_from_prototype(const segment& x,const allocator_type& al)
   {
     return {from_prototype{},x,al};
   }
 
-  segment(const segment& x,const Allocator& al):
+  segment(const segment& x,const allocator_type& al):
     pimpl{x.impl().copy(al)}{set_sentinel();}
 
   segment(segment&& x)=default;
 
   /* TODO: try ptr-level move before impl().move() */
-  segment(segment&& x,const Allocator& al):
+  segment(segment&& x,const allocator_type& al):
     pimpl{x.impl().move(al)}{set_sentinel();}
   
   friend bool operator==(const segment& x,const segment& y)
@@ -256,7 +256,7 @@ private:
 
   segment(segment_backend_unique_ptr&& pimpl):
     pimpl{std::move(pimpl)}{set_sentinel();}
-  segment(from_prototype,const segment& x,const Allocator& al):
+  segment(from_prototype,const segment& x,const allocator_type& al):
     pimpl{x.impl().empty_copy(al)}{set_sentinel();}
 
   segment_backend&       impl()noexcept{return *pimpl;}
