@@ -162,7 +162,7 @@ public:
   std::pair<iterator,bool> insert(const key_type& key,P&& x)
   {
     auto c=map.bucket_count();
-    auto p=map.insert({&key,std::forward<P>(x)});
+    auto p=map.emplace(&key,std::forward<P>(x));
     if(map.bucket_count()!=c)rebuild_cache();
     cache.insert({&key,p.first});
     return p;
