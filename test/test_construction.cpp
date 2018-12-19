@@ -66,7 +66,7 @@ void test_allocator_aware_construction()
     BOOST_TEST(p2==p);
     BOOST_TEST(p2.get_allocator().comes_from(root2));
   }
-#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1916)
   /* std::unordered_map allocator move ctor does not work when source and
    * and target allocators are not equal.
    */
@@ -105,7 +105,7 @@ void test_allocator_aware_construction()
 #endif
     BOOST_TEST(p2.get_allocator().comes_from(Propagate?root1:root2));
   }
-#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1916)
   /* std::unordered_map move asignment does not propagate allocators */
 
   if(!Propagate&&AlwaysEqual)
