@@ -86,7 +86,7 @@ void test_allocator_aware_construction()
 
     (void)(d2==d3); /* Wunused-variable */
 #else
-    BOOST_TEST(d2==d3);
+    if(AlwaysEqual)BOOST_TEST(d2==d3);
 #endif
 
     BOOST_TEST(p2.empty());
@@ -116,7 +116,7 @@ void test_allocator_aware_construction()
     rooted_poly_collection p3{root2};
     p3=std::move(p2);
     auto                   d3=get_layout_data<Types...>(p3);
-    BOOST_TEST(d2==d3);
+    if(Propagate||AlwaysEqual)BOOST_TEST(d2==d3);
     BOOST_TEST(p2.empty());
     do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
     BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
