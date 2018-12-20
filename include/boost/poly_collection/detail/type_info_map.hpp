@@ -189,7 +189,7 @@ private:
   template<typename UnorderedMap>
   static UnorderedMap make(const typename UnorderedMap::allocator_type& al)
   {
-    return {
+    return UnorderedMap{
       10,typename UnorderedMap::hasher{},typename UnorderedMap::key_equal{},al
     };
   }
@@ -201,7 +201,7 @@ private:
   {
     using RawUnorderedMap=typename std::decay<UnorderedMap>::type;
 
-    return {
+    return RawUnorderedMap{
       x.begin(),x.end(),0,typename RawUnorderedMap::hasher{},
       typename RawUnorderedMap::key_equal{},al
     };
