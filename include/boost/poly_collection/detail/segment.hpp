@@ -63,10 +63,11 @@ public:
     return {from_prototype{},x,al};
   }
 
+  segment(const segment& x):
+    pimpl{x.impl().copy()}{set_sentinel();}
+  segment(segment&& x)=default;
   segment(const segment& x,const allocator_type& al):
     pimpl{x.impl().copy(al)}{set_sentinel();}
-
-  segment(segment&& x)=default;
 
   /* TODO: try ptr-level move before impl().move() */
   segment(segment&& x,const allocator_type& al):
@@ -74,9 +75,8 @@ public:
 
   segment& operator=(const segment& x)
   {
-    pimpl=x.impl().copy(
-      allocator_traits::propagate_on_container_copy_assignment::value?
-      x.impl().get_allocator():impl().get_allocator());
+    pimpl=allocator_traits::propagate_on_container_copy_assignment::value?
+      x.impl().copy():x.impl().copy(impl().get_allocator());
     set_sentinel();
     return *this;
   }

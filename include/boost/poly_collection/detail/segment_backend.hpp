@@ -50,6 +50,7 @@ struct segment_backend
   segment_backend& operator=(const segment_backend&)=delete;
 
   virtual                            ~segment_backend()=default;
+  virtual segment_backend_unique_ptr copy()const=0;
   virtual segment_backend_unique_ptr copy(const Allocator&)const=0;
   virtual segment_backend_unique_ptr empty_copy(const Allocator&)const=0;
   virtual segment_backend_unique_ptr move(const Allocator&)const=0;

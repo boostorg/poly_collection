@@ -82,6 +82,11 @@ public:
     return new_(al,al);
   }
 
+  virtual segment_backend_unique_ptr copy()const
+  {
+    return new_(s.get_allocator(),store{s});
+  }
+
   virtual segment_backend_unique_ptr copy(const Allocator& al)const
   {
     return new_(al,store{s,al});
