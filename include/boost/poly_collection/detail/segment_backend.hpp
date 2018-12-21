@@ -55,6 +55,7 @@ struct segment_backend
   virtual segment_backend_unique_ptr move(const Allocator&)const=0;
   virtual bool                       equal(const segment_backend&)const=0;
 
+  virtual Allocator     get_allocator()const noexcept=0;
   virtual base_iterator begin()const noexcept=0;
   virtual base_iterator end()const noexcept=0;
   virtual bool          empty()const noexcept=0;

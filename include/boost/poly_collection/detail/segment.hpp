@@ -71,7 +71,25 @@ public:
   /* TODO: try ptr-level move before impl().move() */
   segment(segment&& x,const allocator_type& al):
     pimpl{x.impl().move(al)}{set_sentinel();}
+
+  segment& operator=(const segment& x)
+  {
+    pimpl=x.impl().copy(
+      allocator_traits::propagate_on_container_copy_assignment::value?
+      x.impl().get_allocator():impl().get_allocator());
+    set_sentinel();
+    return *this;
+  }
   
+  segment& operator=(segment&& x)
+  {
+    pimpl=x.impl().move(
+      allocator_traits::propagate_on_container_move_assignment::value?
+      x.impl().get_allocator():impl().get_allocator());
+    set_sentinel();
+    return *this;
+  }
+
   friend bool operator==(const segment& x,const segment& y)
   {
     if(typeid(*(x.pimpl))!=typeid(*(y.pimpl)))return false;
@@ -244,6 +262,7 @@ public:
   void                 clear()noexcept{filter(impl<U>().nv_clear());}
 
 private:
+  using allocator_traits=std::allocator_traits<Allocator>;
   using segment_backend=typename Model::template segment_backend<Allocator>;
   template<typename Concrete>
   using segment_backend_implementation=typename Model::

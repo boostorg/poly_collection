@@ -102,6 +102,8 @@ public:
     return s==static_cast<const split_segment&>(x).s;
   }
 
+  virtual Allocator     get_allocator()const noexcept
+                         {return s.get_allocator();}
   virtual base_iterator begin()const noexcept{return nv_begin();}
   base_iterator         nv_begin()const noexcept
                          {return base_iterator{value_ptr(i.data())};}
