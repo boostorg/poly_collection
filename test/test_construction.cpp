@@ -108,7 +108,7 @@ void test_allocator_aware_construction()
      * allocators.
      */
 
-    if(!(Propagate&&AlwaysEqual||!Propagate&&!AlwaysEqual))
+    if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
 #endif
     BOOST_TEST(p2.get_allocator().comes_from(Propagate?root1:root2));
   }
@@ -132,7 +132,7 @@ void test_allocator_aware_construction()
      * allocators.
      */
 
-    if(!(Propagate&&AlwaysEqual||!Propagate&&!AlwaysEqual))
+    if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
 #endif
     BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
   }
@@ -167,7 +167,7 @@ void test_allocator_aware_construction()
 #if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
        /* std::unordered_map::swap always and only swaps unequal allocators */
 
-       &&!(Propagate&&AlwaysEqual||!Propagate&&!AlwaysEqual)
+       &&!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual))
 #endif
     ){
       BOOST_TEST(p2.get_allocator().comes_from(Propagate?root2:root1));
