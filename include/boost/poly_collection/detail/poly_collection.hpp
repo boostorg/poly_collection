@@ -103,8 +103,8 @@ class poly_collection
   using enable_if_not_constructible=
     typename std::enable_if<!is_constructible<T,U>::value>::type*;
 
-  using inner_allocator_type=allocator_adaptor<Allocator>;
-  using segment_type=detail::segment<Model,inner_allocator_type>;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
+  using segment_type=detail::segment<Model,segment_allocator_type>;
   using segment_base_iterator=typename segment_type::base_iterator;
   using const_segment_base_iterator=
     typename segment_type::const_base_iterator;
@@ -118,7 +118,7 @@ class poly_collection
     typename segment_type::template const_iterator<T>;
   using segment_map=type_info_map<
     segment_type,
-    typename std::allocator_traits<inner_allocator_type>::template
+    typename std::allocator_traits<segment_allocator_type>::template
       rebind_alloc<segment_type>
   >;
   using segment_map_allocator_type=typename segment_map::allocator_type;
