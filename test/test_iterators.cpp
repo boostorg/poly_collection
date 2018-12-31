@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -58,10 +58,10 @@ void test_iterators(PolyCollection& p)
                 "segment_info must derive from const_segment_info");
 
   {
-    local_iterator       lit;
+    local_iterator       lit,lit2;
     const_local_iterator clit,clit2(lit); /* sorry about the names */
 
-    lit=lit;
+    lit=lit2;
     clit=clit2;
     clit=lit;
   }
@@ -196,20 +196,20 @@ void test_iterators()
                 "from segment_traversal_info");
 
   {
-    iterator                         it;
+    iterator                         it,it2;
     const_iterator                   cit,cit2(it);
-    local_base_iterator              lbit;
+    local_base_iterator              lbit,lbit2;
     const_local_base_iterator        clbit,clbit2(lbit);
-    base_segment_info_iterator       sit;
+    base_segment_info_iterator       sit,sit2;
     const_base_segment_info_iterator csit,csit2(csit);
 
-    it=it;
+    it=it2;
     cit=cit2;
     cit=it;
-    lbit=lbit;
+    lbit=lbit2;
     clbit=clbit2;
     clbit=lbit;
-    sit=sit;
+    sit=sit2;
     csit=csit2;
     csit=sit;
   }
