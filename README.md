@@ -1,9 +1,9 @@
 # Boost PolyCollection library
 
-Branch   | Travis | AppVeyor
----------|--------|---------
-develop  | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=develop)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=develop&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection)
-master   | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=master)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=master&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection)
+Branch   | Travis | AppVeyor | Regression tests
+---------|--------|----------|-----------------
+develop  | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=develop)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=develop&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection) | [![Test Results](./test_results.svg)](https://www.boost.org/development/tests/develop/developer/poly_collection.html)
+master   | [![Build Status](https://travis-ci.org/boostorg/poly_collection.svg?branch=master)](https://travis-ci.org/boostorg/poly_collection) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/boostorg/poly_collection?branch=master&svg=true)](https://ci.appveyor.com/project/joaquintides/poly-collection) | [![Test Results](./test_results.svg)](https://www.boost.org/development/tests/master/developer/poly_collection.html)
 
 **Boost.PolyCollection**: fast containers of polymorphic objects.
 
