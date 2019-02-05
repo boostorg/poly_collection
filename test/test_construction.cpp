@@ -123,9 +123,11 @@ void test_allocator_aware_construction()
     rooted_poly_collection p3{root2};
     p3=std::move(p2);
     auto                   d3=get_layout_data<Types...>(p3);
-    if(Propagate||AlwaysEqual)BOOST_TEST(d2==d3);
-    BOOST_TEST(p2.empty());
-    do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+	if (Propagate||AlwaysEqual) {
+		BOOST_TEST(d2 == d3);
+		BOOST_TEST(p2.empty());
+		do_((BOOST_TEST(!p2.template is_registered<Types>()), 0)...);
+	}
 
 #if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40900)
     /* std::unordered_map move assignment always and only propagates unequal
