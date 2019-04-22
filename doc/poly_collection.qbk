@@ -1122,6 +1122,12 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Release notes]
 
+[section Boost 1.71]
+
+* Maintenance work.
+
+[endsect]
+
 [section Boost 1.70]
 
 * Improved handling of stateful allocators and allocator propagation traits,
