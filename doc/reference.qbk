@@ -5,16 +5,16 @@
   http://www.boost.org/LICENSE_1_0.txt)
 ]
 
-[def _AllocatorAwareContainer_ [@http://en.cppreference.com/w/cpp/concept/AllocatorAwareContainer [* `AllocatorAwareContainer`]]]
-[def _Callable_ [@http://en.cppreference.com/w/cpp/concept/Callable [* `Callable`]]]
-[def _Container_ [@http://en.cppreference.com/w/cpp/concept/Container [* `Container`]]]
-[def _CopyAssignable_ [@http://en.cppreference.com/w/cpp/concept/CopyAssignable [* `CopyAssignable`]]]
-[def _CopyInsertable_ [@http://en.cppreference.com/w/cpp/concept/CopyInsertable [* `CopyInsertable`]]]
-[def _DefaultConstructible_ [@http://en.cppreference.com/w/cpp/concept/DefaultConstructible [* `DefaultConstructible`]]]
-[def _InputIterator_ [@http://en.cppreference.com/w/cpp/concept/InputIterator [* `InputIterator`]]]
+[def _AllocatorAwareContainer_ [@http://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer [* `AllocatorAwareContainer`]]]
+[def _Callable_ [@http://en.cppreference.com/w/cpp/named_req/Callable [* `Callable`]]]
+[def _Container_ [@http://en.cppreference.com/w/cpp/named_req/Container [* `Container`]]]
+[def _CopyAssignable_ [@http://en.cppreference.com/w/cpp/named_req/CopyAssignable [* `CopyAssignable`]]]
+[def _CopyInsertable_ [@http://en.cppreference.com/w/cpp/named_req/CopyInsertable [* `CopyInsertable`]]]
+[def _DefaultConstructible_ [@http://en.cppreference.com/w/cpp/named_req/DefaultConstructible [* `DefaultConstructible`]]]
+[def _InputIterator_ [@http://en.cppreference.com/w/cpp/named_req/InputIterator [* `InputIterator`]]]
 [def _INVOKE_ [@http://en.cppreference.com/w/cpp/utility/functional/invoke ['[* `INVOKE`]]]]
-[def _MoveAssignable_ [@http://en.cppreference.com/w/cpp/concept/MoveAssignable [* `MoveAssignable`]]]
-[def _MoveInsertable_ [@http://en.cppreference.com/w/cpp/concept/MoveInsertable [* `MoveInsertable`]]]
+[def _MoveAssignable_ [@http://en.cppreference.com/w/cpp/named_req/MoveAssignable [* `MoveAssignable`]]]
+[def _MoveInsertable_ [@http://en.cppreference.com/w/cpp/named_req/MoveInsertable [* `MoveInsertable`]]]
 
 [section Reference]
 

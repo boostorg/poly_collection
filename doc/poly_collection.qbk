@@ -17,16 +17,16 @@
 
 [def _Boost.TypeErasure_ [@boost:/libs/type_erasure Boost.TypeErasure]]
 [def _Boost.TypeIndex_ [@boost:/libs/type_index Boost.TypeIndex]]
-[def _CopyConstructible_ [@http://en.cppreference.com/w/cpp/concept/CopyConstructible [* `CopyConstructible`]]]
+[def _CopyConstructible_ [@http://en.cppreference.com/w/cpp/named_req/CopyConstructible [* `CopyConstructible`]]]
 [def _duck_typing_ [@https://en.wikipedia.org/wiki/Duck_typing ['duck typing]]]
-[def _EqualityComparable_ [@http://en.cppreference.com/w/cpp/concept/EqualityComparable [* `EqualityComparable`]]]
-[def _ForwardIterator_ [@http://en.cppreference.com/w/cpp/concept/ForwardIterator [* `ForwardIterator`]]]
-[def _MoveConstructible_ [@http://en.cppreference.com/w/cpp/concept/MoveConstructible [* `MoveConstructible`]]]
-[def _MoveAssignable_ [@http://en.cppreference.com/w/cpp/concept/MoveAssignable [* `MoveAssignable`]]]
+[def _EqualityComparable_ [@http://en.cppreference.com/w/cpp/named_req/EqualityComparable [* `EqualityComparable`]]]
+[def _ForwardIterator_ [@http://en.cppreference.com/w/cpp/named_req/ForwardIterator [* `ForwardIterator`]]]
+[def _MoveConstructible_ [@http://en.cppreference.com/w/cpp/named_req/MoveConstructible [* `MoveConstructible`]]]
+[def _MoveAssignable_ [@http://en.cppreference.com/w/cpp/named_req/MoveAssignable [* `MoveAssignable`]]]
 [def _std::for_each_ [@http://en.cppreference.com/w/cpp/algorithm/for_each `std::for_each`]]
 [def _std::function_ [@http://en.cppreference.com/w/cpp/utility/functional/function `std::function`]]
 [def _std::unordered_multiset_ [@http://en.cppreference.com/w/cpp/container/unordered_multiset `std::unordered_multiset`]]
-[def _RandomAccessIterator_ [@http://en.cppreference.com/w/cpp/concept/RandomAccessIterator [* `RandomAccessIterator`]]]
+[def _RandomAccessIterator_ [@http://en.cppreference.com/w/cpp/named_req/RandomAccessIterator [* `RandomAccessIterator`]]]
 
 [template ticket[number]'''<ulink url="https://svn.boost.org/trac/boost/ticket/'''[number]'''">'''#[number]'''</ulink>''']
 [template github[module number]'''<ulink url="https://github.com/boostorg/'''[module]'''/issues/'''[number]'''">'''#[number]'''</ulink>''']
@@ -692,7 +692,7 @@ case no exception is thrown.
 [note Operators for `<`, `<=`, `>` and `>=` comparison are not provided
 because /segment/ order is not fixed and may vary across otherwise
 identical collections. The situation is similar to that of standard
-[@http://en.cppreference.com/w/cpp/concept/UnorderedAssociativeContainer unordered
+[@http://en.cppreference.com/w/cpp/named_req/UnorderedAssociativeContainer unordered
 associative containers.]
 ]
 
