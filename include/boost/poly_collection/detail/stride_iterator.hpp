@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <type_traits>
 
@@ -79,6 +80,13 @@ public:
       (!std::is_const<Value>::value||std::is_const<DerivedValue>::value)
     >::type* =nullptr
   >
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=40900)||\
+    BOOST_WORKAROUND(BOOST_CLANG,>=1)&&\
+    (__clang_major__>3 || __clang_major__==3 && __clang_minor__ >= 8)
+  /* https://github.com/boostorg/poly_collection/issues/15 */
+  
+  __attribute__((no_sanitize("undefined")))
+#endif
   explicit operator DerivedValue*()const noexcept
   {return static_cast<DerivedValue*>(p);}
 
