@@ -286,6 +286,13 @@ void test_construction()
 
 void test_scoped_allocator()
 {
+#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<50000)&&\
+    BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,>40704)
+  /* std::scoped_allocator_adaptor not assignable, see
+   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65279 .
+   * The bug prevents poly_collection below from creating any segment.
+   */
+#else
   using vector_allocator=rooted_allocator<char>;
   using vector=std::vector<char,vector_allocator>;
   using concept_=boost::type_erasure::relaxed;
@@ -314,6 +321,7 @@ void test_scoped_allocator()
    */
 #else
   BOOST_TEST(s.get_allocator().comes_from(rootv));  
+#endif
 #endif
 }
 
