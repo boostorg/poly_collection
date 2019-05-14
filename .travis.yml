@@ -205,4 +205,4 @@ install:
 script:
   - |-
     echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
-  - ./b2 libs/poly_collection/test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release debug-symbols=on ${UBSAN:+undefined-sanitizer=norecover} ${ASAN:+address-sanitizer=on}
+  - ./b2 -j3 libs/poly_collection/test toolset=$TOOLSET cxxstd=$CXXSTD debug-symbols=on ${UBSAN:+undefined-sanitizer=norecover} ${ASAN:+address-sanitizer=on}
