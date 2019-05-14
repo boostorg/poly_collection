@@ -197,8 +197,8 @@ install:
   - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
   - git submodule update --init tools/boostdep
-  - cp -r $TRAVIS_BUILD_DIR/* libs/polly_collection
-  - python tools/boostdep/depinst/depinst.py polly_collection
+  - cp -r $TRAVIS_BUILD_DIR/* libs/poly_collection
+  - python tools/boostdep/depinst/depinst.py poly_collection
   - ./bootstrap.sh
   - ./b2 headers
 
