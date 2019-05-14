@@ -182,7 +182,7 @@ matrix:
             - libc++-dev
     - os: linux
       compiler: clang++-libc++
-      env: UBSAN=1 ASAN=1 TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+      env: UBSAN=1 ASAN=1 TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=11,14,1z UBSAN_OPTIONS=print_stacktrace=1 ASAN_OPTIONS=alloc_dealloc_mismatch=0
       addons:
         apt:
           packages:
@@ -190,6 +190,9 @@ matrix:
     - os: osx
       compiler: clang++
       env: TOOLSET=clang COMPILER=clang++ CXXSTD=11,14,1z
+    - os: osx
+      compiler: clang++
+      env: UBSAN=1 ASAN=1 TOOLSET=clang COMPILER=clang++ CXXSTD=11,14,1z UBSAN_OPTIONS=print_stacktrace=1
 
 install:
   - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
