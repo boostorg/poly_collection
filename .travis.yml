@@ -165,7 +165,7 @@ matrix:
             - llvm-toolchain-trusty-5.0
     - os: linux
       compiler: clang++-6.0
-      env: UBSAN=1 ASAN=1 TOOLSET=clang COMPILER=clang++-5.0 CXXSTD=11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+      env: UBSAN=1 ASAN=1 TOOLSET=clang COMPILER=clang++-6.0 CXXSTD=11,14,1z UBSAN_OPTIONS=print_stacktrace=1
       addons:
         apt:
           packages:
@@ -196,12 +196,11 @@ install:
   - cd ..
   - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
-  - git submodule update --init
-  - git rm --ignore-unmatch libs/poly_collection/
+  - git submodule update --init tools/boostdep
+  - cp -r $TRAVIS_BUILD_DIR/* libs/polly_collection
+  - python tools/boostdep/depinst/depinst.py polly_collection
   - ./bootstrap.sh
   - ./b2 headers
-  - mkdir libs/poly_collection
-  - cp -r $TRAVIS_BUILD_DIR/* libs/poly_collection
 
 script:
   - |-
