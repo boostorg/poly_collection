@@ -74,6 +74,14 @@ void test_allocator_aware_construction()
 
   if(AlwaysEqual)
 #endif
+#if BOOST_WORKAROUND(_MSVC_STL_UPDATE,==201811L)
+  /* This particular version of VS2019 has a bug in std::unordered_map
+   * allocator move ctor when source and target allocators are not equal.
+   * After private communication from Billy O'Neal.
+   */
+
+  if(AlwaysEqual)
+#endif
   {
     rooted_poly_collection p2{cp};
     auto                   d2=get_layout_data<Types...>(p2);
