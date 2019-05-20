@@ -322,7 +322,7 @@ void test_scoped_allocator()
   auto& s=*p.begin<vector>();
   BOOST_TEST(p.get_allocator().comes_from(roote));
 
-#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
+#if BOOST_WORKAROUND(BOOST_MSVC,==1910)
   /* https://developercommunity.visualstudio.com/content/problem/246251/
    *   3136309.html
    */
