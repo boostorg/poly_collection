@@ -12,7 +12,6 @@
 #include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/relaxed.hpp>
 #include <scoped_allocator>
 #include <utility>
@@ -320,7 +319,7 @@ void test_scoped_allocator()
   poly_collection      p{al};
 
   p.emplace<vector>();
-  auto& s=boost::type_erasure::any_cast<vector&>(*p.begin());
+  auto& s=*p.begin<vector>();
   BOOST_TEST(p.get_allocator().comes_from(roote));
 
 #if BOOST_WORKAROUND(BOOST_MSVC,>=1910)
