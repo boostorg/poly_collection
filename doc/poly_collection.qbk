@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2018 Joaquín M López Muñoz]
+  [copyright 2016-2019 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -39,7 +39,7 @@ of classes derived from an abstract base) be accessed through an indirection poi
 because their actual /type/ and /size/ are not known at the point of usage. As a
 consequence, regular containers cannot store polymorphic objects directly: the usual
 workaround is to have containers of pointers to heap-allocated elements. In modern
-computer architectures this pattern incurs in two types of inefficiency:
+computer architectures this pattern incurs two types of inefficiency:
 
 * The lack of memory contiguity produced by heap allocation degrades CPU cache
 performance.
