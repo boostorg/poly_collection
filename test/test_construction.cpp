@@ -81,6 +81,15 @@ void test_allocator_aware_construction()
 
   if(AlwaysEqual)
 #endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+  /* Very odd behavior probably due to std::unordered_map allocator move ctor
+   * being implemented with move assignment, as reported in
+   * https://github.com/boostorg/poly_collection/issues/16
+   */
+
+  if(!(Propagate&&!AlwaysEqual))
+#endif
   {
     rooted_poly_collection p2{cp};
     auto                   d2=get_layout_data<Types...>(p2);
@@ -120,6 +129,14 @@ void test_allocator_aware_construction()
 
     if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
 #endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* std::unordered_map copy assignment does not propagate allocators, as
+     * reported in https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!Propagate)
+#endif
     BOOST_TEST(p2.get_allocator().comes_from(Propagate?root1:root2));
   }
 #if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
@@ -146,6 +163,14 @@ void test_allocator_aware_construction()
      */
 
     if(!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual)))
+#endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* std::unordered_map move assignment does not propagate equal allocators,
+     * as reported in https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!(Propagate&&AlwaysEqual))
 #endif
     BOOST_TEST(p3.get_allocator().comes_from(Propagate?root1:root2));
   }
@@ -181,6 +206,14 @@ void test_allocator_aware_construction()
        /* std::unordered_map::swap always and only swaps unequal allocators */
 
        &&!((Propagate&&AlwaysEqual)||(!Propagate&&!AlwaysEqual))
+#endif
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+      /* std::unordered_map::swap does not swap equal allocators, as reported
+       * in https://github.com/boostorg/poly_collection/issues/16
+       */
+
+      &&!(Propagate&&AlwaysEqual)
 #endif
     ){
       BOOST_TEST(p2.get_allocator().comes_from(Propagate?root2:root1));
