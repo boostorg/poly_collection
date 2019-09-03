@@ -81,15 +81,6 @@ void test_allocator_aware_construction()
 
   if(AlwaysEqual)
 #endif
-#if !defined(BOOST_MSVC)&&\
-    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
-  /* Very odd behavior probably due to std::unordered_map allocator move ctor
-   * being implemented with move assignment, as reported in
-   * https://github.com/boostorg/poly_collection/issues/16
-   */
-
-  if(!(Propagate&&!AlwaysEqual))
-#endif
   {
     rooted_poly_collection p2{cp};
     auto                   d2=get_layout_data<Types...>(p2);
@@ -110,6 +101,16 @@ void test_allocator_aware_construction()
 
     BOOST_TEST(p2.empty());
     do_((BOOST_TEST(!p2.template is_registered<Types>()),0)...);
+
+#if !defined(BOOST_MSVC)&&\
+    BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB,BOOST_TESTED_AT(804))
+    /* Very odd behavior probably due to std::unordered_map allocator move
+     * ctor being implemented with move assignment, as reported in
+     * https://github.com/boostorg/poly_collection/issues/16
+     */
+
+    if(!(Propagate&&!AlwaysEqual))
+#endif
     BOOST_TEST(p3.get_allocator().comes_from(root2));
   }
   {
