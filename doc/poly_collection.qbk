@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2019 Joaquín M López Muñoz]
+  [copyright 2016-2020 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -1121,6 +1121,12 @@ to allow for the definition of container-level `operator<` and related operators
 [endsect]
 
 [section Release notes]
+
+[section Boost 1.73]
+
+* Suppressed a potential redundant move warning in `boost::poly_collection::for_each`.
+
+[endsect]
 
 [section Boost 1.72]
 
