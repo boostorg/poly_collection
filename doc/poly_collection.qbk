@@ -1125,6 +1125,9 @@ to allow for the definition of container-level `operator<` and related operators
 [section Boost 1.73]
 
 * Suppressed a potential redundant move warning in `boost::poly_collection::for_each`.
+* Fixed a bug by which elements were copied rather than moved in
+allocator-extended move construction and move assigment between collections
+with non-propagating, unequal allocators.
 
 [endsect]
 
