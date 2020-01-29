@@ -1128,6 +1128,9 @@ to allow for the definition of container-level `operator<` and related operators
 * Fixed a bug by which elements were copied rather than moved in
 allocator-extended move construction and move assigment between collections
 with non-propagating, unequal allocators.
+* Allocator-extended move construction no longer decays to allocator-extended copy
+construction for the legacy version of libstdc++-v3 shipped with GCC 4.8
+(which can also be used by Clang).
 
 [endsect]
 
