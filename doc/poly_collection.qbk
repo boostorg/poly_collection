@@ -1124,6 +1124,8 @@ to allow for the definition of container-level `operator<` and related operators
 
 [section Boost 1.74]
 
+* Fixed internal ambiguity problem between `boost::type_erasure::any` and
+`boost::any` (issue [github poly_collection 17]).
 * Maintenance work.
 
 [endsect]
