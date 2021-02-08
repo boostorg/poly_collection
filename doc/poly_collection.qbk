@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2020 Joaquín M López Muñoz]
+  [copyright 2016-2021 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -1121,6 +1121,13 @@ to allow for the definition of container-level `operator<` and related operators
 [endsect]
 
 [section Release notes]
+
+[section Boost 1.76]
+
+* Worked around [@https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95888 GCC bug] affecting
+GCC versions 9.3-10.2 (issue [github poly_collection 20]).
+
+[endsect]
 
 [section Boost 1.74]
 
