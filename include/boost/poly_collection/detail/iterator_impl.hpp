@@ -145,7 +145,7 @@ class local_iterator_impl:
     typename PolyCollection::const_segment_map_iterator;
 
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=90300)&&\
-    BOOST_WORKAROUND(BOOST_GCC_VERSION,<110000)
+    BOOST_WORKAROUND(BOOST_GCC_VERSION,<100300)
 /* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95888 */
 
 public:
