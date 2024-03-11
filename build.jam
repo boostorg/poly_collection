@@ -1,0 +1,27 @@
+# Copyright René Ferdinand Rivera Morell 2024
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import project ;
+
+project /boost/poly_collection
+    : common-requirements
+        <source>/boost/assert//boost_assert
+        <source>/boost/config//boost_config
+        <source>/boost/core//boost_core
+        <source>/boost/iterator//boost_iterator
+        <source>/boost/mp11//boost_mp11
+        <source>/boost/mpl//boost_mpl
+        <source>/boost/type_erasure//boost_type_erasure
+        <source>/boost/type_traits//boost_type_traits
+        <include>include
+    ;
+
+explicit
+    [ alias boost_poly_collection ]
+    [ alias all : boost_poly_collection example test ]
+    ;
+
+call-if : boost-library poly_collection
+    ;

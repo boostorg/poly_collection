@@ -5,8 +5,11 @@
 #
 # See http://www.boost.org/libs/poly_collection for library home page.
 
+require-b2 5.0.1 ;
+import-search /boost/config/checks ;
+
 import testing ;
-import ../../config/checks/config : requires ;
+import config : requires ;
 
 project
     : requirements

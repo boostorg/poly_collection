@@ -7,7 +7,6 @@
 
 project
     : requirements
-      <include>$(BOOST_ROOT)
       <cxxstd>11
     ;
 
@@ -39,6 +38,7 @@ exe insertion_emplacement
 
 exe perf
     : perf.cpp
+      /boost/ptr_container//boost_ptr_container
     :
     : release
     ;
