@@ -7,6 +7,7 @@
 
 project
     : requirements
+      <library>/boost/poly_collection//boost_poly_collection
       <cxxstd>11
     ;
 

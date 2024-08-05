@@ -13,6 +13,7 @@ import config : requires ;
 
 project
     : requirements
+      <library>/boost/poly_collection//boost_poly_collection
       [ requires cxx11_noexcept ] # used as a proxy for C++11 support
       <toolset>msvc:<cxxflags>-D_SCL_SECURE_NO_WARNINGS
     ;
@@ -22,7 +23,7 @@ test-suite "poly_collection" :
           test_algorithm2.cpp     test_algorithm3.cpp
           test_algorithm_main.cpp
         :
-        :                            
+        :
         : <toolset>msvc:<cxxflags>/bigobj
           <toolset>gcc:<inlining>on
           <toolset>gcc:<optimization>space
@@ -32,7 +33,7 @@ test-suite "poly_collection" :
     [ run test_comparison.cpp     test_comparison_main.cpp   ]
     [ run test_construction.cpp   test_construction_main.cpp
         :
-        :                            
+        :
         : <toolset>msvc:<cxxflags>/bigobj
           <toolset>gcc:<inlining>on
           <toolset>gcc:<optimization>space
