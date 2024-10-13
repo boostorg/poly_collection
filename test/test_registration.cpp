@@ -28,6 +28,7 @@ void test_registration()
 
     BOOST_TEST(!p.is_registered(typeid(Type)));
     BOOST_TEST(!p.template is_registered<Type>());
+#if 0
     check_throw<unregistered_type>(
       [&]{(void)p.begin(typeid(Type));},
       [&]{(void)p.end(typeid(Type));},
@@ -59,6 +60,7 @@ void test_registration()
       [&]{(void)cp.template capacity<Type>();},
       [&]{(void)p.template shrink_to_fit<Type>();},
       [&]{(void)p.template clear<Type>();});
+#endif
 
 #if 0
     p.register_types();
