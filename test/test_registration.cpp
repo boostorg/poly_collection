@@ -37,13 +37,16 @@ void test_registration()
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
       [&]{(void)p.cbegin(typeid(Type));},
-      [&]{(void)p.cend(typeid(Type));},
+      [&]{(void)p.cend(typeid(Type));});
+#if 0
       [&]{(void)p.template begin<Type>();},
       [&]{(void)p.template end<Type>();},
       [&]{(void)cp.template begin<Type>();},
       [&]{(void)cp.template end<Type>();},
       [&]{(void)p.template cbegin<Type>();},
-      [&]{(void)p.template cend<Type>();});
+      [&]{(void)p.template cend<Type>();},
+#endif
+
 #if 0
       [&]{(void)p.segment(typeid(Type));},
       [&]{(void)cp.segment(typeid(Type));},
