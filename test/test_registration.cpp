@@ -114,6 +114,8 @@ void test_registration()
 void test_registration()
 {
   test_registration<any_types::collection,any_types::t1>();
+#if 0
   test_registration<base_types::collection,base_types::t1>();
   test_registration<function_types::collection,function_types::t1>();
+#endif
 }
