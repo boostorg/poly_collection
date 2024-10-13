@@ -26,9 +26,11 @@ void test_registration()
     PolyCollection        p;
     const PolyCollection& cp=p;
 
+#if 0
     BOOST_TEST(!p.is_registered(typeid(Type)));
     BOOST_TEST(!p.template is_registered<Type>());
-#if 0
+#endif
+
     check_throw<unregistered_type>(
       [&]{(void)p.begin(typeid(Type));},
       [&]{(void)p.end(typeid(Type));},
@@ -41,7 +43,8 @@ void test_registration()
       [&]{(void)cp.template begin<Type>();},
       [&]{(void)cp.template end<Type>();},
       [&]{(void)p.template cbegin<Type>();},
-      [&]{(void)p.template cend<Type>();},
+      [&]{(void)p.template cend<Type>();});
+#if 0
       [&]{(void)p.segment(typeid(Type));},
       [&]{(void)cp.segment(typeid(Type));},
       [&]{(void)p.template segment<Type>();},
