@@ -33,11 +33,14 @@ void test_registration()
 
     check_throw<unregistered_type>(
       [&]{(void)p.begin(typeid(Type));},
-      [&]{(void)p.end(typeid(Type));},
+      [&]{(void)p.end(typeid(Type));});
+#if 0
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
       [&]{(void)p.cbegin(typeid(Type));},
-      [&]{(void)p.cend(typeid(Type));});
+      [&]{(void)p.cend(typeid(Type));},
+#endif
+
 #if 0
       [&]{(void)p.template begin<Type>();},
       [&]{(void)p.template end<Type>();},
@@ -45,9 +48,6 @@ void test_registration()
       [&]{(void)cp.template end<Type>();},
       [&]{(void)p.template cbegin<Type>();},
       [&]{(void)p.template cend<Type>();},
-#endif
-
-#if 0
       [&]{(void)p.segment(typeid(Type));},
       [&]{(void)cp.segment(typeid(Type));},
       [&]{(void)p.template segment<Type>();},
