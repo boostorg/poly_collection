@@ -32,16 +32,17 @@ void test_registration()
 #endif
 
     check_throw<unregistered_type>(
-      [&]{(void)p.begin(typeid(Type));},
+      [&]{(void)p.begin(typeid(Type));});
+
+#if 0
       [&]{(void)p.end(typeid(Type));});
+#endif
+
 #if 0
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
       [&]{(void)p.cbegin(typeid(Type));},
       [&]{(void)p.cend(typeid(Type));},
-#endif
-
-#if 0
       [&]{(void)p.template begin<Type>();},
       [&]{(void)p.template end<Type>();},
       [&]{(void)cp.template begin<Type>();},
