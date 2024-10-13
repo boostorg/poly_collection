@@ -233,16 +233,30 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 UBSAN C++11-14",
+        "Linux 24.04 GCC 14 UBSAN C++11",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11' } + ubsan,
         "g++-14-multilib",
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 UBSAN C++17-20",
+        "Linux 24.04 GCC 14 UBSAN C++14",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17,20' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '14' } + ubsan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 UBSAN C++17",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17' } + ubsan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 UBSAN C++20",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '20' } + ubsan,
         "g++-14-multilib",
     ),
 
@@ -254,16 +268,30 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 ASAN C++11-14",
+        "Linux 24.04 GCC 14 ASAN C++11",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11' } + asan,
         "g++-14-multilib",
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 ASAN C++17-20",
+        "Linux 24.04 GCC 14 ASAN C++14",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17,20' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '14' } + asan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 ASAN C++17",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17' } + asan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 ASAN C++20",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '20' } + asan,
         "g++-14-multilib",
     ),
 
@@ -429,13 +457,23 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 UBSAN",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14,17,2a' } + ubsan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++11-14",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14' } + ubsan,
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 ASAN",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14,17,2a' } + asan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++17-2a",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17,2a' } + ubsan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++11-14",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14' } + asan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++17-2a",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17,2a' } + asan,
     ),
 
     macos_pipeline(
