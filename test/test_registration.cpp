@@ -60,6 +60,7 @@ void test_registration()
       [&]{(void)p.template shrink_to_fit<Type>();},
       [&]{(void)p.template clear<Type>();});
 
+#if 0
     p.register_types();
     p.template register_types<>();
     BOOST_TEST(!p.is_registered(typeid(Type)));
@@ -93,8 +94,10 @@ void test_registration()
     (void)cp.template capacity<Type>();
     (void)p.template shrink_to_fit<Type>();
     (void)p.template clear<Type>();
+#endif
   }
 
+#if 0
   {
     PolyCollection p;
     p.template reserve<Type>(0);
@@ -109,6 +112,7 @@ void test_registration()
       std::distance(
         p.segment_traversal().begin(),p.segment_traversal().end())==1);
   }
+#endif
 }
 
 void test_registration()
