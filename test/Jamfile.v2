@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Joaquín M López Muñoz.
+# Copyright 2016-2024 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -41,7 +41,21 @@ test-suite "poly_collection" :
           <toolset>clang:<optimization>space                 ]
     [ run test_emplacement.cpp    test_emplacement_main.cpp  ]
     [ run test_erasure.cpp        test_erasure_main.cpp      ]
-    [ run test_insertion.cpp      test_insertion_main.cpp    ]
-    [ run test_iterators.cpp      test_iterators_main.cpp    ]
+    [ run test_insertion.cpp      test_insertion_main.cpp
+        :
+        :
+        : <toolset>msvc:<cxxflags>/bigobj
+          <toolset>gcc:<inlining>on
+          <toolset>gcc:<optimization>space
+          <toolset>clang:<inlining>on
+          <toolset>clang:<optimization>space                 ]
+    [ run test_iterators.cpp      test_iterators_main.cpp
+        :
+        :
+        : <toolset>msvc:<cxxflags>/bigobj
+          <toolset>gcc:<inlining>on
+          <toolset>gcc:<optimization>space
+          <toolset>clang:<inlining>on
+          <toolset>clang:<optimization>space                 ]
     [ run test_registration.cpp   test_registration_main.cpp ]
     ;
