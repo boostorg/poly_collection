@@ -29,6 +29,8 @@
 #include <typeinfo>
 #include <utility>
 
+#include <iostream>
+
 namespace boost{
 
 namespace poly_collection{
@@ -443,7 +445,9 @@ public:
 
   local_base_iterator begin(const std::type_info& info)
   {
+    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     auto it=get_map_iterator_for(info);
+    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     return {it,segment(it).begin()};
   }
 

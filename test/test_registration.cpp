@@ -35,10 +35,7 @@ void test_registration()
       [&]{(void)p.begin(typeid(Type));});
 
 #if 0
-      [&]{(void)p.end(typeid(Type));});
-#endif
-
-#if 0
+      [&]{(void)p.end(typeid(Type));},
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
       [&]{(void)p.cbegin(typeid(Type));},
