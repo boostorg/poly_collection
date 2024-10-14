@@ -969,12 +969,24 @@ private:
   >
   const_segment_map_iterator get_map_iterator_for(const T& x)
   {
+    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     const auto& id=subtypeid(x);
+    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     auto        it=map.find(id);
-    if(it!=map.end())return it;
-    else if(id!=typeid(T))throw unregistered_type{id};
-    else return map.insert(
-      typeid(T),segment_type::template make<T>(get_allocator())).first;
+    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
+    if(it!=map.end()){
+      std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
+      return it;
+    }
+    else if(id!=typeid(T)){
+      std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
+      throw unregistered_type{id};
+    }
+    else{
+      std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
+      return map.insert(
+        typeid(T),segment_type::template make<T>(get_allocator())).first;
+    }
   }
 
   template<
