@@ -28,7 +28,6 @@ void test_registration()
 
     BOOST_TEST(!p.is_registered(typeid(Type)));
     BOOST_TEST(!p.template is_registered<Type>());
-
     check_throw<unregistered_type>(
       [&]{(void)p.begin(typeid(Type));},
       [&]{(void)p.end(typeid(Type));},

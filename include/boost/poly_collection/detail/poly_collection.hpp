@@ -995,7 +995,7 @@ private:
   {
     const auto& id=subtypeid(x);
     auto it=map.find(id);
-    if(it!=map.end())throw unregistered_type{id};
+    if(it==map.end())throw unregistered_type{id};
     return it;
   }
 
