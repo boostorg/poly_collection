@@ -1,4 +1,4 @@
-/* Copyright 2016-2018 Joaquin M Lopez Munoz.
+/* Copyright 2016-2024 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -28,8 +28,6 @@
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
-
-#include <iostream>
 
 namespace boost{
 
@@ -445,9 +443,7 @@ public:
 
   local_base_iterator begin(const std::type_info& info)
   {
-    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     auto it=get_map_iterator_for(info);
-    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     return {it,segment(it).begin()};
   }
 
@@ -999,8 +995,8 @@ private:
   {
     const auto& id=subtypeid(x);
     auto it=map.find(id);
-    if(it!=map.end())return it;
-    else throw unregistered_type{id};
+    if(it!=map.end())throw unregistered_type{id};
+    return it;
   }
 
   template<

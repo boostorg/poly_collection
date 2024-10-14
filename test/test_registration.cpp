@@ -26,15 +26,11 @@ void test_registration()
     PolyCollection        p;
     const PolyCollection& cp=p;
 
-#if 0
     BOOST_TEST(!p.is_registered(typeid(Type)));
     BOOST_TEST(!p.template is_registered<Type>());
-#endif
 
     check_throw<unregistered_type>(
-      [&]{(void)p.begin(typeid(Type));});
-
-#if 0
+      [&]{(void)p.begin(typeid(Type));},
       [&]{(void)p.end(typeid(Type));},
       [&]{(void)cp.begin(typeid(Type));},
       [&]{(void)cp.end(typeid(Type));},
@@ -64,9 +60,7 @@ void test_registration()
       [&]{(void)cp.template capacity<Type>();},
       [&]{(void)p.template shrink_to_fit<Type>();},
       [&]{(void)p.template clear<Type>();});
-#endif
 
-#if 0
     p.register_types();
     p.template register_types<>();
     BOOST_TEST(!p.is_registered(typeid(Type)));
@@ -100,10 +94,8 @@ void test_registration()
     (void)cp.template capacity<Type>();
     (void)p.template shrink_to_fit<Type>();
     (void)p.template clear<Type>();
-#endif
   }
 
-#if 0
   {
     PolyCollection p;
     p.template reserve<Type>(0);
@@ -118,14 +110,11 @@ void test_registration()
       std::distance(
         p.segment_traversal().begin(),p.segment_traversal().end())==1);
   }
-#endif
 }
 
 void test_registration()
 {
   test_registration<any_types::collection,any_types::t1>();
-#if 0
   test_registration<base_types::collection,base_types::t1>();
   test_registration<function_types::collection,function_types::t1>();
-#endif
 }
