@@ -1046,11 +1046,8 @@ private:
     const std::type_info& info)const
   {
     auto it=map.find(info);
-    if(it!=map.end())return it;
-    else{
-      unregistered_type e{info};
-      throw e;
-    }
+    if(it==map.end())throw unregistered_type{info};
+    return it;
   }
 
   static segment_type& segment(const_segment_map_iterator pos)
