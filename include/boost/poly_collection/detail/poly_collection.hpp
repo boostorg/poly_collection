@@ -1045,16 +1045,11 @@ private:
   const_segment_map_iterator get_map_iterator_for(
     const std::type_info& info)const
   {
-    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
     auto it=map.find(info);
-    std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
-    if(it!=map.end()){
-      std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
-      return it;
-    }
+    if(it!=map.end())return it;
     else{
-      std::cerr<<"poly_collection.hpp "<<__LINE__<<std::endl;
-      throw unregistered_type{info};
+      unregistered_type e{info};
+      throw e;
     }
   }
 
