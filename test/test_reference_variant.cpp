@@ -93,7 +93,7 @@ void test_constexpr_reference_variant_for()
   static constexpr std::size_t res=
     v.index()+
     (v.valueless_by_exception()?1:0)+
-#ifndef BOOST_MP11_HAS_CXX14_CONSTEXPR /* mp_with_index requires it */
+#ifdef BOOST_MP11_HAS_CXX14_CONSTEXPR /* mp_with_index requires it */
     (v==v?1:0)+
     (v!=v?1:0)+
     (v< v?1:0)+
