@@ -145,7 +145,7 @@ struct deref_and_call
   F f;
 
   template<typename... Ts>
-  constexpr auto operator()(Ts&&... xs)->
+  constexpr auto operator()(Ts&&... xs)const->
     decltype(f(deref_as_pointer(std::forward<Ts>(xs))...))
   {
     return f(deref_as_pointer(std::forward<Ts>(xs))...);
@@ -244,7 +244,7 @@ struct relop_helper
 struct eq_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x==y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x==y;}
 };
 
 template<typename... Ts>
@@ -259,7 +259,7 @@ constexpr bool operator==(
 struct neq_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x!=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x!=y;}
 };
 
 template<typename... Ts>
@@ -275,7 +275,7 @@ constexpr bool operator!=(
 struct lt_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x<y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x<y;}
 };
 
 template<typename... Ts>
@@ -291,7 +291,7 @@ constexpr bool operator<(
 struct lte_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x<=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x<=y;}
 };
 
 template<typename... Ts>
@@ -307,7 +307,7 @@ constexpr bool operator<=(
 struct gt_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x>y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x>y;}
 };
 
 template<typename... Ts>
@@ -323,7 +323,7 @@ constexpr bool operator>(
 struct gte_
 {
   template<typename T>
-  constexpr bool operator()(const T& x,const T& y){return x>=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x>=y;}
 };
 
 template<typename... Ts>
