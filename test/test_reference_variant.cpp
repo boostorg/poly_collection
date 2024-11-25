@@ -12,6 +12,7 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/poly_collection/detail/reference_variant.hpp>
 #include <utility>
@@ -106,8 +107,11 @@ void test_constexpr_reference_variant_for()
     (holds_alternative<const T>(v)?1:0)+
     (get<I>(v)==x?1:0)+
     (get<const T>(v)==x?1:0)+
+#if !BOOST_WORKAROUND(BOOST_GCC_VERSION,<80000)
     (get_if<I>(&v)?1:0)+
-    (get_if<const T>(&v)?1:0);
+    (get_if<const T>(&v)?1:0)+
+#endif
+    0;
 
   (void)res;
 #endif
