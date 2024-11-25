@@ -1,4 +1,4 @@
-/* Copyright 2016-2020 Joaquin M Lopez Munoz.
+/* Copyright 2016-2024 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <boost/poly_collection/detail/auto_iterator.hpp>
+#include <boost/poly_collection/detail/copyable.hpp>
 #include <boost/poly_collection/detail/functional.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/segment_split.hpp>
@@ -58,7 +59,9 @@ template<
 >
 bool all_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
-  auto alg=restitute_range<Ts...>(std_all_of{},pred);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(std_all_of{},pred);
   for(auto i:detail::segment_split(first,last))if(!alg(i))return false;
   return true;
 }
@@ -71,7 +74,9 @@ template<
 >
 bool any_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
-  auto alg=restitute_range<Ts...>(std_any_of{},pred);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(std_any_of{},pred);
   for(auto i:detail::segment_split(first,last))if(alg(i))return true;
   return false;
 }
@@ -84,7 +89,9 @@ template<
 >
 bool none_of(const Iterator& first,const Iterator& last,Predicate pred)
 {
-  auto alg=restitute_range<Ts...>(std_none_of{},pred);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(std_none_of{},pred);
   for(auto i:detail::segment_split(first,last))if(!alg(i))return false;
   return true;
 }
@@ -105,7 +112,10 @@ template<
 >
 Function for_each(const Iterator& first,const Iterator& last,Function f)
 {
-  for_each_segment(first,last,restitute_range<Ts...>(for_each_alg{},f));
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  for_each_segment(
+    first,last,restitute_range<model_type,Ts...>(for_each_alg{},f));
   return f;
 }
 
@@ -129,16 +139,17 @@ template<
 Iterator for_each_n(const Iterator& first,Size n,Function f)
 {
   using traits=iterator_traits<Iterator>;
+  using model_type=typename traits::model_type;
   using local_base_iterator=typename traits::local_base_iterator;
 
   if(n<=0)return first;
 
-  auto alg=restitute_iterator<Ts...>(
+  auto alg=restitute_iterator<model_type,Ts...>(
          cast_return<local_base_iterator>(for_each_n_alg{}));
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    auto m=sit->end()-lbit;
+    Size m=static_cast<Size>(sit->end()-lbit);
     if(n<=m){
       auto it=alg(sit->type_info(),lbit,n,f);
       return traits::iterator_from(
@@ -162,9 +173,10 @@ Iterator generic_find(
   const Iterator& first,const Iterator& last,Args&&... args)
 {
   using traits=iterator_traits<Iterator>;
+  using model_type=typename traits::model_type;
   using local_base_iterator=typename traits::local_base_iterator;
 
-  auto alg=restitute_range<Ts...>(
+  auto alg=restitute_range<model_type,Ts...>(
     cast_return<local_base_iterator>(Algorithm{}),
     std::forward<Args>(args)...);
   for(auto i:detail::segment_split(first,last)){
@@ -240,23 +252,27 @@ template<typename... Ts>
 struct adjacent_find_alg
 {
   template<
-    typename LocalIterator,typename BinaryPredicate,typename LocalBaseIterator
+    typename LocalIterator,typename BinaryPredicate,
+    typename TypeIndex,typename LocalBaseIterator
   >
   LocalBaseIterator operator()(
     LocalIterator first,LocalIterator last,BinaryPredicate pred,
-    bool& carry,const std::type_info* prev_info, /* note the &s */
+    bool& carry,TypeIndex& prev_info, /* note the &s */
     LocalBaseIterator& prev)const
   {
+    using traits=iterator_traits<LocalIterator>;
+    using model_type=typename traits::model_type;
+
     if(first==last)return LocalBaseIterator{last};
     if(carry){
-      auto p=restitute_iterator<Ts...>(deref_to(pred));
-      if(p(*prev_info,prev,first))return prev;
+      auto p=restitute_iterator<model_type,Ts...>(deref_to(pred));
+      if(p(prev_info,prev,first))return prev;
     }
     auto res=std::adjacent_find(first,last,pred);
     if(res==last){
       carry=true;
-      prev_info=&typeid(
-        typename std::iterator_traits<LocalIterator>::value_type);
+      prev_info=traits::template typeid_<
+        typename std::iterator_traits<LocalIterator>::value_type>();
       prev=LocalBaseIterator{last-1};
     }
     else carry=false;
@@ -275,7 +291,8 @@ Iterator adjacent_find(
   using local_base_iterator=typename traits::local_base_iterator;
 
   bool                  carry=false;
-  const std::type_info* prev_info{&typeid(void)};
+  auto                  prev_info=
+                          make_copyable(traits::template typeid_<void>());
   local_base_iterator   prev;
   return generic_find<adjacent_find_alg<Ts...>,Ts...>(
     first,last,pred,carry,prev_info,prev);  
@@ -298,7 +315,10 @@ template<
 std::ptrdiff_t generic_count(
   const Iterator& first,const Iterator& last,Args&&... args)
 {
-  auto alg=restitute_range<Ts...>(Algorithm{},std::forward<Args>(args)...);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(
+    Algorithm{},std::forward<Args>(args)...);
   std::ptrdiff_t res=0;
   for(auto i:detail::segment_split(first,last))res+=alg(i);
   return res;
@@ -451,7 +471,9 @@ bool equal(
   const Iterator& first1,const Iterator& last1,
   InputIterator first2,BinaryPredicate pred)
 {
-  auto alg=restitute_range<Ts...>(equal_alg{},first2,pred);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(equal_alg{},first2,pred);
   for(auto i:detail::segment_split(first1,last1))if(!alg(i))return false;
   return true;
 }
@@ -475,7 +497,9 @@ bool equal(
   const Iterator& first1,const Iterator& last1,
   InputIterator first2,InputIterator last2,BinaryPredicate pred)
 {
-  auto alg=restitute_range<Ts...>(equal_alg{},first2,last2,pred);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  auto alg=restitute_range<model_type,Ts...>(equal_alg{},first2,last2,pred);
   for(auto i:detail::segment_split(first1,last1))if(!alg(i))return false;
   return first2==last2;
 }
@@ -531,13 +555,14 @@ bool is_permutation_suffix(
   ForwardIterator first2,ForwardIterator last2,BinaryPredicate pred)
 {
   using traits=iterator_traits<Iterator>;
+  using model_type=typename traits::model_type;
 
   auto send=traits::end_base_segment_info_iterator_from(last1);
   for(auto i:detail::segment_split(first1,last1)){
     for(auto lbscan=i.begin();lbscan!=i.end();++lbscan){
       auto& info=i.type_info();
       auto p=head_closure(
-        restitute_iterator<Ts...>(deref_1st_to(pred)),info,lbscan);
+        restitute_iterator<model_type,Ts...>(deref_1st_to(pred)),info,lbscan);
       auto scan=traits::iterator_from(lbscan,send);
       if(algorithm::find_if<Ts...>(first1,scan,p)!=scan)continue;
       std::ptrdiff_t matches=std::count_if(first2,last2,p);
@@ -700,13 +725,14 @@ Iterator search_n(
   Size count,const T& x,BinaryPredicate pred)
 {
   using traits=iterator_traits<Iterator>;
+  using model_type=typename traits::model_type;
   using local_base_iterator=typename traits::local_base_iterator;
 
   if(count<=0)return first;
 
   bool                carry=false;
   auto                remain=count;
-  auto                alg=restitute_range<Ts...>(
+  auto                alg=restitute_range<model_type,Ts...>(
                         cast_return<local_base_iterator>(search_n_alg{}),
                         count,carry,remain,x,pred);
   local_base_iterator prev;
@@ -743,8 +769,10 @@ template<
 OutputIterator generic_copy(
   const Iterator& first,const Iterator& last,OutputIterator res,Args&&... args)
 {
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
   for(auto i:detail::segment_split(first,last)){
-    auto alg=restitute_range<Ts...>(
+    auto alg=restitute_range<model_type,Ts...>(
       Algorithm{},res,std::forward<Args>(args)...);
     res=alg(i);
   }
@@ -772,14 +800,15 @@ template<
 OutputIterator copy_n(const Iterator& first,Size count,OutputIterator res)
 {
   using traits=iterator_traits<Iterator>;
+  using model_type=typename traits::model_type;
 
   if(count<=0)return res;
 
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    auto n=(std::min)(count,sit->end()-lbit);
-    auto alg=restitute_iterator<Ts...>(std_copy_n{},n,res);
+    auto n=(std::min)(count,static_cast<Size>(sit->end()-lbit));
+    auto alg=restitute_iterator<model_type,Ts...>(std_copy_n{},n,res);
     res=alg(sit->type_info(),lbit);
     if((count-=n)==0)break;
     ++sit;
@@ -950,23 +979,26 @@ struct unique_copy_alg
 {
   template<
     typename LocalIterator,typename OutputIterator,
-    typename BinaryPredicate,typename LocalBaseIterator
+    typename BinaryPredicate,typename TypeIndex,typename LocalBaseIterator
   >
   OutputIterator operator()(
     LocalIterator first,LocalIterator last,
     OutputIterator res, BinaryPredicate pred,
-    bool& carry,const std::type_info* prev_info, /* note the &s */
+    bool& carry,TypeIndex& prev_info, /* note the &s */
     LocalBaseIterator& prev)const
   {
+    using traits=iterator_traits<LocalIterator>;
+    using model_type=typename traits::model_type;
+
     if(carry){
-      auto p=restitute_iterator<Ts...>(deref_to(pred));
-      for(;first!=last;++first)if(!p(*prev_info,prev,first))break;
+      auto p=restitute_iterator<model_type,Ts...>(deref_to(pred));
+      for(;first!=last;++first)if(!p(prev_info,prev,first))break;
     }
     if(first==last)return res;
     res=std::unique_copy(first,last,res,pred);
     carry=true;
-    prev_info=&typeid(
-      typename std::iterator_traits<LocalIterator>::value_type);
+    prev_info=traits::template typeid_<
+      typename std::iterator_traits<LocalIterator>::value_type>();
     prev=LocalBaseIterator{last-1};
     return res;
   }
@@ -985,7 +1017,8 @@ OutputIterator unique_copy(
   using local_base_iterator=typename traits::local_base_iterator;
 
   bool                  carry=false;
-  const std::type_info* prev_info{&typeid(void)};
+  auto                  prev_info=
+                          make_copyable(traits::template typeid_<void>());
   local_base_iterator   prev;
   return generic_copy<unique_copy_alg<Ts...>,Ts...>(
     first,last,res,pred,carry,prev_info,prev);  
@@ -1044,11 +1077,13 @@ OutputIterator sample(
   const Iterator& first,const Iterator& last,
   OutputIterator res,Distance n,UniformRandomBitGenerator&& g)
 {
-  Distance m=algorithm::fast_distance(first,last);
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
+  Distance m=static_cast<Distance>(algorithm::fast_distance(first,last));
   n=(std::min)(n,m);
 
   for(auto i:detail::segment_split(first,last)){
-    auto alg=restitute_range<Ts...>(sample_alg{},res,n,m,g);
+    auto alg=restitute_range<model_type,Ts...>(sample_alg{},res,n,m,g);
     res=alg(i);
     if(n==0)return res;
   }
@@ -1078,8 +1113,11 @@ std::pair<OutputIterator1,OutputIterator2> partition_copy(
   const Iterator& first,const Iterator& last,
   OutputIterator1 rest,OutputIterator2 resf,Predicate pred)
 {
+  using model_type=typename iterator_traits<Iterator>::model_type;
+
   for(auto i:detail::segment_split(first,last)){
-    auto alg=restitute_range<Ts...>(std_partition_copy{},rest,resf,pred);
+    auto alg=restitute_range<model_type,Ts...>(
+      std_partition_copy{},rest,resf,pred);
     std::tie(rest,resf)=alg(i);
   }
   return {rest,resf};
@@ -1094,7 +1132,9 @@ struct partition_point_pred
   bool operator()(const Iterator& it)const
   {
     using traits=iterator_traits<Iterator>;
-    auto p=restitute_iterator<Ts...>(deref_to(pred));
+    using model_type=typename traits::model_type;
+
+    auto p=restitute_iterator<model_type,Ts...>(deref_to(pred));
     return p(
       traits::base_segment_info_iterator_from(it)->type_info(),
       traits::local_base_iterator_from(it));

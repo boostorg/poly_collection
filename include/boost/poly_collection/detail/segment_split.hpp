@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2024 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,8 +14,8 @@
 #endif
 
 #include <boost/iterator/iterator_facade.hpp>
+#include <boost/poly_collection/detail/copyable.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
-#include <typeinfo>
 #include <utility>
 
 namespace boost{
@@ -32,16 +32,18 @@ class segment_splitter
   using traits=iterator_traits<PolyCollectionIterator>;
   using local_base_iterator=typename traits::local_base_iterator;
   using base_segment_info_iterator=typename traits::base_segment_info_iterator;
+  using type_index=typename traits::type_index;
+  using copyable_type_index=copyable<type_index>;
 
 public:
   struct info
   {
-    const std::type_info& type_info()const noexcept{return *pinfo_;}
-    local_base_iterator   begin()const noexcept{return begin_;}
-    local_base_iterator   end()const noexcept{return end_;}
+    const type_index&   type_info()const noexcept{return info_;}
+    local_base_iterator begin()const noexcept{return begin_;}
+    local_base_iterator end()const noexcept{return end_;}
 
-    const std::type_info* pinfo_;
-    local_base_iterator   begin_,end_;
+    copyable_type_index info_;
+    local_base_iterator begin_,end_;
   };
 
   struct iterator:iterator_facade<iterator,info,std::input_iterator_tag,info>
@@ -65,7 +67,7 @@ public:
     info dereference()const noexcept
     {
       return {
-        &it->type_info(),
+        it->type_info(),
         it==traits::base_segment_info_iterator_from(*pfirst)?
           traits::local_base_iterator_from(*pfirst):it->begin(),
         it==traits::base_segment_info_iterator_from(*plast)?
@@ -125,15 +127,15 @@ void for_each_segment(
 
   if(sfirst!=slast){
     for(;;){
-      f(info{&sfirst->type_info(),lbfirst,sfirst->end()});
+      f(info{sfirst->type_info(),lbfirst,sfirst->end()});
       ++sfirst;
       if(sfirst==slast)break;
       lbfirst=sfirst->begin();
     }
-    if(sfirst!=send)f(info{&sfirst->type_info(),sfirst->begin(),lblast});
+    if(sfirst!=send)f(info{sfirst->type_info(),sfirst->begin(),lblast});
   }
   else if(sfirst!=send){
-    f(info{&sfirst->type_info(),lbfirst,lblast});
+    f(info{sfirst->type_info(),lbfirst,lblast});
   }
 }
 #else

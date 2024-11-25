@@ -1,4 +1,4 @@
-/* Copyright 2016-2018 Joaquin M Lopez Munoz.
+/* Copyright 2016-2024 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -34,6 +34,7 @@ template<typename Base>
 struct base_model
 {
   using value_type=Base;
+  using type_index=std::type_info;
   template<typename Derived>
   using is_implementation=std::is_base_of<Base,Derived>;
   template<typename T>
@@ -48,6 +49,9 @@ private:
     typename std::enable_if<is_terminal<T>::value>::type*;
 
 public:
+  template<typename T> 
+  static const std::type_info& typeid_(){return typeid(T);}
+
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static const std::type_info& subtypeid(const T& x){return typeid(x);}
 

@@ -1,4 +1,4 @@
-/* Copyright 2016 Joaquin M Lopez Munoz.
+/* Copyright 2016-2024 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 #include "test_erasure.hpp"
 #include "test_insertion.hpp"
 #include "test_iterators.hpp"
+#include "test_reference_variant.hpp"
 #include "test_registration.hpp"
 
 int main()
@@ -27,6 +28,7 @@ int main()
   test_erasure();
   test_insertion();
   test_iterators();
+  test_reference_variant();
   test_registration();
 
   return boost::report_errors();
