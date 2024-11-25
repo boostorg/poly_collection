@@ -93,12 +93,14 @@ void test_constexpr_reference_variant_for()
   static constexpr std::size_t res=
     v.index()+
     (v.valueless_by_exception()?1:0)+
+#ifndef BOOST_MP11_HAS_CXX14_CONSTEXPR /* mp_with_index requires it */
     (v==v?1:0)+
     (v!=v?1:0)+
     (v< v?1:0)+
     (v<=v?1:0)+
     (v> v?1:0)+
     (v>=v?1:0)+
+#endif
     visit(constexpr_get_sizeof{},v)+
     (holds_alternative<const T>(v)?1:0)+
     (get<I>(v)==x?1:0)+
