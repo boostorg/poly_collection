@@ -9,6 +9,7 @@
 #include "test_reference_variant.hpp"
 
 #include <boost/config.hpp>
+#include <boost/core/addressof.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
 #include <boost/mp11/algorithm.hpp>
@@ -80,6 +81,7 @@ template<typename T> using add_const=const T;
 template<typename V,typename T>
 void test_constexpr_reference_variant_for()
 {
+#ifndef BOOST_CORE_NO_CONSTEXPR_ADDRESSOF /* used on variant construction */
   using namespace boost::poly_collection;
 
   /* addresses of constexpr objects are const */
@@ -105,6 +107,7 @@ void test_constexpr_reference_variant_for()
     (get_if<const T>(&v)?1:0);
 
   (void)res;
+#endif
 }
 
 template<typename V,typename T>

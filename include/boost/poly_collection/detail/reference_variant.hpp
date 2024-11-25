@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/config.hpp>
+#include <boost/core/addressof.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/list.hpp>
@@ -47,7 +48,7 @@ public:
     typename std::enable_if<
       (Idx<mp11::mp_size<reference_variant>::value)>::type* =nullptr
   >
-  constexpr reference_variant(T& x):v{std::addressof(x)}{}
+  constexpr reference_variant(T& x):v{boost::addressof(x)}{}
 
   reference_variant(const reference_variant&)=default;
   reference_variant(reference_variant&&)=default;
