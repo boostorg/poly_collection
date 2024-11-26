@@ -108,6 +108,7 @@ void test_constexpr_reference_variant_for()
     (get<I>(v)==x?1:0)+
     (get<const T>(v)==x?1:0)+
 #if !BOOST_WORKAROUND(BOOST_GCC_VERSION,<80000)
+    /* fails to recognize &v as a constant expression */
     (get_if<I>(&v)?1:0)+
     (get_if<const T>(&v)?1:0)+
 #endif
