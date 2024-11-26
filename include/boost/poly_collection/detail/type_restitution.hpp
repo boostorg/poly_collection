@@ -14,7 +14,7 @@
 #endif
 
 #include <boost/mp11/algorithm.hpp>
-#include <boost/mp11/bind.hpp>
+#include <boost/mp11/function.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
 #include <boost/poly_collection/detail/functional.hpp>
@@ -65,24 +65,31 @@ using restitution_list=
  * the associated closed collection.
  */
 
+namespace is_total_restitution_impl
+{
 template<typename Model,typename L,typename=void>
-struct is_total_restitution_helper:std::false_type{};
+struct helper:std::false_type{};
+
+template<typename L1,typename L2>
+struct is_contained;
+
+template<template <typename...> class L1,typename... Ts,typename L2>
+struct is_contained<L1<Ts...>,L2>:mp11::mp_and<mp11::mp_contains<L2,Ts>...>{};
 
 template<typename Model,typename L>
-struct is_total_restitution_helper<
+struct helper<
   Model,L,
   typename std::enable_if<
     is_closed_collection<Model>::value&&
-    mp11::mp_all_of_q<
-      typename Model::acceptable_type_list,
-      mp11::mp_bind_front<mp11::mp_contains,L>
-    >::value
+    is_contained<typename Model::acceptable_type_list,L>::value
   >::type
 >:std::true_type{};
 
+} /* namespace is_total_restitution_impl */
+
 template<typename Model,typename L>
 using is_total_restitution=
-  mp11::mp_bool<is_total_restitution_helper<Model,L>::value>;
+  mp11::mp_bool<is_total_restitution_impl::helper<Model,L>::value>;
 
 /* Given types Ts..., a const type_index& info and a local_base_iterator
  * it, we denote by restitute<Ts...>(info,it):
