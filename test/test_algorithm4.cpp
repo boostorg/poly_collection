@@ -51,10 +51,12 @@ void test_total_restitution_algorithm()
      /* find: no easy way to check value_type is not compared against */
   (void)find_if<all_types>(p.begin(),p.end(),pred);
   (void)find_if_not<all_types>(p.begin(),p.end(),pred);
-     /* find_end: no easy way to check value_type is not compared against */
-     /* find_first_of, same */
-     /* adjacent_find, same */
-     /* count, same */
+  (void)find_end<all_types>
+    (p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
+  (void)find_first_of<all_types>
+    (p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
+  (void)adjacent_find<all_types>(p.begin(),p.end(),pred);
+     /* count, no easy way to check value_type is not compared against */
   (void)count_if<all_types>(p.begin(),p.end(),pred);
   (void)mismatch<all_types>(p.begin(),p.end(),std::begin(seq),pred);
   (void)equal<all_types>(p.begin(),p.end(),std::begin(seq),pred);
@@ -72,6 +74,7 @@ void test_total_restitution_algorithm()
   (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,0);
   (void)remove_copy<all_types>(p.begin(),p.end(),out,0);
   (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
+  (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
   (void)sample<all_types>(p.begin(),p.begin(),out,0,std::mt19937{});
   (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
