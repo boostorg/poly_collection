@@ -32,7 +32,7 @@ struct pierced_pred
   bool operator()(const Q&,const R&)const{return true;}
 };
 
-template<typename PolyCollection>
+template<typename PolyCollection,typename T>
 void test_total_restitution_algorithm()
 {
   using namespace boost::poly_collection;
@@ -64,15 +64,15 @@ void test_total_restitution_algorithm()
     p.begin(),p.end(),std::begin(seq),pred);
   (void)search<all_types>(
     p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
-  (void)search_n<all_types>(p.begin(),p.end(),1,0,pred);
+  (void)search_n<all_types>(p.begin(),p.end(),1,T{0},pred);
   (void)copy<all_types>(p.begin(),p.end(),out);
   (void)copy_n<all_types>(p.begin(),0,out);
   (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)move<all_types>(p.begin(),p.end(),out);
   (void)transform<all_types>(p.begin(),p.end(),out,pred);
-  (void)replace_copy<all_types>(p.begin(),p.end(),out,0,0);
-  (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,0);
-  (void)remove_copy<all_types>(p.begin(),p.end(),out,0);
+  (void)replace_copy<all_types>(p.begin(),p.end(),out,T{0},T{0});
+  (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,T{0});
+  (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
   (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
@@ -88,5 +88,6 @@ void test_algorithm4()
     variant_types::collection,jammed_auto_increment,variant_types::to_int,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
-  test_total_restitution_algorithm<variant_types::collection>();
+  test_total_restitution_algorithm<
+    variant_types::collection,variant_types::t1>();
 }
