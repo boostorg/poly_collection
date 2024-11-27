@@ -8,6 +8,7 @@
 
 #include "test_algorithm4.hpp"
 
+#include <boost/detail/workaround.hpp>
 #include <boost/iterator/function_output_iterator.hpp>
 #include <iterator>
 #include <random>
@@ -43,9 +44,16 @@ void test_total_restitution_algorithm()
   int                      seq[1];
   auto                     out=boost::make_function_output_iterator(pred);
 
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)&&BOOST_WORKAROUND(BOOST_MSVC,<1920)
+/* Internal fix for https://lists.boost.org/Archives/boost/2017/06/235687.php
+ * causes instantiation of std alg for value_type.
+ */
+#else
   (void)all_of<all_types>(p.begin(),p.end(),pred);
   (void)any_of<all_types>(p.begin(),p.end(),pred);
   (void)none_of<all_types>(p.begin(),p.end(),pred);
+#endif
+
   (void)for_each<all_types>(p.begin(),p.end(),pred);
   (void)for_each_n<all_types>(p.begin(),0,pred);
      /* find: no easy way to check value_type is not compared against */
@@ -78,7 +86,16 @@ void test_total_restitution_algorithm()
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
   (void)sample<all_types>(p.begin(),p.begin(),out,0,std::mt19937{});
   (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
+
+#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)&&BOOST_WORKAROUND(BOOST_MSVC,<1920)
+/* Internal fix for https://lists.boost.org/Archives/boost/2017/06/235687.php
+ * causes instantiation of std alg for value_type.
+ */
+/* https://lists.boost.org/Archives/boost/2017/06/235687.php */
+#else
   (void)partition_copy<all_types>(p.begin(),p.begin(),out,out,pred);
+#endif
+
   (void)partition_point<all_types>(p.begin(),p.begin(),pred);
 };
 
