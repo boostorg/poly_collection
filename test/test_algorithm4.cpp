@@ -52,6 +52,12 @@ void test_total_restitution_algorithm()
   (void)all_of<all_types>(p.begin(),p.end(),pred);
   (void)any_of<all_types>(p.begin(),p.end(),pred);
   (void)none_of<all_types>(p.begin(),p.end(),pred);
+  (void)count_if<all_types>(p.begin(),p.end(),pred);
+  (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
+  (void)transform<all_types>(p.begin(),p.end(),out,pred);
+  (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
+  (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
+  (void)partition_copy<all_types>(p.begin(),p.begin(),out,out,pred);
 #endif
 
   (void)for_each<all_types>(p.begin(),p.end(),pred);
@@ -65,7 +71,6 @@ void test_total_restitution_algorithm()
     (p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
   (void)adjacent_find<all_types>(p.begin(),p.end(),pred);
      /* count, no easy way to check value_type is not compared against */
-  (void)count_if<all_types>(p.begin(),p.end(),pred);
   (void)mismatch<all_types>(p.begin(),p.end(),std::begin(seq),pred);
   (void)equal<all_types>(p.begin(),p.end(),std::begin(seq),pred);
   (void)is_permutation<all_types>(
@@ -75,27 +80,13 @@ void test_total_restitution_algorithm()
   (void)search_n<all_types>(p.begin(),p.end(),1,T{0},pred);
   (void)copy<all_types>(p.begin(),p.end(),out);
   (void)copy_n<all_types>(p.begin(),0,out);
-  (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)move<all_types>(p.begin(),p.end(),out);
-  (void)transform<all_types>(p.begin(),p.end(),out,pred);
   (void)replace_copy<all_types>(p.begin(),p.end(),out,T{0},T{0});
   (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,T{0});
   (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
-  (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
   (void)sample<all_types>(p.begin(),p.begin(),out,0,std::mt19937{});
-
-#if BOOST_WORKAROUND(BOOST_MSVC,>=1910)&&BOOST_WORKAROUND(BOOST_MSVC,<1920)
-/* Internal fix for https://lists.boost.org/Archives/boost/2017/06/235687.php
- * causes instantiation of std alg for value_type.
- */
-/* https://lists.boost.org/Archives/boost/2017/06/235687.php */
-#else
-  (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
-  (void)partition_copy<all_types>(p.begin(),p.begin(),out,out,pred);
-#endif
-
   (void)partition_point<all_types>(p.begin(),p.begin(),pred);
 };
 
