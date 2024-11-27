@@ -57,6 +57,7 @@ void test_total_restitution_algorithm()
     p.begin(),p.end(),std::begin(seq),pred);
   (void)copy<all_types>(p.begin(),p.end(),out);
   (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
+  (void)move<all_types>(p.begin(),p.end(),out);
   (void)transform<all_types>(p.begin(),p.end(),out,pred);
   (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
   (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
@@ -81,7 +82,6 @@ void test_total_restitution_algorithm()
     p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
   (void)search_n<all_types>(p.begin(),p.end(),1,T{0},pred);
   (void)copy_n<all_types>(p.begin(),0,out);
-  (void)move<all_types>(p.begin(),p.end(),out);
   (void)replace_copy<all_types>(p.begin(),p.end(),out,T{0},T{0});
   (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,T{0});
   (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
