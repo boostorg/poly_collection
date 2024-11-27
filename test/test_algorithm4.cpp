@@ -53,6 +53,8 @@ void test_total_restitution_algorithm()
   (void)any_of<all_types>(p.begin(),p.end(),pred);
   (void)none_of<all_types>(p.begin(),p.end(),pred);
   (void)count_if<all_types>(p.begin(),p.end(),pred);
+  (void)is_permutation<all_types>(
+    p.begin(),p.end(),std::begin(seq),pred);
   (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)transform<all_types>(p.begin(),p.end(),out,pred);
   (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
@@ -74,8 +76,6 @@ void test_total_restitution_algorithm()
      /* count, no easy way to check value_type is not compared against */
   (void)mismatch<all_types>(p.begin(),p.end(),std::begin(seq),pred);
   (void)equal<all_types>(p.begin(),p.end(),std::begin(seq),pred);
-  (void)is_permutation<all_types>(
-    p.begin(),p.end(),std::begin(seq),pred);
   (void)search<all_types>(
     p.begin(),p.end(),std::begin(seq),std::end(seq),pred);
   (void)search_n<all_types>(p.begin(),p.end(),1,T{0},pred);
