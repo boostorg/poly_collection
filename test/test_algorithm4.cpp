@@ -55,6 +55,7 @@ void test_total_restitution_algorithm()
   (void)count_if<all_types>(p.begin(),p.end(),pred);
   (void)copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)transform<all_types>(p.begin(),p.end(),out,pred);
+  (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
   (void)remove_copy_if<all_types>(p.begin(),p.end(),out,pred);
   (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
   (void)partition_copy<all_types>(p.begin(),p.begin(),out,out,pred);
@@ -83,7 +84,6 @@ void test_total_restitution_algorithm()
   (void)move<all_types>(p.begin(),p.end(),out);
   (void)replace_copy<all_types>(p.begin(),p.end(),out,T{0},T{0});
   (void)replace_copy_if<all_types>(p.begin(),p.end(),out,pred,T{0});
-  (void)remove_copy<all_types>(p.begin(),p.end(),out,T{0});
   (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
   (void)sample<all_types>(p.begin(),p.begin(),out,0,std::mt19937{});
