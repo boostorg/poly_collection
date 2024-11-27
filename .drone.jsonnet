@@ -430,14 +430,14 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
 
     linux_pipeline(
         "Linux 23.10 Clang 17 UBSAN",
-        "cppalliance/droneubuntu2310:1",
+        "cppalliance/droneubuntu2404:1",
         { TOOLSET: 'clang', COMPILER: 'clang++-17', CXXSTD: '11,14,17,20,2b' } + ubsan,
         "clang-17",
     ),
 
     linux_pipeline(
         "Linux 23.10 Clang 17 ASAN",
-        "cppalliance/droneubuntu2310:1",
+        "cppalliance/droneubuntu2404:1",
         { TOOLSET: 'clang', COMPILER: 'clang++-17', CXXSTD: '11,14,17,20,2b' } + asan,
         "clang-17",
     ),
