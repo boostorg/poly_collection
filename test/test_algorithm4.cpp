@@ -85,7 +85,6 @@ void test_total_restitution_algorithm()
   (void)unique_copy<all_types>(p.begin(),p.end(),out,pred);
   (void)rotate_copy<all_types>(p.begin(),p.begin(),p.end(),out);
   (void)sample<all_types>(p.begin(),p.begin(),out,0,std::mt19937{});
-  (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
 
 #if BOOST_WORKAROUND(BOOST_MSVC,>=1910)&&BOOST_WORKAROUND(BOOST_MSVC,<1920)
 /* Internal fix for https://lists.boost.org/Archives/boost/2017/06/235687.php
@@ -93,6 +92,7 @@ void test_total_restitution_algorithm()
  */
 /* https://lists.boost.org/Archives/boost/2017/06/235687.php */
 #else
+  (void)is_partitioned<all_types>(p.begin(),p.begin(),pred);
   (void)partition_copy<all_types>(p.begin(),p.begin(),out,out,pred);
 #endif
 
