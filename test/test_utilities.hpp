@@ -385,16 +385,21 @@ struct realloc_poly_collection_class<
   using type=PolyCollection<T,Allocator<value_type,Args...>>;
 };
 
-template<typename PolyCollection,typename=void>
-struct is_closed_collection:std::true_type{};
-
 template<typename PolyCollection>
-struct is_closed_collection<
-  PolyCollection,
-  boost::void_t<
-    decltype(std::declval<PolyCollection>().template register_types<>())
-  >
->:std::false_type{};
+struct is_closed_collection
+{
+private:
+  template<typename PolyCollection2>
+  static decltype(
+    std::declval<PolyCollection2&>().template register_types<>(),
+    std::false_type{}
+  ) check(int);
+
+  template<typename> static std::true_type check(...);
+
+public:
+  static constexpr bool value=decltype(check<PolyCollection>(0))::value;
+};
 
 template<
   typename... T,typename PolyCollection,
