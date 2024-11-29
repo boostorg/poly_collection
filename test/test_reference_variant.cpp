@@ -121,6 +121,20 @@ void test_constexpr_reference_variant_for()
 #endif
 }
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+template<typename Q,typename V>
+struct get_
+{
+  V& v;
+
+  void operator()()
+  {
+    using namespace boost::poly_collection;
+    (void)get<Q>(v);
+  }
+};
+#endif
+
 template<typename V,typename T>
 void test_reference_variant_for()
 {
@@ -204,7 +218,12 @@ void test_reference_variant_for()
   BOOST_TEST(&get<T>(cv)==&x);
   BOOST_TEST(get<T>(std::move(v))==x);
   BOOST_TEST(get<T>(std::move(cv))==x);
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
+  /* https://godbolt.org/z/jcfKb755o */
+  check_throw<bad_variant_access>(get_<Q,V>{v});
+#else
   check_throw<bad_variant_access>([&]{(void)get<Q>(v);});
+#endif
 
   BOOST_TEST(get_if<I>((V*)nullptr)==nullptr);
   BOOST_TEST(get_if<I>(&v)==&x);
