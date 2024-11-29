@@ -82,7 +82,10 @@ template<typename T> using add_const=const T;
 template<typename V,typename T>
 void test_constexpr_reference_variant_for()
 {
-#ifndef BOOST_CORE_NO_CONSTEXPR_ADDRESSOF /* used on variant construction */
+#if defined(BOOST_CORE_NO_CONSTEXPR_ADDRESSOF)||\
+    BOOST_WORKAROUND(BOOST_MSVC,<=1900)
+  /* can't even construct a compile-time reference_variant */
+#else
   using namespace boost::poly_collection;
 
   /* addresses of constexpr objects are const */

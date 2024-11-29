@@ -13,7 +13,9 @@
 #pragma once
 #endif
 
+#include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/bind.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
@@ -70,11 +72,19 @@ namespace is_total_restitution_impl
 template<typename Model,typename L,typename=void>
 struct helper:std::false_type{};
 
+#if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
 template<typename L1,typename L2>
 struct is_contained;
 
-template<template <typename...> class L1,typename... Ts,typename L2>
-struct is_contained<L1<Ts...>,L2>:mp11::mp_and<mp11::mp_contains<L2,Ts>...>{};
+template<template <typename...> class L1,typename L2>
+struct is_contained<L1<>,L2>:std::true_type{};
+
+template<template <typename...> class L1,typename T,typename... Ts,typename L2>
+struct is_contained<L1<T,Ts...>,L2>:is_contained<L1<Ts...>,L2>
+{
+  using super=is_contained<L1<Ts...>,L2>;
+  static constexpr bool value=super::value&&mp11::mp_contains<L2,T>::value;
+};
 
 template<typename Model,typename L>
 struct helper<
@@ -84,7 +94,19 @@ struct helper<
     is_contained<typename Model::acceptable_type_list,L>::value
   >::type
 >:std::true_type{};
-
+#else
+template<typename Model,typename L>
+struct helper<
+  Model,L,
+  typename std::enable_if<
+    is_closed_collection<Model>::value&&
+    mp11::mp_all_of_q<
+      typename Model::acceptable_type_list,
+      mp11::mp_bind_front<mp11::mp_contains,L>
+    >::value
+  >::type
+>:std::true_type{};
+#endif
 } /* namespace is_total_restitution_impl */
 
 template<typename Model,typename L>

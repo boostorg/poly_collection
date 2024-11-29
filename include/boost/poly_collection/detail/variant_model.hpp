@@ -78,14 +78,15 @@ struct variant_model
   using acceptable_type_list=mp11::mp_list<Ts...>;
 
   template<typename T>
-  using is_terminal=mp11::mp_contains<acceptable_type_list,T>;
+  struct is_terminal: /* using makes VS2015 choke, hence we derive */
+    mp11::mp_contains<acceptable_type_list,T>{};
 
   template<typename T>
-  using is_implementation=std::integral_constant<
+  struct is_implementation:std::integral_constant< /* idem */
     bool,
     is_terminal<T>::value||
     variant_model_is_subvariant<T,Ts...>::value
-  >;
+  >{};
 
 private:
   template<typename T>
