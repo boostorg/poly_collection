@@ -205,12 +205,17 @@ void test_reference_variant_for()
 
   BOOST_TEST((
     visit(get_addresses{},v,w)==get_addresses::result_type{&x,&y}));
+
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,<40900)
+  /*  call of overloaded 'cref_qualifier(...&)' is ambiguous */
+#else
   BOOST_TEST((
     visit(get_cref_qualifiers{},v,cv)==
     get_cref_qualifiers::result_type{plain_ref,const_ref}));
   BOOST_TEST((
     visit(get_cref_qualifiers{},std::move(v),std::move(cv))==
     get_cref_qualifiers::result_type{rvalue_ref,const_rvalue_ref}));
+#endif
 
   BOOST_TEST(holds_alternative<T>(cv));
   BOOST_TEST(!holds_alternative<Q>(cv));
