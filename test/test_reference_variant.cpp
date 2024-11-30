@@ -85,6 +85,10 @@ void test_constexpr_reference_variant_for()
 #if defined(BOOST_CORE_NO_CONSTEXPR_ADDRESSOF)||\
     BOOST_WORKAROUND(BOOST_MSVC,<=1900)
   /* can't even construct a compile-time reference_variant */
+#elif BOOST_WORKAROUND(BOOST_GCC_VERSION,<40900)
+  /* const qualifiers being stripped in TMP transformations:
+   * https://godbolt.org/z/1dPcz35Y5
+   */
 #else
   using namespace boost::poly_collection;
 
