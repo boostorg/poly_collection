@@ -118,7 +118,7 @@ using is_not_copy_assignable=std::integral_constant<
 template<typename T>
 using is_equality_comparable=std::integral_constant<
   bool,
-  boost::has_equal_to<T,T,bool>::value
+  boost::has_equal_to<const T&,const T&,bool>::value
 >;
 
 template<typename T>
