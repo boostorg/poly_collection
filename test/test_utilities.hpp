@@ -476,7 +476,7 @@ template<typename... Types,typename PolyCollection>
 layout_data<sizeof...(Types)> get_layout_data(const PolyCollection& p)
 {
   return{
-    {{(is_registered<Types>(p)?
+    {{(is_registered<Types>(p)&&!p.template empty<Types>()?
       &*p.template begin<Types>():nullptr)...}},
     {{(is_registered<Types>(p)?
       p.template size<Types>():0)...}}
