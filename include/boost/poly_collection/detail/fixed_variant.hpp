@@ -57,7 +57,7 @@ public:
     typename std::enable_if<
       (I<mp11::mp_size<fixed_variant>::value)>::type* =nullptr
   >
-  fixed_variant(const T&):index_{I}{}
+  explicit fixed_variant(const T&):index_{I}{}
 
   std::size_t index()const noexcept{return index_;}
   bool        valueless_by_exception()const noexcept{return false;}
