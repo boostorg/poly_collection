@@ -123,8 +123,8 @@ void test_fixed_variant_for()
   V                                              &v=x,&w=y;
   const V                                        &cv=v,&cw=w,&cu=z;
 
-  BOOST_TEST(v.index()==I);
-  BOOST_TEST(!v.valueless_by_exception());
+  BOOST_TEST(cv.index()==I);
+  BOOST_TEST(!cv.valueless_by_exception());
 
   BOOST_TEST((cv==cw) == (x==y));
   BOOST_TEST((cv!=cw) == (x!=y));
@@ -187,6 +187,11 @@ void test_fixed_variant_for()
     visit(hasher{},cv,cw,cu)==hasher{}(x.value,y.value,z.value));
   BOOST_TEST(
     visit(hasher{},cv,cw,cv,cu)==hasher{}(x.value,y.value,x.value,z.value));
+
+  visit<void>(hasher{});
+  visit<void>(hasher{},cv);
+  visit<void>(hasher{},cv,cw);
+  visit<void>(hasher{},cv,cw,cu);
 
   BOOST_TEST(holds_alternative<T>(cv));
   BOOST_TEST(!holds_alternative<Q>(cv));

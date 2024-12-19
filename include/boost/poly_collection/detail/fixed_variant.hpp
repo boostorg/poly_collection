@@ -268,14 +268,33 @@ struct return_type_impl<deduced,F,Vs...>
 template<typename R,typename F,typename... Vs>
 using return_type=typename return_type_impl<R,F,Vs...>::type;
 
-template<typename R=deduced,typename F>
-return_type<R,F&&> visit(F&& f)
-{
-  return std::forward<F>(f)();
-}
-
-template<typename R,typename F,typename V,typename... Vs>
+template<typename R,typename F,typename... Vs>
 struct visit_helper;
+
+template<typename R,typename F>
+struct visit_helper<R,F>
+{
+  F&& f;
+
+  R operator()(){return std::forward<F>(f)();}
+};
+
+template<typename F>
+struct visit_helper<void,F>
+{
+  F&& f;
+
+  void operator()(){(void)std::forward<F>(f)();}
+};
+
+template<
+  typename R=deduced,typename F,
+  typename ReturnType=return_type<R,F&&>
+>
+ReturnType visit(F&& f)
+{
+  return visit_helper<ReturnType,F>{std::forward<F>(f)}();
+}
 
 template<typename R,typename F,typename V>
 struct visit_helper<R,F,V>
@@ -287,6 +306,19 @@ struct visit_helper<R,F,V>
   R operator()(I)
   {
     return std::forward<F>(f)(unsafe_get<I::value>(std::forward<V>(x)));
+  }
+};
+
+template<typename F,typename V>
+struct visit_helper<void,F,V>
+{
+  F&& f;
+  V&& x;
+
+  template<typename I>
+  void operator()(I)
+  {
+    (void)std::forward<F>(f)(unsafe_get<I::value>(std::forward<V>(x)));
   }
 };
 
@@ -317,11 +349,25 @@ struct bound_f
   }
 };
 
+template<typename F,typename V,typename I>
+struct bound_f<void,F,V,I>
+{
+  F&& f;
+  V&& x;
+
+  template<typename... Args>
+  void operator()(Args&&... xs)
+  {
+    (void)std::forward<F>(f)(
+      unsafe_get<I::value>(std::forward<V>(x)),std::forward<Args>(xs)...);
+  }
+};
+
 template<typename R,typename F>
 struct bound_visit;
 
 template<typename R,typename F,typename V,typename... Vs>
-struct visit_helper
+struct visit_helper<R,F,V,Vs...>
 {
   F&&                 f;
   V&&                 x;
