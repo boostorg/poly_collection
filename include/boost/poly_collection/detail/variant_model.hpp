@@ -87,6 +87,29 @@ struct variant_model_is_subvariant<
 >:variant_model_is_subset<mp11::mp_list<Us...>,mp11::mp_list<Ts...>>{};
 #endif
 
+template<typename F,typename... Ts>
+auto visit_dispatch(F&& f,const fixed_variant_impl::fixed_variant<Ts...>&x)->
+  decltype(boost::poly_collection::visit(std::move(f),x))
+{
+  return boost::poly_collection::visit(std::move(f),x);
+}
+
+template<typename F,typename... Ts>
+auto visit_dispatch(F&& f,const boost::variant2::variant<Ts...>&x)->
+  decltype(boost::variant2::visit(std::move(f),x))
+{
+  return boost::variant2::visit(std::move(f),x);
+}
+
+#if !defined(BOOST_NO_CXX17_HDR_VARIANT)
+template<typename F,typename... Ts>
+auto visit_dispatch(F&& f,const std::variant<Ts...>&x)->
+  decltype(std::visit(std::move(f),x))
+{
+  return std::visit(std::move(f),x);
+}
+#endif
+
 template<typename... Ts>
 struct variant_model
 {
@@ -171,7 +194,7 @@ public:
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static const void* subaddress(const T& x)
   {
-    return visit(subaddress_visitor{},x);
+    return visit_dispatch(subaddress_visitor{},x);
   }
 
   template<typename T,enable_if_terminal<T> =nullptr>
@@ -191,7 +214,7 @@ public:
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static const std::type_info& subtype_info(const T& x)
   {
-    return visit(subtype_info_visitor{},x);
+    return visit_dispatch(subtype_info_visitor{},x);
   }
 
   using base_iterator=fixed_variant_iterator<value_type>;
@@ -225,7 +248,7 @@ private:
   friend class packed_segment;
 
   template<typename T>
-  using final_type= fixed_variant_impl::fixed_variant_closure<
+  using final_type=fixed_variant_impl::fixed_variant_closure<
      T,fixed_variant_impl::fixed_variant<Ts...>>;
 
   template<typename T>
