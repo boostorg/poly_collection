@@ -9,11 +9,13 @@
 #include "test_fixed_variant.hpp"
 
 #include <boost/config.hpp>
+#include <boost/container_hash/hash.hpp>
 #include <boost/core/addressof.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/core/lightweight_test_trait.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/tuple.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <utility>
 #include "test_utilities.hpp"
@@ -33,6 +35,8 @@ struct non_copyable
   constexpr bool operator>(const non_copyable&)const{return false;}
   constexpr bool operator>=(const non_copyable&)const{return true;}
 };
+
+std::size_t hash_value(const non_copyable&){return 0;}
 
 struct get_addresses
 {
@@ -72,6 +76,26 @@ struct get_cref_qualifiers
   }
 };
 
+struct hasher_helper
+{
+  std::size_t& seed;
+
+  template<typename T>
+  void operator()(const T& x){boost::hash_combine(seed,x);}
+};
+
+struct hasher
+{
+  template<typename... Ts>
+  std::size_t operator()(const Ts&... xs)const
+  {
+    std::size_t seed=0;
+    boost::mp11::tuple_for_each(
+      std::forward_as_tuple(xs...),hasher_helper{seed});
+    return seed;
+  }
+};
+
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,<50000)
 template<typename Q,typename V>
 struct get_
@@ -95,7 +119,7 @@ void test_fixed_variant_for()
   using Q=boost::mp11::mp_at_c<V,J>;
 
   fixed_variant_impl::fixed_variant_closure<T,V> x{T(0)},y{T(1)};
-  fixed_variant_impl::fixed_variant_closure<Q,V> z{Q(0)};
+  fixed_variant_impl::fixed_variant_closure<Q,V> z{Q(2)};
   V                                              &v=x,&w=y;
   const V                                        &cv=v,&cw=w,&cu=z;
 
@@ -158,6 +182,11 @@ void test_fixed_variant_for()
     visit(get_cref_qualifiers{},std::move(v),std::move(cv))==
     get_cref_qualifiers::result_type{rvalue_ref,const_rvalue_ref}));
 #endif
+
+  BOOST_TEST(
+    visit(hasher{},cv,cw,cu)==hasher{}(x.value,y.value,z.value));
+  BOOST_TEST(
+    visit(hasher{},cv,cw,cv,cu)==hasher{}(x.value,y.value,x.value,z.value));
 
   BOOST_TEST(holds_alternative<T>(cv));
   BOOST_TEST(!holds_alternative<Q>(cv));
