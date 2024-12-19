@@ -36,13 +36,26 @@
 #include <variant>
 #endif
 
+namespace boost{namespace variant2{
+
+template<class... T> class variant;
+
+}} /* namespace boost::variant2 */
+
+namespace boost_poly_collection_invoke_visit_variant2{
+
+/* defined here to avoid ADL ambiguities with visit */
+
+template<typename F,typename... Ts>
+auto invoke_visit(F&& f,const boost::variant2::variant<Ts...>&x)->
+  decltype(visit(std::forward<F>(f),x))
+{
+  return visit(std::forward<F>(f),x);
+}
+
+} /* namespace boost_poly_collection_invoke_visit_variant2 */
+
 namespace boost{
-
-namespace variant2{
-
-template<typename... Ts> class variant;
-
-} /* namespace variant2 */
 
 namespace poly_collection{
 
@@ -88,25 +101,20 @@ struct variant_model_is_subvariant<
 #endif
 
 template<typename F,typename... Ts>
-auto visit_dispatch(F&& f,const fixed_variant_impl::fixed_variant<Ts...>&x)->
-  decltype(boost::poly_collection::visit(std::move(f),x))
+auto invoke_visit(F&& f,const fixed_variant_impl::fixed_variant<Ts...>&x)->
+  decltype(boost::poly_collection::visit(std::forward<F>(f),x))
 {
-  return boost::poly_collection::visit(std::move(f),x);
+  return boost::poly_collection::visit(std::forward<F>(f),x);
 }
 
-template<typename F,typename... Ts>
-auto visit_dispatch(F&& f,const boost::variant2::variant<Ts...>&x)->
-  decltype(boost::variant2::visit(std::move(f),x))
-{
-  return boost::variant2::visit(std::move(f),x);
-}
+using boost_poly_collection_invoke_visit_variant2::invoke_visit;
 
 #if !defined(BOOST_NO_CXX17_HDR_VARIANT)
 template<typename F,typename... Ts>
-auto visit_dispatch(F&& f,const std::variant<Ts...>&x)->
-  decltype(std::visit(std::move(f),x))
+auto invoke_visit(F&& f,const std::variant<Ts...>&x)->
+  decltype(std::visit(std::forward<F>(f),x))
 {
-  return std::visit(std::move(f),x);
+  return std::visit(std::forward<F>(f),x);
 }
 #endif
 
@@ -194,7 +202,7 @@ public:
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static const void* subaddress(const T& x)
   {
-    return visit_dispatch(subaddress_visitor{},x);
+    return invoke_visit(subaddress_visitor{},x);
   }
 
   template<typename T,enable_if_terminal<T> =nullptr>
@@ -214,7 +222,7 @@ public:
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static const std::type_info& subtype_info(const T& x)
   {
-    return visit_dispatch(subtype_info_visitor{},x);
+    return invoke_visit(subtype_info_visitor{},x);
   }
 
   using base_iterator=fixed_variant_iterator<value_type>;
