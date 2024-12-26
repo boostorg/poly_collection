@@ -414,7 +414,7 @@ struct relop_helper
 {
   const fixed_variant<Ts...> &x,&y;
 
-  template<typename I> bool operator()(I)const
+  template<typename I> constexpr bool operator()(I)const
   {
     return RelOp{}(unsafe_get<I::value>(x),unsafe_get<I::value>(y));
   }
@@ -423,11 +423,11 @@ struct relop_helper
 struct eq_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x==y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x==y;}
 };
 
 template<typename... Ts>
-bool operator==(
+constexpr bool operator==(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
@@ -438,11 +438,11 @@ bool operator==(
 struct neq_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x!=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x!=y;}
 };
 
 template<typename... Ts>
-bool operator!=(
+constexpr bool operator!=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
@@ -454,11 +454,11 @@ bool operator!=(
 struct lt_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x<y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x<y;}
 };
 
 template<typename... Ts>
-bool operator<(
+constexpr bool operator<(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
@@ -470,11 +470,11 @@ bool operator<(
 struct lte_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x<=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x<=y;}
 };
 
 template<typename... Ts>
-bool operator<=(
+constexpr bool operator<=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
@@ -486,11 +486,11 @@ bool operator<=(
 struct gt_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x>y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x>y;}
 };
 
 template<typename... Ts>
-bool operator>(
+constexpr bool operator>(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
@@ -502,11 +502,11 @@ bool operator>(
 struct gte_
 {
   template<typename T>
-  bool operator()(const T& x,const T& y)const{return x>=y;}
+  constexpr bool operator()(const T& x,const T& y)const{return x>=y;}
 };
 
 template<typename... Ts>
-bool operator>=(
+constexpr bool operator>=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
