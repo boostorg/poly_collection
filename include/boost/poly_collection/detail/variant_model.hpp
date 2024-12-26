@@ -143,17 +143,17 @@ private:
     typename std::enable_if<!is_terminal<T>::value>::type*;
 
 public:
-  template<typename T> static type_index typeid_()
+  template<typename T> static type_index index()
   {
     return mp11::mp_find<acceptable_type_list,T>::value;
   }
 
   template<typename T,enable_if_terminal<T> =nullptr>
-  static type_index subtypeid(const T&){return typeid_<T>();}
+  static type_index subindex(const T&){return index<T>();}
 
 private:
   template<typename... Qs>
-  struct subtypeid_lambda
+  struct subindex_lambda
   {
     template<typename I>
     std::size_t operator()(I)const
@@ -167,13 +167,13 @@ public:
   template<
     template<typename...> class V,typename... Qs,
     enable_if_not_terminal<V<Qs...>> =nullptr>
-  static type_index subtypeid(const V<Qs...>& x)
+  static type_index subindex(const V<Qs...>& x)
   {
     static constexpr auto not_found=mp11::mp_size<acceptable_type_list>::value;
     auto i=x.index();
     if(i>=sizeof...(Qs))return not_found;
     else return mp11::mp_with_index<sizeof...(Qs)>(
-      i,subtypeid_lambda<Qs...>{});
+      i,subindex_lambda<Qs...>{});
   }
 
   template<typename T,enable_if_terminal<T> =nullptr>
@@ -264,7 +264,6 @@ private:
   {
     return reinterpret_cast<const final_type<T>*>(p);
   }
-
 };
 
 } /* namespace poly_collection::detail */

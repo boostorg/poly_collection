@@ -121,10 +121,10 @@ using is_total_restitution=
 
 /* Given types Ts..., a const type_index& info and a local_base_iterator
  * it, we denote by restitute<Ts...>(info,it):
- *   - a local_iterator<Ti> from it, if info==typeid_<Ti>() for some Ti in
+ *   - a local_iterator<Ti> from it, if info==index<Ti>() for some Ti in
  *     Ts...
  *   - it otherwise,
- * where type_index and typeid_ are the type indexing facilities of the
+ * where type_index and index are the type indexing facilities of the
  * underlying polymorphic model.
  * 
  * Using this notation, restitute_range<IsTotal,Ts...>(f,args...)(s) resolves
@@ -151,7 +151,7 @@ struct restitute_range_class<IsTotal,F,T,Ts...>:
     using traits=iterator_traits<decltype(s.begin())>;
     using local_iterator=typename traits::template local_iterator<T>;
 
-    if(s.type_info()==traits::template typeid_<T>())
+    if(s.type_info()==traits::template index<T>())
       return (this->f)(
         local_iterator{s.begin()},local_iterator{s.end()});
     else
@@ -235,7 +235,7 @@ struct restitute_iterator_class<IsTotal,F,T,Ts...>:
       std::declval<F>()(LocalIterator{it},std::forward<Args>(args)...))
   {
     if(static_cast<const typename Traits::type_index&>(info)==
-       Traits::template typeid_<T>()){
+       Traits::template index<T>()){
       return (this->f)(LocalIterator{it},std::forward<Args>(args)...);
     }
     else{

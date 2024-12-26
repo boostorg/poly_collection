@@ -50,13 +50,13 @@ private:
 
 public:
   template<typename T> 
-  static const std::type_info& typeid_(){return typeid(T);}
+  static const std::type_info& index(){return typeid(T);}
 
   template<typename T,enable_if_not_terminal<T> =nullptr>
-  static const std::type_info& subtypeid(const T& x){return typeid(x);}
+  static const std::type_info& subindex(const T& x){return typeid(x);}
 
   template<typename T,enable_if_terminal<T> =nullptr>
-  static const std::type_info& subtypeid(const T&){return typeid(T);}
+  static const std::type_info& subindex(const T&){return typeid(T);}
 
   template<typename T,enable_if_not_terminal<T> =nullptr>
   static void* subaddress(T& x)

@@ -58,13 +58,13 @@ struct function_model<R(Args...)>
   using is_terminal=function_model_is_terminal<T>;
 
   template<typename T> 
-  static const std::type_info& typeid_(){return typeid(T);}
+  static const std::type_info& index(){return typeid(T);}
 
   template<typename T>
-  static const std::type_info& subtypeid(const T&){return typeid(T);}
+  static const std::type_info& subindex(const T&){return typeid(T);}
 
   template<typename Signature>
-  static const std::type_info& subtypeid(
+  static const std::type_info& subindex(
     const callable_wrapper<Signature>& f)
   {
     return f.target_type();

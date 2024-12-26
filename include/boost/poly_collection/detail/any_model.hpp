@@ -109,16 +109,16 @@ struct any_model
   using is_terminal=any_model_is_terminal<T>;
 
   template<typename T> 
-  static const std::type_info& typeid_(){return typeid(T);}
+  static const std::type_info& index(){return typeid(T);}
 
   template<typename T>
-  static const std::type_info& subtypeid(const T&){return typeid(T);}
+  static const std::type_info& subindex(const T&){return typeid(T);}
 
   template<
     typename Concept2,typename T,
     any_model_enable_if_has_typeid_<Concept2,T> =nullptr
   >
-  static const std::type_info& subtypeid(
+  static const std::type_info& subindex(
     const type_erasure::any<Concept2,T>& a)
   {
     return type_erasure::typeid_of(a);

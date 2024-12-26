@@ -283,7 +283,7 @@ struct adjacent_find_alg
     auto res=std::adjacent_find(first,last,pred);
     if(res==last){
       carry=true;
-      prev_info=traits::template typeid_<
+      prev_info=traits::template index<
         typename std::iterator_traits<LocalIterator>::value_type>();
       prev=LocalBaseIterator{last-1};
     }
@@ -304,7 +304,7 @@ BOOST_FORCEINLINE Iterator adjacent_find(
 
   bool                  carry=false;
   auto                  prev_info=
-                          make_copyable(traits::template typeid_<void>());
+                          make_copyable(traits::template index<void>());
   local_base_iterator   prev;
   return generic_find<adjacent_find_alg<Ts...>,Ts...>(
     first,last,pred,carry,prev_info,prev);  
@@ -1013,7 +1013,7 @@ struct unique_copy_alg
     if(first==last)return res;
     res=std::unique_copy(first,last,res,pred);
     carry=true;
-    prev_info=traits::template typeid_<
+    prev_info=traits::template index<
       typename std::iterator_traits<LocalIterator>::value_type>();
     prev=LocalBaseIterator{last-1};
     return res;
@@ -1034,7 +1034,7 @@ BOOST_FORCEINLINE OutputIterator unique_copy(
 
   bool                  carry=false;
   auto                  prev_info=
-                          make_copyable(traits::template typeid_<void>());
+                          make_copyable(traits::template index<void>());
   local_base_iterator   prev;
   return generic_copy<unique_copy_alg<Ts...>,Ts...>(
     first,last,res,pred,carry,prev_info,prev);  

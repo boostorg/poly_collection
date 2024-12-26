@@ -31,7 +31,7 @@ namespace detail{
 
 /* (Internal) bunch of traits-grouped functions for const-preserving
  * interoperatibility between iterators and local iterators of a
- * poly_collection, plus access to associated model's typeid_ from
+ * poly_collection, plus access to associated model's index from
  * an iterator type.
  */
 
@@ -107,9 +107,9 @@ struct iterator_traits
   }
 
   template<typename T>
-  static decltype(model_type::template typeid_<T>()) typeid_()
+  static decltype(model_type::template index<T>()) index()
   {
-    return model_type::template typeid_<T>();
+    return model_type::template index<T>();
   }
 };
 
