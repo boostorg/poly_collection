@@ -103,16 +103,16 @@ struct hasher
 
 template<typename T,std::size_t... Is>
 std::tuple<decltype(T{Is})...>
-make_iota_tuple(boost::mp11::index_sequence<Is...>)
+make_iota_tuple_helper(boost::mp11::index_sequence<Is...>)
 {
   return std::tuple<decltype(T{Is})...>{T{Is}...};
 }
 
 template<typename T,std::size_t N>
-decltype(make_iota_tuple<T>(boost::mp11::make_index_sequence<N>{}))
+decltype(make_iota_tuple_helper<T>(boost::mp11::make_index_sequence<N>{}))
 make_iota_tuple()
 {
-  return make_iota_tuple<T>(boost::mp11::make_index_sequence<N>{});
+  return make_iota_tuple_helper<T>(boost::mp11::make_index_sequence<N>{});
 }
 
 template<typename V>
