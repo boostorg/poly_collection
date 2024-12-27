@@ -1,11 +1,11 @@
 [/
-  Copyright 2016-2024 Joaquin M Lopez Munoz.
+  Copyright 2024 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
 ]
 
-[template poly_collection_synopsis[class_name template_header value_type type_index]
+[template closed_poly_collection_synopsis[class_name template_header value_type type_index]
   ``[template_header]``
   class ``[class_name]``
   {
@@ -53,14 +53,6 @@
     ``[class_name]``& operator=(``[class_name]``&&);
 
     allocator_type get_allocator()const noexcept;
-
-    ``[link poly_collection.reference.polymorphic_containers.polymorphic_collections.type_registration ['// type registration:]]``
-
-    template<typename... T>
-    void _register_types_();
-
-    bool _is_registered_(const type_index& info)const;
-    template<typename T> bool _is_registered_()const;
 
     ``[link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators ['// iterators:]]``
 
