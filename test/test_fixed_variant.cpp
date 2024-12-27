@@ -15,6 +15,7 @@
 #include <boost/core/lightweight_test_trait.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/integer_sequence.hpp>
 #include <boost/mp11/tuple.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <utility>
@@ -86,13 +87,57 @@ struct hasher_helper
 
 struct hasher
 {
+  hasher(std::size_t seed_=0):seed{seed_}{}
+
   template<typename... Ts>
   std::size_t operator()(const Ts&... xs)const
   {
-    std::size_t seed=0;
+    std::size_t res=seed;
     boost::mp11::tuple_for_each(
-      std::forward_as_tuple(xs...),hasher_helper{seed});
-    return seed;
+      std::forward_as_tuple(xs...),hasher_helper{res});
+    return res;
+  }
+
+  std::size_t seed;
+};
+
+template<typename T,std::size_t... Is>
+std::tuple<decltype(T{Is})...>
+make_iota_tuple(boost::mp11::index_sequence<Is...>)
+{
+  return {T{Is}...};
+}
+
+template<typename T,std::size_t N>
+decltype(make_iota_tuple<T>(boost::mp11::make_index_sequence<N>{}))
+make_iota_tuple()
+{
+  return make_iota_tuple<T>(boost::mp11::make_index_sequence<N>{});
+}
+
+template<typename V>
+struct visitor_by_index
+{
+  V&& x;
+
+  template<typename... Fs>
+  auto operator()(Fs&&... fs)->
+    decltype(visit_by_index(std::forward<V>(x),std::forward<Fs>(fs)...))
+  {
+    return visit_by_index(std::forward<V>(x),std::forward<Fs>(fs)...);
+  }
+};
+
+template<typename V>
+struct void_visitor_by_index
+{
+  V&& x;
+
+  template<typename... Fs>
+  void operator()(Fs&&... fs)
+  {
+    using boost::poly_collection::visit_by_index;
+    return visit_by_index<void>(std::forward<V>(x),std::forward<Fs>(fs)...);
   }
 };
 
@@ -192,6 +237,16 @@ void test_fixed_variant_for()
   visit<void>(hasher{},cv);
   visit<void>(hasher{},cv,cw);
   visit<void>(hasher{},cv,cw,cu);
+
+  BOOST_TEST(
+    boost::mp11::tuple_apply(
+      visitor_by_index<const V&>{cv},
+      make_iota_tuple<hasher,boost::mp11::mp_size<V>::value>())==
+    hasher{I}(x.value));
+
+  boost::mp11::tuple_apply(
+    void_visitor_by_index<const V&>{cv},
+    make_iota_tuple<hasher,boost::mp11::mp_size<V>::value>());
 
   BOOST_TEST(holds_alternative<T>(cv));
   BOOST_TEST(!holds_alternative<Q>(cv));

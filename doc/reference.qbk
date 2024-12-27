@@ -1317,6 +1317,9 @@ which is implementation defined.
   template<typename R=``/see-below/``,typename F,typename... Vs>
   ``/see-below/`` ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.visit visit]``(F&& f,Vs&&... xs);
 
+  template<typename R=``/see-below/``,typename V,typename... Fs>
+  ``/see-below/`` ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.visit_by_index visit_by_index]``(V&& x,Fs&&... fs);
+
 [#poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.index]
 
 `std::size_t index()const noexcept;`
@@ -1462,11 +1465,28 @@ a pointer to the contained value otherwise.
 `std::forward<F>(f)(get<Is>(std::forward<Vs>(xs)...)`, with `Is...` equal to `xs.index()...`.[br]
 [*Returns:] 
 
-* If `R` is `void`: nothing.
+* If `R` is specified as `void`: nothing.
 * If `R` is specified as a type different from `void`: the value `e(Is...)` implicitly
 converted to `R`. 
 * If `R` is not specified, `e(Is...)`. In this and the previous case,
 `e(Js...)` must have the same type for all valid index packs `Js...`.
+
+[#poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.visit_by_index]
+
+`template<typename R=`[^ /see-below/]`,typename V,typename... Fs>`[br]
+[^ /see-below/]` visit_by_index(V&& x,Fs&&... fs);`
+
+[*Requires:] `sizeof...(Fs)` is equal to the number of alternative types in the variant.[br]
+[*Effects:] Calls the expression `e(i)`, defined as
+`std::forward<Fi>(fi)(get<i>(std::forward<V>(x)))`, with `i==x.index()` and 
+`Fi` and `fi` denoting the `i`-th element of `Fs...` and `fs...`, respectively.[br]
+[*Returns:] 
+
+* If `R` is specified as `void`: nothing.
+* If `R` is specified as a type different from `void`: the value `e(i)` implicitly
+converted to `R`. 
+* If `R` is not specified, `e(i)`. In this and the previous case,
+`e(j)` must have the same type for all `j` in \[0, `sizeof...(Fs)`). 
 
 [endsect]
 

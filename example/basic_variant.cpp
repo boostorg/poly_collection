@@ -48,23 +48,48 @@ int main()
   c.insert(window{"pop-up 1"});
   c.insert(window{"pop-up 2"});
 
+  {
 //[basic_variant_2
-//=  // usual utility to construct a visitor
-//=  template<typename... Ts>
-//=  struct overloaded:Ts...{using Ts::operator()...;};
-//=  template<class... Ts>
-//=  overloaded(Ts...)->overloaded<Ts...>;
+//=    // usual utility to construct a visitor
+//=    template<typename... Ts>
+//=    struct overloaded:Ts...{using Ts::operator()...;};
+//=    template<class... Ts>
+//=    overloaded(Ts...)->overloaded<Ts...>;
 
-  const char* comma="";
-  for(const auto& r:c){
-    std::cout<<comma;
-    visit(overloaded{
-      [](const sprite& s)       { s.render(std::cout); },
-      [](const std::string& str){ std::cout<<str; },
-      [](const window& w)       { w.display(std::cout); }
-    },r);
-    comma=",";
-  }
-  std::cout<<"\n";
+    const char* comma="";
+    for(const auto& r:c){
+      std::cout<<comma;
+      visit(overloaded{
+        [](const sprite& s)       { s.render(std::cout); },
+        [](const std::string& str){ std::cout<<str; },
+        [](const window& w)       { w.display(std::cout); }
+      },r);
+      comma=",";
+    }
+    std::cout<<"\n";
 //]
+  }
+
+  {
+//[basic_variant_3
+    auto print_sprite=[](const sprite& s)       { s.render(std::cout); };
+    auto print_string=[](const std::string& str){ std::cout<<str; };
+    auto print_window=[](const window& w)       { w.display(std::cout); };
+
+    const char* comma="";
+    for(const auto& r:c){
+      std::cout<<comma;
+      visit_by_index(
+        r,
+        print_sprite,  // type #0: warrior
+        print_sprite,  // type #1: juggernaut
+        print_sprite,  // type #2: goblin
+        print_sprite,  // type #3: elf
+        print_string,  // type #4
+        print_window); // type #5
+      comma=",";
+    }
+    std::cout<<"\n";
+//]
+  }
 }

@@ -409,6 +409,68 @@ struct bound_visit
   }
 };
 
+template<typename R,typename V,typename... Fs>
+struct return_type_by_index_impl
+{
+  using type=R;
+};
+
+template<typename V,typename F,typename... Fs>
+struct return_type_by_index_impl<deduced,V,F,Fs...>
+{
+  using type=decltype(std::declval<F>()(get<0>(std::declval<V>())));
+};
+
+template<typename R,typename V,typename... Fs>
+using return_type_by_index=typename return_type_by_index_impl<R,V,Fs...>::type;
+
+template<typename R,typename V,typename... Fs>
+struct visit_by_index_helper
+{
+  V&&                 x;
+  std::tuple<Fs&&...> fs;
+
+  template<typename I>
+  R operator()(I)
+  {
+    return std::get<I::value>(std::move(fs))(
+      unsafe_get<I::value>(std::forward<V>(x)));
+  }
+};
+
+template<typename V,typename... Fs>
+struct visit_by_index_helper<void,V,Fs...>
+{
+  V&&                 x;
+  std::tuple<Fs&&...> fs;
+
+  template<typename I>
+  void operator()(I)
+  {
+    (void)std::get<I::value>(std::move(fs))(
+      unsafe_get<I::value>(std::forward<V>(x)));
+  }
+};
+
+template<
+  typename R=deduced,typename V,typename... Fs,
+  typename ReturnType=return_type_by_index<R,V&&,Fs&&...>
+>
+ReturnType visit_by_index(V&& x,Fs&&... fs)
+{
+  using raw_variant=typename std::decay<V>::type;
+  static_assert(
+    mp11::mp_size<raw_variant>::value==sizeof...(Fs),
+    "the number of function objects must be the same as that of the "
+    "alternative types in the variant");
+
+  return mp11::mp_with_index<mp11::mp_size<raw_variant>::value>(
+    x.index(),
+    visit_by_index_helper<ReturnType,V,Fs...>{
+      std::forward<V>(x),
+      std::forward_as_tuple(std::forward<Fs>(fs)...)});
+}
+
 template<typename RelOp,typename ... Ts>
 struct relop_helper
 {
@@ -527,6 +589,7 @@ using boost::poly_collection::fixed_variant_impl::bad_variant_access;
 using boost::poly_collection::fixed_variant_impl::variant_alternative;
 using boost::poly_collection::fixed_variant_impl::variant_alternative_t;
 using boost::poly_collection::fixed_variant_impl::visit;
+using boost::poly_collection::fixed_variant_impl::visit_by_index;
 using boost::poly_collection::fixed_variant_impl::holds_alternative;
 using boost::poly_collection::fixed_variant_impl::get;
 using boost::poly_collection::fixed_variant_impl::unsafe_get;

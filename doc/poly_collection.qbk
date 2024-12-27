@@ -416,6 +416,11 @@ Output:
 warrior 1,warrior 4,juggernaut 2,goblin 0,elf 3,"stamina: 10,000","game over",'''[pop-up 1]''','''[pop-up 2]'''
 ]
 
+The alternative visitation function `visit_by_index` may be more conveniente in that
+it doesn't require that we build an overloaded visitor:
+
+[basic_variant_3]
+
 Note that types are traversed in the exact same order as specified. The `value_type`
 of a `boost::variant_collection<boost::mp11:mp_list<Ts..>>` behaves as a
 `std::variant<Ts..>`, with some obvious restrictions such as the impossibility
