@@ -101,18 +101,19 @@ struct hasher
   std::size_t seed;
 };
 
+template<typename T,std::size_t N>
+using iota_tuple=boost::mp11::mp_repeat_c<std::tuple<T>,N>;
+
 template<typename T,std::size_t... Is>
-std::tuple<decltype(T{Is})...>
-make_iota_tuple_helper(boost::mp11::index_sequence<Is...>)
+iota_tuple<T,sizeof...(Is)> make_iota_tuple(boost::mp11::index_sequence<Is...>)
 {
-  return std::tuple<decltype(T{Is})...>{T{Is}...};
+  return iota_tuple<T,sizeof...(Is)>{T{Is}...};
 }
 
 template<typename T,std::size_t N>
-decltype(make_iota_tuple_helper<T>(boost::mp11::make_index_sequence<N>{}))
-make_iota_tuple()
+iota_tuple<T,N> make_iota_tuple()
 {
-  return make_iota_tuple_helper<T>(boost::mp11::make_index_sequence<N>{});
+  return make_iota_tuple<T>(boost::mp11::make_index_sequence<N>{});
 }
 
 template<typename V>
