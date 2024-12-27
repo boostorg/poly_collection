@@ -416,7 +416,7 @@ Output:
 warrior 1,warrior 4,juggernaut 2,goblin 0,elf 3,"stamina: 10,000","game over",'''[pop-up 1]''','''[pop-up 2]'''
 ]
 
-The alternative visitation function `visit_by_index` may be more conveniente in that
+The alternative visitation function `visit_by_index` may be more convenient in that
 it doesn't require that we build an overloaded visitor:
 
 [basic_variant_3]
