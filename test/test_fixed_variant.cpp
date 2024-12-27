@@ -105,7 +105,7 @@ template<typename T,std::size_t... Is>
 std::tuple<decltype(T{Is})...>
 make_iota_tuple(boost::mp11::index_sequence<Is...>)
 {
-  return {T{Is}...};
+  return std::tuple<decltype(T{Is})...>{T{Is}...};
 }
 
 template<typename T,std::size_t N>
