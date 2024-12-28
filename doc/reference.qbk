@@ -1156,6 +1156,9 @@ _Boost.TypeErasure_:
   >
   class _variant_collection_;
 
+  template<typename... Ts>
+  using variant_collection_of=variant_collection<mp11::mp_list<Ts...>>;
+
   template<typename TypeList,typename Allocator>
   bool operator==(
     const variant_collection<TypeList,Allocator>& x,
@@ -1173,15 +1176,17 @@ _Boost.TypeErasure_:
   } /* namespace poly_collection */
 
   using poly_collection::variant_collection;
+  using poly_collection::variant_collection_of;
 
   } /* namespace boost */
 
 Defines the alias template _variant_collection_value_type_ (the actual type
 it refers to, though, is merely forward declared).
 Forward declares the class template _variant_collection_
-and specifies its default template arguments. Forward declares associated free
-functions and brings `boost::poly_collection::variant_collection` to the
-`boost` namespace.
+and specifies its default template arguments. 
+Defines the alias template `variant_collection_of`. Forward declares associated
+free functions and brings `boost::poly_collection::variant_collection`
+and `poly_collection::variant_collection_of` to the `boost` namespace.
 
 [endsect]
 

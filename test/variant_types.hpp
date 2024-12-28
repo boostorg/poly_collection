@@ -61,10 +61,8 @@ struct alternative5
   std::string str;
 };
 
-using collection=boost::variant_collection<
-  boost::mp11::mp_list<
-    alternative1,alternative2,alternative3,alternative4,alternative5
-  >
+using collection=boost::variant_collection_of<
+  alternative1,alternative2,alternative3,alternative4,alternative5
 >;
 
 using value_type=collection::value_type;

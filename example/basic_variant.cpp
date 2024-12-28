@@ -28,6 +28,14 @@ int main()
   > c;
 //]
 
+  {
+//[basic_variant_2
+  boost::variant_collection_of<
+    warrior,juggernaut,goblin,elf,std::string,window
+  > c;
+//]
+  }
+
   // populate with sprites
   std::mt19937                 gen{92754}; // some arbitrary random seed
   std::discrete_distribution<> rnd{{1,1,1,1}};
@@ -49,7 +57,7 @@ int main()
   c.insert(window{"pop-up 2"});
 
   {
-//[basic_variant_2
+//[basic_variant_3
 //=    // usual utility to construct a visitor
 //=    template<typename... Ts>
 //=    struct overloaded:Ts...{using Ts::operator()...;};
@@ -71,7 +79,7 @@ int main()
   }
 
   {
-//[basic_variant_3
+//[basic_variant_4
     auto print_sprite=[](const sprite& s)       { s.render(std::cout); };
     auto print_string=[](const std::string& str){ std::cout<<str; };
     auto print_window=[](const window& w)       { w.display(std::cout); };

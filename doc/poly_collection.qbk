@@ -403,12 +403,18 @@ may as well specify them at compile time:
 
 [basic_variant_1]
 
-`boost::variant_collection` behaves as a `std::vector` of _std::variant_'''s''', except
-that objects of the same type are grouped together. `boost::mp11::mp_list` is just
-a syntactic construct needed to specify the list of types that go into the collection.
-Access to the objects is done through /visitation/:
+`boost::mp11::mp_list` is needed to syntactically distinguish the types that
+go in the collection from the (defaulted) allocator argument that comes next.
+If no special allocator is specified, the alias template `variant_collection_of` provides
+a sligthly more convenient syntax:
 
 [basic_variant_2]
+
+`boost::variant_collection` behaves as a `std::vector` of _std::variant_'''s''',
+except that objects of the same type are grouped together. Access to the objects
+is done through /visitation/:
+
+[basic_variant_3]
 
 Output:
 
@@ -419,7 +425,7 @@ warrior 1,warrior 4,juggernaut 2,goblin 0,elf 3,"stamina: 10,000","game over",''
 The alternative visitation function `visit_by_index` may be more convenient in that
 it doesn't require that we build an overloaded visitor:
 
-[basic_variant_3]
+[basic_variant_4]
 
 Note that types are traversed in the exact same order as specified. The `value_type`
 of a `boost::variant_collection<boost::mp11:mp_list<Ts..>>` behaves as a

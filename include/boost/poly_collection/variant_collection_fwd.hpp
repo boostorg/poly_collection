@@ -34,6 +34,9 @@ template<
 >
 class variant_collection;
 
+template<typename... Ts>
+using variant_collection_of=variant_collection<mp11::mp_list<Ts...>>;
+
 template<typename TypeList,typename Allocator>
 bool operator==(
   const variant_collection<TypeList,Allocator>& x,
@@ -52,6 +55,7 @@ void swap(
 } /* namespace poly_collection */
 
 using poly_collection::variant_collection;
+using poly_collection::variant_collection_of;
 
 } /* namespace boost */
 
