@@ -63,6 +63,9 @@ void test_null_variant_collection()
 
   c.swap(c);
 
+  BOOST_TEST(cc==cc);
+  BOOST_TEST(!(cc!=cc));
+
   auto f=[](value_type&){};
 
   boost::poly_collection::for_each(c.begin(),c.end(),f);
