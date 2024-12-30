@@ -16,6 +16,7 @@
 #include "test_fixed_variant.hpp"
 #include "test_insertion.hpp"
 #include "test_iterators.hpp"
+#include "test_null_variant_collection.hpp"
 #include "test_registration.hpp"
 
 int main()
@@ -29,6 +30,7 @@ int main()
   test_fixed_variant();
   test_insertion();
   test_iterators();
+  test_null_variant_collection();
   test_registration();
 
   return boost::report_errors();

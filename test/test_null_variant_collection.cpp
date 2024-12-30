@@ -53,10 +53,17 @@ void test_null_variant_collection()
   BOOST_TEST_EQ(cc.size(),0);
   check_throw<unregistered_type>([&]{(void)cc.size(0);});
 
+  check_throw<unregistered_type>([&]{(void)cc.max_size(0);});
+
   check_throw<unregistered_type>([&]{(void)cc.capacity(0);});
+
+  c.reserve(100);
+  check_throw<unregistered_type>([&]{c.reserve(0,100);});
 
   c.shrink_to_fit();
   check_throw<unregistered_type>([&]{(void)c.shrink_to_fit(0);});
+
+  c.erase(c.begin(),c.end());
 
   c.clear();
   check_throw<unregistered_type>([&]{(void)c.clear(0);});
