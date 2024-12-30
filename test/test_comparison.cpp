@@ -158,7 +158,7 @@ void test_stateless_lambda_comparability_check()
 
 void test_comparison()
 {
-/*  test_comparison<
+  test_comparison<
     any_types::collection,auto_increment,
     any_types::t1,any_types::t2,any_types::t3,
     any_types::t4,any_types::t5>();
@@ -169,7 +169,7 @@ void test_comparison()
   test_comparison<
     function_types::collection,auto_increment,
     function_types::t1,function_types::t2,function_types::t3,
-    function_types::t4,function_types::t5>();*/
+    function_types::t4,function_types::t5>();
   test_comparison<
     variant_types::collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
