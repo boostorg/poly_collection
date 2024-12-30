@@ -24,16 +24,17 @@ project
     ;
 
 test-suite "poly_collection" :
-    [ run test_algorithm.cpp     test_algorithm1.cpp
-          test_algorithm2.cpp    test_algorithm3.cpp
-          test_algorithm4.cpp    test_algorithm_main.cpp     ]
-    [ run test_capacity.cpp      test_capacity_main.cpp      ]
-    [ run test_comparison.cpp    test_comparison_main.cpp    ]
-    [ run test_construction.cpp  test_construction_main.cpp  ]
-    [ run test_emplacement.cpp   test_emplacement_main.cpp   ]
-    [ run test_erasure.cpp       test_erasure_main.cpp       ] 
-    [ run test_fixed_variant.cpp test_fixed_variant_main.cpp ]
-    [ run test_insertion.cpp     test_insertion_main.cpp     ]
-    [ run test_iterators.cpp     test_iterators_main.cpp     ]
-    [ run test_registration.cpp  test_registration_main.cpp  ]
+    [ run test_algorithm.cpp               test_algorithm1.cpp
+          test_algorithm2.cpp              test_algorithm3.cpp
+          test_algorithm4.cpp              test_algorithm_main.cpp               ]
+    [ run test_capacity.cpp                test_capacity_main.cpp                ]
+    [ run test_comparison.cpp              test_comparison_main.cpp              ]
+    [ run test_construction.cpp            test_construction_main.cpp            ]
+    [ run test_emplacement.cpp             test_emplacement_main.cpp             ]
+    [ run test_erasure.cpp                 test_erasure_main.cpp                 ] 
+    [ run test_fixed_variant.cpp           test_fixed_variant_main.cpp           ]
+    [ run test_insertion.cpp               test_insertion_main.cpp               ]
+    [ run test_iterators.cpp               test_iterators_main.cpp               ]
+    [ run test_null_variant_collection.cpp test_null_variant_collection_main.cpp ]
+    [ run test_registration.cpp            test_registration_main.cpp            ]
     ;

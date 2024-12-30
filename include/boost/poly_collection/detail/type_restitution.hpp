@@ -177,8 +177,8 @@ struct restitute_range_class<std::true_type /* total */,F,T>
   F f;
 };
 
-template<typename F>
-struct restitute_range_class<std::false_type /* non total */,F>
+template<typename IsTotal,typename F>
+struct restitute_range_class<IsTotal,F>
 {
   restitute_range_class(const F& f):f(f){}
   
@@ -266,8 +266,8 @@ struct restitute_iterator_class<std::true_type /* total */,F,T>
   F f;
 };
 
-template<typename F>
-struct restitute_iterator_class<std::false_type /* non total */,F>
+template<typename IsTotal,typename F>
+struct restitute_iterator_class<IsTotal,F>
 {
   restitute_iterator_class(const F& f):f(f){}
   
