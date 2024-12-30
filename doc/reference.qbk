@@ -1876,7 +1876,8 @@ For the description of the algorithms we use the following notation:
 of a collection of Boost.PolyCollection such that \[`first`, `middle`) and
 \[`middle`, `last`) are valid ranges.
 * `args...` is a function parameter pack of types `Args&&...`,
-* `Ts...` is a template parameter pack of arbitrary types.
+* `Ts...` is a template parameter pack of acceptable types for the collection,
+plus optionally `all_types` in the case of closed collections.
   * Open collections: `Us...` is defined as `Ts...`.
   * Closed collections: `Us...` is defined as the set of all acceptable types
   in the collection if `all_types` is in `Ts...`, or as `Ts...` otherwise.
@@ -1917,7 +1918,7 @@ value, which disallows this type of polymorphism.].[br]
 [*Effects:] Equivalent to `expr`.[br]
 [*Returns:] `expr`.[br]
 [*Complexity:] That of `expr`.[br]
-[*Note:] In the case of closed collections, if `Us...` contains all the
+[*Note:] In the case of closed collections, if `Us...` is not empty and contains all the
 acceptable types of the collection (/total restitution/), then
 the dereference operation of `rfirst`, `rmiddle` and `rlast` to the
 collection's `value_type` is not ever instantiated.
