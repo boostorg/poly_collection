@@ -51,13 +51,13 @@ class fixed_variant
   static_assert(
     mp11::mp_is_set<fixed_variant>::value,
     "all types in the variant must be distinct");
-  static constexpr std::size_t N=sizeof...(Ts);
 
 public:
   template<
     typename T,
     std::size_t I=mp11::mp_find<fixed_variant,T>::value,
-    typename std::enable_if<(I<N)>::type* =nullptr
+    typename std::enable_if<
+      (I<mp11::mp_size<fixed_variant>::value)>::type* =nullptr
   >
   explicit fixed_variant(const T&):index_{I}{}
 
@@ -65,6 +65,7 @@ public:
   bool        valueless_by_exception()const noexcept{return false;}
 
 private:
+  static constexpr std::size_t N=sizeof...(Ts);
   using index_type=mp11::mp_cond<
     mp11::mp_bool<
       (N<=(std::numeric_limits<unsigned char>::max)())>,unsigned char,
