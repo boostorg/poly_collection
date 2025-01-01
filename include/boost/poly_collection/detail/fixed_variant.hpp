@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -20,10 +20,12 @@
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/set.hpp>
 #include <boost/mp11/tuple.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
 #include <boost/type_traits/is_constructible.hpp>
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
@@ -49,13 +51,13 @@ class fixed_variant
   static_assert(
     mp11::mp_is_set<fixed_variant>::value,
     "all types in the variant must be distinct");
+  static constexpr std::size_t N=sizeof...(Ts);
 
 public:
   template<
     typename T,
     std::size_t I=mp11::mp_find<fixed_variant,T>::value,
-    typename std::enable_if<
-      (I<mp11::mp_size<fixed_variant>::value)>::type* =nullptr
+    typename std::enable_if<(I<N)>::type* =nullptr
   >
   explicit fixed_variant(const T&):index_{I}{}
 
@@ -63,7 +65,15 @@ public:
   bool        valueless_by_exception()const noexcept{return false;}
 
 private:
-  std::size_t index_;
+  using index_type=mp11::mp_cond<
+    mp11::mp_bool<
+      (N<=(std::numeric_limits<unsigned char>::max)())>,unsigned char,
+    mp11::mp_bool<
+      (N<=(std::numeric_limits<unsigned short>::max)())>,unsigned short,
+    mp11::mp_true, std::size_t
+  >;
+
+  index_type index_;
 };
 
 template<typename T>
