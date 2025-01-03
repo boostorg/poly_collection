@@ -1,5 +1,5 @@
 [/
-  Copyright 2016-2024 Joaquin M Lopez Munoz.
+  Copyright 2016-2025 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
@@ -1243,6 +1243,8 @@ which is implementation defined.
   class ``/variant_collection_value_type_impl/``
   {
   public:
+    // copy and assigmnent are disallowed
+
     std::size_t ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.index index]``()const noexcept;
     bool        ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.valueless_by_exception valueless_by_exception]``()const noexcept;
   };
