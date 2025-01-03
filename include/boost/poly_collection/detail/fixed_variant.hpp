@@ -49,6 +49,9 @@ template<typename... Ts>
 class fixed_variant
 {
   static_assert(
+    !mp11::mp_empty<fixed_variant>::value,
+    "the variant can't be specified with zero types");
+  static_assert(
     mp11::mp_is_set<fixed_variant>::value,
     "all types in the variant must be distinct");
 

@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -16,7 +16,6 @@
 #include "test_fixed_variant.hpp"
 #include "test_insertion.hpp"
 #include "test_iterators.hpp"
-#include "test_null_variant_collection.hpp"
 #include "test_registration.hpp"
 
 int main()
@@ -30,7 +29,6 @@ int main()
   test_fixed_variant();
   test_insertion();
   test_iterators();
-  test_null_variant_collection();
   test_registration();
 
   return boost::report_errors();
