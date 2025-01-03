@@ -77,7 +77,7 @@ public:
   std::size_t index()const noexcept{return index_;}
   bool        valueless_by_exception()const noexcept{return false;}
 
-#if !BOOST_WORKAROUND(BOOST_MSVC,<1920)
+#if BOOST_WORKAROUND(BOOST_MSVC,<1920)
   /* spurious C2248 when perfect forwarding fixed_variant */
 #else
 protected:
