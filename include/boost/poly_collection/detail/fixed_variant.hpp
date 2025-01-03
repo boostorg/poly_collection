@@ -76,6 +76,10 @@ public:
   std::size_t index()const noexcept{return index_;}
   bool        valueless_by_exception()const noexcept{return false;}
 
+protected:
+  fixed_variant(const fixed_variant&)=default;
+  fixed_variant& operator=(const fixed_variant&)=default;
+
 private:
   index_type index_;
 };
