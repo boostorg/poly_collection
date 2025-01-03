@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp>
 #include <boost/core/addressof.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/list.hpp>
@@ -49,6 +50,9 @@ template<typename... Ts>
 class fixed_variant
 {
   static_assert(
+    !mp11::mp_empty<fixed_variant>::value,
+    "the variant can't be specified with zero types");
+  static_assert(
     mp11::mp_is_set<fixed_variant>::value,
     "all types in the variant must be distinct");
 
@@ -72,6 +76,14 @@ public:
 
   std::size_t index()const noexcept{return index_;}
   bool        valueless_by_exception()const noexcept{return false;}
+
+#if BOOST_WORKAROUND(BOOST_MSVC,<1920)
+  /* spurious C2248 when perfect forwarding fixed_variant */
+#else
+protected:
+  fixed_variant(const fixed_variant&)=default;
+  fixed_variant& operator=(const fixed_variant&)=default;
+#endif
 
 private:
   index_type index_;
