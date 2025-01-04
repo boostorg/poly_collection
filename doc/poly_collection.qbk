@@ -1,7 +1,7 @@
 [library Boost.PolyCollection
   [quickbook 1.6]
   [authors [López Muñoz, Joaquín M]]
-  [copyright 2016-2024 Joaquín M López Muñoz]
+  [copyright 2016-2025 Joaquín M López Muñoz]
   [category containers]
   [id poly_collection]
   [dirname poly_collection]
@@ -80,7 +80,7 @@ stored for further opportunities of increased efficiency related to inlining and
 
 [note Boost.PolyCollection is a header-only library. C++11 support is required.
 The library has been verified to work with Visual Studio 2015, GCC 4.8 and
-Clang 3.3.]
+Clang 3.5.]
 
 [endsect]
 
