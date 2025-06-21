@@ -11,8 +11,8 @@ branches:
   only:
     - master
     - develop
-    - feature/**
-    - fix/**
+    - feature/*
+    - fix/*
       
 environment:
   matrix:
