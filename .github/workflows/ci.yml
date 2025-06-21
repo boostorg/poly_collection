@@ -126,16 +126,19 @@ jobs:
             cxxstd: "11,14,17,2a"
             container: ubuntu:20.04
             os: ubuntu-latest
+            install: clang-10
           - toolset: clang
             compiler: clang++-11
             cxxstd: "11,14,17,2a"
             container: ubuntu:20.04
             os: ubuntu-latest
+            install: clang-11
           - toolset: clang
             compiler: clang++-12
             cxxstd: "11,14,17,20"
             container: ubuntu:20.04
             os: ubuntu-latest
+            install: clang-12
           - toolset: clang
             compiler: clang++-13
             cxxstd: "11,14,17,20,2b"
