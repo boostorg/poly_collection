@@ -1,4 +1,4 @@
-/* Copyright 2024-2025 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -505,13 +505,25 @@ struct relop_helper
   }
 };
 
+template<template<typename> class Expr,typename... Ts>
+using all_support=mp11::mp_all<mp11::mp_valid<Expr,Ts>...>;
+
+void convertible_to_bool(bool);
+
 struct eq_
 {
   template<typename T>
   bool operator()(const T& x,const T& y)const{return x==y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using eq_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()==std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<eq_expr,Ts...>::value>::type* =nullptr
+>
 bool operator==(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
@@ -526,7 +538,14 @@ struct neq_
   bool operator()(const T& x,const T& y)const{return x!=y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using neq_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()!=std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<neq_expr,Ts...>::value>::type* =nullptr
+>
 bool operator!=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
@@ -542,7 +561,14 @@ struct lt_
   bool operator()(const T& x,const T& y)const{return x<y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using lt_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()<std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<lt_expr,Ts...>::value>::type* =nullptr
+>
 bool operator<(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
@@ -558,7 +584,14 @@ struct lte_
   bool operator()(const T& x,const T& y)const{return x<=y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using lte_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()<=std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<lte_expr,Ts...>::value>::type* =nullptr
+>
 bool operator<=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
@@ -574,7 +607,14 @@ struct gt_
   bool operator()(const T& x,const T& y)const{return x>y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using gt_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()>std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<gt_expr,Ts...>::value>::type* =nullptr
+>
 bool operator>(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
@@ -590,7 +630,14 @@ struct gte_
   bool operator()(const T& x,const T& y)const{return x>=y;}
 };
 
-template<typename... Ts>
+template<typename T>
+using gte_expr=decltype(
+  convertible_to_bool(std::declval<const T&>()>=std::declval<const T&>()));
+
+template<
+  typename... Ts,
+  typename std::enable_if<all_support<gte_expr,Ts...>::value>::type* =nullptr
+>
 bool operator>=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
