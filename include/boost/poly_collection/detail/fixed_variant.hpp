@@ -505,8 +505,20 @@ struct relop_helper
   }
 };
 
+template<typename...>
+struct make_void{typedef void type;};
+template<typename... Ts> using void_t=typename make_void<Ts...>::type;
+
+template<class, template<typename...> class F,typename... T>
+struct mp_valid_impl:std::false_type{};
+template<template<typename...> class F,typename... T>
+struct mp_valid_impl<void_t<F<T...>>,F,T...>:std::true_type{};
+
+template<template<class...> class F,class... T> using mp_valid=
+  typename mp_valid_impl<void, F, T...>;
+
 template<template<typename> class Expr,typename... Ts>
-using all_valid=mp11::mp_all<mp11::mp_valid<Expr,Ts>...>;
+using all_valid=mp11::mp_all<mp_valid<Expr,Ts>...>;
 
 void convertible_to_bool(bool);
 
@@ -518,7 +530,7 @@ struct eq_
 
 template<typename T>
 using eq_expr=decltype(
-  std::declval<const T&>()==std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()==std::declval<const T&>()));
 
 template<
   typename... Ts,
@@ -540,7 +552,7 @@ struct neq_
 
 template<typename T>
 using neq_expr=decltype(
-  std::declval<const T&>()!=std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()!=std::declval<const T&>()));
 
 template<
   typename... Ts,
@@ -563,7 +575,7 @@ struct lt_
 
 template<typename T>
 using lt_expr=decltype(
-  std::declval<const T&>()<std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()<std::declval<const T&>()));
 
 template<
   typename... Ts,
@@ -586,7 +598,7 @@ struct lte_
 
 template<typename T>
 using lte_expr=decltype(
-  std::declval<const T&>()<=std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()<=std::declval<const T&>()));
 
 template<
   typename... Ts,
@@ -609,7 +621,7 @@ struct gt_
 
 template<typename T>
 using gt_expr=decltype(
-  std::declval<const T&>()>std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()>std::declval<const T&>()));
 
 template<
   typename... Ts,
@@ -632,7 +644,7 @@ struct gte_
 
 template<typename T>
 using gte_expr=decltype(
-  std::declval<const T&>()>=std::declval<const T&>());
+  convertible_to_bool(std::declval<const T&>()>=std::declval<const T&>()));
 
 template<
   typename... Ts,
