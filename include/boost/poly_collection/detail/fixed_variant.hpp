@@ -518,11 +518,12 @@ struct eq_
 };
 
 template<typename T>
-using eq_expr=has_equal_to<T,T,bool>;
+using eq_constraint=has_equal_to<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<eq_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<eq_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator==(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -539,11 +540,12 @@ struct neq_
 };
 
 template<typename T>
-using neq_expr=has_not_equal_to<T,T,bool>;
+using neq_constraint=has_not_equal_to<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<neq_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<neq_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator!=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -561,11 +563,12 @@ struct lt_
 };
 
 template<typename T>
-using lt_expr=has_less<T,T,bool>;
+using lt_constraint=has_less<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<lt_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<lt_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator<(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -583,11 +586,12 @@ struct lte_
 };
 
 template<typename T>
-using lte_expr=has_less_equal<T,T,bool>;
+using lte_constraint=has_less_equal<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<lte_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<lte_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator<=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -605,11 +609,12 @@ struct gt_
 };
 
 template<typename T>
-using gt_expr=has_greater<T,T,bool>;
+using gt_constraint=has_greater<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<gt_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<gt_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator>(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -627,11 +632,12 @@ struct gte_
 };
 
 template<typename T>
-using gte_expr=has_greater_equal<T,T,bool>;
+using gte_constraint=has_greater_equal<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<mp11::mp_all<gte_expr<Ts>...>::value>::type* =nullptr
+  typename std::enable_if<
+    mp11::mp_all<gte_constraint<Ts>...>::value>::type* =nullptr
 >
 bool operator>=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
