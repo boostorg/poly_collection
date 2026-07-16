@@ -518,11 +518,14 @@ struct eq_
 
 template<typename T>
 using eq_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()==std::declval<const T&>()));
+  std::declval<const T&>()==std::declval<const T&>());
 
-template<typename... Ts>
-typename std::enable_if<all_valid<eq_expr,Ts...>::value,bool>::type
-operator==(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<eq_expr,Ts...>::value>::type* =nullptr
+>
+bool operator==(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()==y.index()&&
@@ -537,11 +540,14 @@ struct neq_
 
 template<typename T>
 using neq_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()!=std::declval<const T&>()));
+  std::declval<const T&>()!=std::declval<const T&>());
 
-template<typename... Ts>
-typename std::enable_if<all_valid<neq_expr,Ts...>::value,bool>::type
-operator!=(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<neq_expr,Ts...>::value>::type* =nullptr
+>
+bool operator!=(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()!=y.index()||
@@ -557,11 +563,14 @@ struct lt_
 
 template<typename T>
 using lt_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()<std::declval<const T&>()));
+  std::declval<const T&>()<std::declval<const T&>());
 
-template<typename... Ts>
-typename std::enable_if<all_valid<lt_expr,Ts...>::value,bool>::type
-operator<(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<lt_expr,Ts...>::value>::type* =nullptr
+>
+bool operator<(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()<y.index()||
@@ -577,11 +586,14 @@ struct lte_
 
 template<typename T>
 using lte_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()<=std::declval<const T&>()));
+  std::declval<const T&>()<=std::declval<const T&>());
 
-template<typename... Ts>
-typename std::enable_if<all_valid<lte_expr,Ts...>::value,bool>::type
-operator<=(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<lte_expr,Ts...>::value>::type* =nullptr
+>
+bool operator<=(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()<y.index()||
@@ -597,11 +609,14 @@ struct gt_
 
 template<typename T>
 using gt_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()>std::declval<const T&>()));
+  std::declval<const T&>()>std::declval<const T&>());
 
-template<typename... Ts>
-typename std::enable_if<all_valid<gt_expr,Ts...>::value,bool>::type
-operator>(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<gt_expr,Ts...>::value>::type* =nullptr
+>
+bool operator>(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()>y.index()||
@@ -617,11 +632,14 @@ struct gte_
 
 template<typename T>
 using gte_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()>=std::declval<const T&>()));
+  std::declval<const T&>()>=std::declval<const T&>());
 
-template<typename... Ts>  
-typename std::enable_if<all_valid<gte_expr,Ts...>::value,bool>::type
-operator>=(const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
+template<
+  typename... Ts,
+  typename std::enable_if<all_valid<gte_expr,Ts...>::value>::type* =nullptr
+>
+bool operator>=(
+  const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
 {
   return
     x.index()>y.index()||
