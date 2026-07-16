@@ -506,7 +506,7 @@ struct relop_helper
 };
 
 template<template<typename> class Expr,typename... Ts>
-using all_support=mp11::mp_all<mp11::mp_valid<Expr,Ts>...>;
+using all_valid=mp11::mp_all<mp11::mp_valid<Expr,Ts>...>;
 
 void convertible_to_bool(bool);
 
@@ -522,7 +522,7 @@ using eq_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<eq_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<eq_expr,Ts...>::value>::type* =nullptr
 >
 bool operator==(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -544,7 +544,7 @@ using neq_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<neq_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<neq_expr,Ts...>::value>::type* =nullptr
 >
 bool operator!=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -567,7 +567,7 @@ using lt_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<lt_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<lt_expr,Ts...>::value>::type* =nullptr
 >
 bool operator<(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -590,7 +590,7 @@ using lte_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<lte_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<lte_expr,Ts...>::value>::type* =nullptr
 >
 bool operator<=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -613,7 +613,7 @@ using gt_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<gt_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<gt_expr,Ts...>::value>::type* =nullptr
 >
 bool operator>(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -636,7 +636,7 @@ using gte_expr=decltype(
 
 template<
   typename... Ts,
-  typename std::enable_if<all_support<gte_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<all_valid<gte_expr,Ts...>::value>::type* =nullptr
 >
 bool operator>=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
