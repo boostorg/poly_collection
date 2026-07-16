@@ -515,7 +515,7 @@ template<template<typename...> class F,typename... T>
 struct mp_valid_impl<void_t<F<T...>>,F,T...>:std::true_type{};
 
 template<template<class...> class F,class... T> using mp_valid=
-  typename mp_valid_impl<void, F, T...>;
+  typename mp_valid_impl<void, F, T...>::type;
 
 template<template<typename> class Expr,typename... Ts>
 using all_valid=mp11::mp_all<mp_valid<Expr,Ts>...>;
