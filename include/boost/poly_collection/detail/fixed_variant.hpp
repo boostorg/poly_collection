@@ -24,6 +24,12 @@
 #include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
+#include <boost/type_traits/has_equal_to.hpp>
+#include <boost/type_traits/has_greater.hpp>
+#include <boost/type_traits/has_greater_equal.hpp>
+#include <boost/type_traits/has_less.hpp>
+#include <boost/type_traits/has_less_equal.hpp>
+#include <boost/type_traits/has_not_equal_to.hpp>
 #include <boost/type_traits/is_constructible.hpp>
 #include <cstddef>
 #include <limits>
@@ -505,23 +511,6 @@ struct relop_helper
   }
 };
 
-template<typename...>
-struct make_void{typedef void type;};
-template<typename... Ts> using void_t=typename make_void<Ts...>::type;
-
-template<class, template<typename...> class F,typename... T>
-struct mp_valid_impl:std::false_type{};
-template<template<typename...> class F,typename... T>
-struct mp_valid_impl<void_t<F<T...>>,F,T...>:std::true_type{};
-
-template<template<class...> class F,class... T> using mp_valid=
-  typename mp_valid_impl<void, F, T...>::type;
-
-template<template<typename> class Expr,typename... Ts>
-using all_valid=mp11::mp_all<mp_valid<Expr,Ts>...>;
-
-void convertible_to_bool(bool);
-
 struct eq_
 {
   template<typename T>
@@ -529,12 +518,11 @@ struct eq_
 };
 
 template<typename T>
-using eq_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()==std::declval<const T&>()));
+using eq_expr=has_equal_to<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<eq_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<eq_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator==(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -551,12 +539,11 @@ struct neq_
 };
 
 template<typename T>
-using neq_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()!=std::declval<const T&>()));
+using neq_expr=has_not_equal_to<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<neq_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<neq_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator!=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -574,12 +561,11 @@ struct lt_
 };
 
 template<typename T>
-using lt_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()<std::declval<const T&>()));
+using lt_expr=has_less<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<lt_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<lt_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator<(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -597,12 +583,11 @@ struct lte_
 };
 
 template<typename T>
-using lte_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()<=std::declval<const T&>()));
+using lte_expr=has_less_equal<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<lte_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<lte_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator<=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -620,12 +605,11 @@ struct gt_
 };
 
 template<typename T>
-using gt_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()>std::declval<const T&>()));
+using gt_expr=has_greater<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<gt_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<gt_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator>(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
@@ -643,12 +627,11 @@ struct gte_
 };
 
 template<typename T>
-using gte_expr=decltype(
-  convertible_to_bool(std::declval<const T&>()>=std::declval<const T&>()));
+using gte_expr=has_greater_equal<T,T,bool>;
 
 template<
   typename... Ts,
-  typename std::enable_if<all_valid<gte_expr,Ts...>::value>::type* =nullptr
+  typename std::enable_if<mp11::mp_all<gte_expr<Ts>...>::value>::type* =nullptr
 >
 bool operator>=(
   const fixed_variant<Ts...>& x,const fixed_variant<Ts...>& y)
