@@ -46,4 +46,5 @@ template<typename T> using is_final=boost::is_final<T>;
 
 } /* namespace boost */
 #endif
+
 #endif
