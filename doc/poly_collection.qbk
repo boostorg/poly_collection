@@ -1210,6 +1210,7 @@ to allow for the definition of container-level `operator<` and related operators
 only when the corresponding relational operator is available for all `Ts...`, in
 accordance with WG21 paper
 [@https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2944r3.html P2944R3].
+* Fixed incompatibility problem with libc++ v21 or higher ([github_pr poly_collection 34]).
 
 [endsect]
 
