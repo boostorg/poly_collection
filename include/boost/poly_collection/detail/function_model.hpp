@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/core/addressof.hpp>
+#include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_iterator.hpp>
 #include <boost/poly_collection/detail/is_invocable.hpp>
@@ -33,6 +34,12 @@ namespace detail{
 /* model for function_collection */
 
 template<typename Signature>
+struct function_polymorphism;
+
+template<typename Signature,typename Allocator>
+struct function_storage;
+
+template<typename Signature,typename Allocator>
 struct function_model;
 
 /* is_terminal defined out-class to allow for partial specialization */
@@ -45,7 +52,7 @@ struct function_model_is_terminal<callable_wrapper<Signature>>:
   std::false_type{};
 
 template<typename R,typename... Args>
-struct function_model<R(Args...)>
+struct function_polymorphism<R(Args...)>
 {
   using value_type=callable_wrapper<R(Args...)>;
 
@@ -87,7 +94,14 @@ struct function_model<R(Args...)>
   {
     return f.data();
   }
+};
 
+template<typename R,typename... Args,typename Allocator>
+struct function_storage<R(Args...),Allocator>
+{
+  using value_type=callable_wrapper<R(Args...)>;
+  using allocator_type=Allocator;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
   using base_iterator=callable_wrapper_iterator<value_type>;
   using const_base_iterator=callable_wrapper_iterator<const value_type>;
   using base_sentinel=value_type*;
@@ -96,11 +110,10 @@ struct function_model<R(Args...)>
   using iterator=Callable*;
   template<typename Callable>
   using const_iterator=const Callable*;
-  template<typename Allocator>
-  using segment_backend=detail::segment_backend<function_model,Allocator>;
-  template<typename Callable,typename Allocator>
+  using segment_backend=detail::segment_backend<function_storage>;
+  template<typename Callable>
   using segment_backend_implementation=
-    split_segment<function_model,Callable,Allocator>;
+    split_segment<function_storage,Callable>;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -115,11 +128,20 @@ struct function_model<R(Args...)>
   }
 
 private:
-  template<typename,typename,typename>
+  template<typename,typename>
   friend class split_segment;
 
   template<typename Callable>
   static value_type make_value_type(Callable& x){return value_type{x};}
+};
+
+template<typename R,typename... Args,typename Allocator>
+struct function_model<R(Args...),Allocator>:
+  function_polymorphism<R(Args...)>,
+  function_storage<R(Args...),Allocator>
+{
+  /* disambiguate multiply-inherited, identical typedef */
+  using value_type=typename function_polymorphism<R(Args...)>::value_type;
 };
 
 } /* namespace poly_collection::detail */

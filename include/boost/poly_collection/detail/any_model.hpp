@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
+#include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/type_erasure/any.hpp>
 #include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/binding.hpp>
@@ -44,15 +45,21 @@ namespace detail{
 /* model for any_collection */
 
 template<typename Concept>
+struct any_polymorphism;
+
+template<typename Concept,typename Allocator>
+struct any_storage;
+
+template<typename Concept,typename Allocator>
 struct any_model;
 
 /* Refine is_acceptable to cover type_erasure::any classes whose assignment
  * operator won't compile.
  */
 
-template<typename Concept,typename Concept2,typename T>
+template<typename Concept,typename Allocator,typename Concept2,typename T>
 struct is_acceptable<
-  type_erasure::any<Concept2,T>,any_model<Concept>,
+  type_erasure::any<Concept2,T>,any_model<Concept,Allocator>,
   typename std::enable_if<
     !type_erasure::is_relaxed<Concept2>::value&&
     !type_erasure::is_subconcept<type_erasure::assignable<>,Concept2>::value&&
@@ -89,16 +96,19 @@ struct any_model_make_reference
 }; 
 
 template<typename Concept>
-struct any_model
+using any_model_value_type=type_erasure::any<
+  typename std::conditional<
+    type_erasure::is_subconcept<type_erasure::typeid_<>,Concept>::value,
+    Concept,
+    mpl::vector2<Concept,type_erasure::typeid_<>>
+  >::type,
+  type_erasure::_self&
+>;
+
+template<typename Concept>
+struct any_polymorphism
 {
-  using value_type=type_erasure::any<
-    typename std::conditional<
-      type_erasure::is_subconcept<type_erasure::typeid_<>,Concept>::value,
-      Concept,
-      mpl::vector2<Concept,type_erasure::typeid_<>>
-    >::type,
-    type_erasure::_self&
-  >;
+  using value_type=any_model_value_type<Concept>;
 
   using type_index=std::type_info;
 
@@ -147,7 +157,14 @@ struct any_model
   {
     return type_erasure::any_cast<const void*>(&a);
   }
+};
 
+template<typename Concept,typename Allocator>
+struct any_storage
+{
+  using value_type=any_model_value_type<Concept>;
+  using allocator_type=Allocator;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
   using base_iterator=any_iterator<value_type>;
   using const_base_iterator=any_iterator<const value_type>;
   using base_sentinel=value_type*;
@@ -156,11 +173,10 @@ struct any_model
   using iterator=Concrete*;
   template<typename Concrete>
   using const_iterator=const Concrete*;
-  template<typename Allocator>
-  using segment_backend=detail::segment_backend<any_model,Allocator>;
-  template<typename Concrete,typename Allocator>
+  using segment_backend=detail::segment_backend<any_storage>;
+  template<typename Concrete>
   using segment_backend_implementation=
-    split_segment<any_model,Concrete,Allocator>;
+    split_segment<any_storage,Concrete>;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -175,7 +191,7 @@ struct any_model
   }
 
 private:
-  template<typename,typename,typename>
+  template<typename,typename>
   friend class split_segment;
 
   template<typename Concrete>
@@ -200,6 +216,13 @@ private:
       type_erasure::binding<concept_>{b}
     };
   }
+};
+
+template<typename Concept,typename Allocator>
+struct any_model:any_polymorphism<Concept>,any_storage<Concept,Allocator>
+{
+  /* disambiguate multiply-inherited, identical typedef */
+  using value_type=typename any_polymorphism<Concept>::value_type;
 };
 
 } /* namespace poly_collection::detail */

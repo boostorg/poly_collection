@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -25,10 +25,10 @@ namespace poly_collection{
 template<typename Signature,typename Allocator>
 class function_collection:
  public common_impl::poly_collection<
-   detail::function_model<Signature>,Allocator>
+   detail::function_model<Signature,Allocator>>
 {
   using base_type=common_impl::poly_collection<
-    detail::function_model<Signature>,Allocator>;
+    detail::function_model<Signature,Allocator>>;
 
   base_type&       base()noexcept{return *this;}
   const base_type& base()const noexcept{return *this;}

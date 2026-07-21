@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -26,10 +26,12 @@ namespace poly_collection{
 template<typename TypeList,typename Allocator>
 class variant_collection:
   public common_impl::poly_collection<
-    mp11::mp_rename<TypeList,detail::variant_model>,Allocator>
+    mp11::mp_rename<
+      mp11::mp_push_front<TypeList,Allocator>,detail::variant_model>>
 {
   using base_type=common_impl::poly_collection<
-    mp11::mp_rename<TypeList,detail::variant_model>,Allocator>;
+    mp11::mp_rename<
+      mp11::mp_push_front<TypeList,Allocator>,detail::variant_model>>;
 
   base_type&       base()noexcept{return *this;}
   const base_type& base()const noexcept{return *this;}

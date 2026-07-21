@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -21,12 +21,12 @@ namespace boost{
 namespace poly_collection{
 
 namespace detail{
-template<typename... Ts> struct variant_model;
+template<typename... Ts> struct variant_polymorphism;
 }
 
 template<typename TypeList>
 using variant_collection_value_type=
-  typename mp11::mp_rename<TypeList,detail::variant_model>::value_type;
+  typename mp11::mp_rename<TypeList,detail::variant_polymorphism>::value_type;
 
 template<
   typename TypeList,

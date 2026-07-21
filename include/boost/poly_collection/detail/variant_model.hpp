@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -24,6 +24,7 @@
 #include <boost/mp11/set.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
+#include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/fixed_variant_iterator.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
@@ -64,6 +65,12 @@ namespace detail{
 /* model for variant_collection */
 
 template<typename... Ts>
+struct variant_polymorphism;
+
+template<typename Allocator,typename... Ts>
+struct variant_storage;
+
+template<typename Allocator,typename... Ts>
 struct variant_model;
 
 template<typename V,typename...Ts>
@@ -119,7 +126,7 @@ auto invoke_visit(F&& f,const std::variant<Ts...>&x)->
 #endif
 
 template<typename... Ts>
-struct variant_model
+struct variant_polymorphism
 {
   using value_type=fixed_variant_impl::fixed_variant<Ts...>;
   using type_index=std::size_t;
@@ -224,7 +231,14 @@ public:
   {
     return invoke_visit(subtype_info_visitor{},x);
   }
+};
 
+template<typename Allocator,typename... Ts>
+struct variant_storage
+{
+  using value_type=fixed_variant_impl::fixed_variant<Ts...>;
+  using allocator_type=Allocator;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
   using base_iterator=fixed_variant_iterator<value_type>;
   using const_base_iterator=fixed_variant_iterator<const value_type>;
   using base_sentinel=value_type*;
@@ -233,11 +247,10 @@ public:
   using iterator=fixed_variant_alternative_iterator<value_type,T>;
   template<typename T>
   using const_iterator=fixed_variant_alternative_iterator<value_type,const T>;
-  template<typename Allocator>
-  using segment_backend=detail::segment_backend<variant_model,Allocator>;
-  template<typename T,typename Allocator>
+  using segment_backend=detail::segment_backend<variant_storage>;
+  template<typename T>
   using segment_backend_implementation=
-    packed_segment<variant_model,T,Allocator>;
+    packed_segment<variant_storage,T>;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -252,7 +265,7 @@ public:
   }
 
 private:
-  template<typename,typename,typename>
+  template<typename,typename>
   friend class packed_segment;
 
   template<typename T>
@@ -264,6 +277,14 @@ private:
   {
     return reinterpret_cast<const final_type<T>*>(p);
   }
+};
+
+template<typename Allocator,typename... Ts>
+struct variant_model:
+  variant_polymorphism<Ts...>,variant_storage<Allocator,Ts...>
+{
+  /* disambiguate multiply-inherited, identical typedef */
+  using value_type=fixed_variant_impl::fixed_variant<Ts...>;
 };
 
 } /* namespace poly_collection::detail */

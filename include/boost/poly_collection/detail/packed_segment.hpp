@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -33,33 +33,34 @@ namespace detail{
  * Requires:
  *  - [const_]base_iterator is a stride iterator constructible from
  *    {value_type*,sizeof(store_value_type)}.
- *  - Model provides a function value_ptr for
+ *  - StorageModel provides a function value_ptr for
  *    const Concrete* -> const value_type* conversion.
- *  - If Model provides a final_type<Concrete> template alias, it is this
+ *  - If StorageModel provides a final_type<Concrete> template alias, it is this
  *    type that is stored in the segment rather than Concrete. In this case,
  *    final_type<Concrete> must be constructible from Concrete and
  *    Concrete* must be reinterpret_castable to final_type<Concrete>* and vice
  *    versa.
  */
 
-template<typename Model,typename Concrete,typename Allocator>
-class packed_segment:public segment_backend<Model,Allocator>
+template<typename StorageModel,typename Concrete>
+class packed_segment:public segment_backend<StorageModel>
 {
   template<typename M>
   static typename M::template final_type<Concrete> final_type_helper(M);
   static Concrete final_type_helper(...);
 
-  using value_type=typename Model::value_type;
-  using final_type=decltype(final_type_helper(std::declval<Model>()));
+  using value_type=typename StorageModel::value_type;
+  using allocator_type=typename StorageModel::segment_allocator_type;
+  using final_type=decltype(final_type_helper(std::declval<StorageModel>()));
   using store_value_type=value_holder<final_type,Concrete>;
   using store=std::vector<
     store_value_type,
-    typename std::allocator_traits<Allocator>::
+    typename std::allocator_traits<allocator_type>::
       template rebind_alloc<store_value_type>
   >;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
-  using segment_backend=detail::segment_backend<Model,Allocator>;
+  using segment_backend=detail::segment_backend<StorageModel>;
   using typename segment_backend::segment_backend_unique_ptr;
   using typename segment_backend::value_pointer;
   using typename segment_backend::const_value_pointer;
@@ -69,7 +70,7 @@ class packed_segment:public segment_backend<Model,Allocator>
     typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
   using typename segment_backend::range;
-  using segment_allocator_type=typename std::allocator_traits<Allocator>::
+  using segment_allocator_type=typename std::allocator_traits<allocator_type>::
     template rebind_alloc<packed_segment>;
 
 public:
@@ -85,17 +86,17 @@ public:
     return new_(s.get_allocator(),store{s});
   }
 
-  virtual segment_backend_unique_ptr copy(const Allocator& al)const
+  virtual segment_backend_unique_ptr copy(const allocator_type& al)const
   {
     return new_(al,store{s,al});
   }
 
-  virtual segment_backend_unique_ptr empty_copy(const Allocator& al)const
+  virtual segment_backend_unique_ptr empty_copy(const allocator_type& al)const
   {
     return new_(al,al);
   }
 
-  virtual segment_backend_unique_ptr move(const Allocator& al)
+  virtual segment_backend_unique_ptr move(const allocator_type& al)
   {
     return new_(al,store{std::move(s),al});
   }
@@ -105,7 +106,10 @@ public:
     return s==static_cast<const packed_segment&>(x).s;
   }
 
-  virtual Allocator get_allocator()const noexcept{return s.get_allocator();}
+  virtual allocator_type get_allocator()const noexcept
+  {
+    return s.get_allocator();
+  }
 
   virtual base_iterator begin()const noexcept{return nv_begin();}
 
@@ -260,7 +264,8 @@ private:
     std::allocator_traits<segment_allocator_type>::deallocate(al,q,1);
   }
 
-  packed_segment(const Allocator& al):s{typename store::allocator_type{al}}{}
+  packed_segment(const allocator_type& al):
+    s{typename store::allocator_type{al}}{}
   packed_segment(store&& s):s{std::move(s)}{}
 
   static Concrete& concrete_ref(value_pointer p)noexcept
@@ -286,7 +291,8 @@ private:
   
   static value_type* value_ptr(const store_value_type* p)noexcept
   {
-    return const_cast<value_type*>(Model::value_ptr(const_concrete_ptr(p)));
+    return const_cast<value_type*>(
+      StorageModel::value_ptr(const_concrete_ptr(p)));
   }
 
   static const store_value_type* const_store_value_type_ptr(

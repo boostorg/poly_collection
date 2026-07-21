@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/core/addressof.hpp>
+#include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
@@ -31,7 +32,7 @@ namespace detail{
 /* model for base_collection */
 
 template<typename Base>
-struct base_model
+struct base_polymorphism
 {
   using value_type=Base;
   using type_index=std::type_info;
@@ -75,7 +76,14 @@ public:
 
   template<typename T,enable_if_terminal<T> =nullptr>
   static const void* subaddress(const T& x){return boost::addressof(x);}
+};
 
+template<typename Base,typename Allocator>
+struct base_storage
+{
+  using value_type=Base;
+  using allocator_type=Allocator;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
   using base_iterator=stride_iterator<Base>;
   using const_base_iterator=stride_iterator<const Base>;
   using base_sentinel=Base*;
@@ -84,11 +92,10 @@ public:
   using iterator=Derived*;
   template<typename Derived>
   using const_iterator=const Derived*;
-  template<typename Allocator>
-  using segment_backend=detail::segment_backend<base_model,Allocator>;
-  template<typename Derived,typename Allocator>
+  using segment_backend=detail::segment_backend<base_storage>;
+  template<typename Derived>
   using segment_backend_implementation=
-    packed_segment<base_model,Derived,Allocator>;
+    packed_segment<base_storage,Derived>;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -105,7 +112,7 @@ public:
   }
 
 private:
-  template<typename,typename,typename>
+  template<typename,typename>
   friend class packed_segment;
 
   template<typename Derived>
@@ -113,6 +120,13 @@ private:
   {
     return p;
   }
+};
+
+template<typename Base,typename Allocator>
+struct base_model:base_polymorphism<Base>,base_storage<Base,Allocator>
+{
+  /* disambiguate multiply-inherited, identical typedef */
+  using value_type=typename base_polymorphism<Base>::value_type;
 };
 
 } /* namespace poly_collection::detail */

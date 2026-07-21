@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -19,7 +19,6 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
-#include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/iterator_impl.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
@@ -42,7 +41,7 @@ namespace common_impl{
 
 using namespace detail;
 
-template<typename Model,typename Allocator>
+template<typename Model>
 class poly_collection
 {
   /* used only to early force closed collection acceptability checks */
@@ -111,8 +110,8 @@ class poly_collection
   using enable_if_not_constructible=
     typename std::enable_if<!is_constructible<T,U>::value>::type*;
 
-  using segment_allocator_type=allocator_adaptor<Allocator>;
-  using segment_type=detail::segment<Model,segment_allocator_type>;
+  using segment_allocator_type=typename Model::segment_allocator_type;
+  using segment_type=detail::segment<Model>;
   using segment_base_iterator=typename segment_type::base_iterator;
   using const_segment_base_iterator=
     typename segment_type::const_base_iterator;
@@ -129,13 +128,14 @@ public:
   /* types */
 
   using value_type=typename segment_type::value_type;
-  using allocator_type=Allocator;
+  using allocator_type=typename Model::allocator_type;
   using size_type=std::size_t;
   using difference_type=std::ptrdiff_t;
   using reference=value_type&;
   using const_reference=const value_type&;
-  using pointer=typename std::allocator_traits<Allocator>::pointer;
-  using const_pointer=typename std::allocator_traits<Allocator>::const_pointer;
+  using pointer=typename std::allocator_traits<allocator_type>::pointer;
+  using const_pointer=
+    typename std::allocator_traits<allocator_type>::const_pointer;
   using type_index=typename Model::type_index;
 
 private:
@@ -1004,9 +1004,8 @@ public:
   void swap(poly_collection& x){map.swap(x.map);}
 
 private:
-  template<typename M,typename A>
-  friend bool operator==(
-    const poly_collection<M,A>&,const poly_collection<M,A>&);
+  template<typename M>
+  friend bool operator==(const poly_collection<M>&,const poly_collection<M>&);
 
   struct create_segment
   {
@@ -1248,12 +1247,11 @@ private:
   segment_map map;
 };
 
-template<typename Model,typename Allocator>
+template<typename Model>
 bool operator==(
-  const poly_collection<Model,Allocator>& x,
-  const poly_collection<Model,Allocator>& y)
+  const poly_collection<Model>& x,const poly_collection<Model>& y)
 {
-  typename poly_collection<Model,Allocator>::size_type s=0;
+  typename poly_collection<Model>::size_type s=0;
   const auto &mapx=x.map,&mapy=y.map;
   for(const auto& p:mapx){
     auto ss=p.second.size();
@@ -1264,17 +1262,16 @@ bool operator==(
   return s==y.size(); 
 }
 
-template<typename Model,typename Allocator>
+template<typename Model>
 bool operator!=(
-  const poly_collection<Model,Allocator>& x,
-  const poly_collection<Model,Allocator>& y)
+  const poly_collection<Model>& x,const poly_collection<Model>& y)
 {
   return !(x==y);
 }
 
-template<typename Model,typename Allocator>
+template<typename Model>
 void swap(
-  poly_collection<Model,Allocator>& x,poly_collection<Model,Allocator>& y)
+  poly_collection<Model>& x,poly_collection<Model>& y)
 {
   x.swap(y);
 }
