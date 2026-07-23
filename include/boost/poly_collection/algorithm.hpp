@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -158,7 +158,7 @@ BOOST_FORCEINLINE Iterator for_each_n(const Iterator& first,Size n,Function f)
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    Size m=static_cast<Size>(sit->end()-lbit);
+    Size m=static_cast<Size>(std::distance(lbit,sit->end()));
     if(n<=m){
       auto it=alg(sit->type_info(),lbit,n,f);
       return traits::iterator_from(
@@ -285,7 +285,7 @@ struct adjacent_find_alg
       carry=true;
       prev_info=traits::template index<
         typename std::iterator_traits<LocalIterator>::value_type>();
-      prev=LocalBaseIterator{last-1};
+      prev=LocalBaseIterator{std::prev(last)};
     }
     else carry=false;
     return LocalBaseIterator{res};
@@ -823,7 +823,7 @@ BOOST_FORCEINLINE OutputIterator copy_n(
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    auto n=(std::min)(count,static_cast<Size>(sit->end()-lbit));
+    auto n=(std::min)(count,static_cast<Size>(std::distance(lbit,sit->end())));
     auto alg=restitute_iterator<model_type,Ts...>(std_copy_n{},n,res);
     res=alg(sit->type_info(),lbit);
     if((count-=n)==0)break;
@@ -1015,7 +1015,7 @@ struct unique_copy_alg
     carry=true;
     prev_info=traits::template index<
       typename std::iterator_traits<LocalIterator>::value_type>();
-    prev=LocalBaseIterator{last-1};
+    prev=LocalBaseIterator{std::prev(last)};
     return res;
   }
 };

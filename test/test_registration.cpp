@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -116,4 +116,6 @@ void test_registration()
   test_registration<any_types::collection,any_types::t1>();
   test_registration<base_types::collection,base_types::t1>();
   test_registration<function_types::collection,function_types::t1>();
+
+  test_registration<base_types::unordered_collection,base_types::t1>();
 }

@@ -13,8 +13,8 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
+#include <boost/poly_collection/detail/base_polymorphism.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
@@ -30,53 +30,6 @@ namespace poly_collection{
 namespace detail{
 
 /* model for base_collection */
-
-template<typename Base>
-struct base_polymorphism
-{
-  using value_type=Base;
-  using type_index=std::type_info;
-  template<typename Derived>
-  using is_implementation=std::is_base_of<Base,Derived>;
-  template<typename T>
-  using is_terminal=is_final<T>; //TODO: should we say !is_polymorhpic||is_final?
-
-private:
-  template<typename T>
-  using enable_if_not_terminal=
-    typename std::enable_if<!is_terminal<T>::value>::type*;
-  template<typename T>
-  using enable_if_terminal=
-    typename std::enable_if<is_terminal<T>::value>::type*;
-
-public:
-  template<typename T> 
-  static const std::type_info& index(){return typeid(T);}
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static const std::type_info& subindex(const T& x){return typeid(x);}
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static const std::type_info& subindex(const T&){return typeid(T);}
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static void* subaddress(T& x)
-  {
-    return dynamic_cast<void*>(boost::addressof(x));
-  }
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static const void* subaddress(const T& x)
-  {
-    return dynamic_cast<const void*>(boost::addressof(x));
-  }
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static void* subaddress(T& x){return boost::addressof(x);}
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static const void* subaddress(const T& x){return boost::addressof(x);}
-};
 
 template<typename Base,typename Allocator>
 struct base_storage

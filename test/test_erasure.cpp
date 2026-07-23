@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -153,4 +153,11 @@ void test_erasure()
     variant_types::collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
+
+#if 0
+  test_erasure<
+    base_types::unordered_collection,auto_increment,
+    base_types::t1,base_types::t2,base_types::t3,
+    base_types::t4,base_types::t5>();
+#endif
 }
