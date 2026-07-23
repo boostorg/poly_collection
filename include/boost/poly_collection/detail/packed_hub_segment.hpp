@@ -227,34 +227,32 @@ public:
 
   virtual range erase(const_base_iterator p)
   {
-    return range_from(s.erase(make_store_iterator(p)));
+    return range_from(s.erase(iterator_from(p)));
   }
 
   range nv_erase(const_iterator p)
   {
-    return range_from(s.erase(make_store_iterator(p)));
+    return range_from(s.erase(iterator_from(p)));
   }
 
   virtual range erase(const_base_iterator first,const_base_iterator last)
   {
-    return range_from(
-      s.erase(make_store_iterator(first),make_store_iterator(last)));
+    return range_from(s.erase(iterator_from(first),iterator_from(last)));
   }
 
   range nv_erase(const_iterator first,const_iterator last)
   {
-    return range_from(
-      s.erase(make_store_iterator(first),make_store_iterator(last)));
+    return range_from(s.erase(iterator_from(first),iterator_from(last)));
   }
 
   virtual range erase_till_end(const_base_iterator first)
   {
-    return range_from(s.erase(make_store_iterator(first),s.cend()));
+    return range_from(s.erase(iterator_from(first),s.cend()));
   }
 
   virtual range erase_from_begin(const_base_iterator last)
   {
-    return range_from(s.erase(s.cbegin(),make_store_iterator(last)));
+    return range_from(s.erase(s.cbegin(),iterator_from(last)));
   }
 
   virtual base_sentinel clear()noexcept{return nv_clear();}
@@ -298,6 +296,16 @@ private:
     return *static_cast<const Concrete*>(p);
   }
 
+  static const_store_iterator iterator_from(const_base_iterator p)noexcept
+  {
+    return iterator_from(static_cast<const_iterator>(p));
+  }
+
+  static const_store_iterator iterator_from(const_iterator p)noexcept
+  {
+    return make_hub_iterator<const_store_iterator>(get_members(p));
+  }
+
   static base_iterator make_base_iterator(hub_iterator_members m)noexcept
   {
     return {
@@ -313,18 +321,6 @@ private:
   range range_from(store_iterator it)const noexcept
   {
     return {make_base_iterator(get_members(it)),sentinel()};
-  }
-
-  static const_store_iterator make_store_iterator(
-    const_base_iterator p)noexcept
-  {
-    return make_hub_iterator<const_store_iterator>(
-      get_members(const_iterator{p}));
-  }
-
-  static const_store_iterator make_store_iterator(const_iterator p)noexcept
-  {
-    return make_hub_iterator<const_store_iterator>(get_members(p));
   }
 
   store s;
