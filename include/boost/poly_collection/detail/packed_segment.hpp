@@ -43,7 +43,7 @@ namespace detail{
  */
 
 template<typename StorageModel,typename Concrete>
-class packed_segment:segment_backend<StorageModel>
+class packed_segment:public segment_backend<StorageModel>
 {
   template<typename M>
   static typename M::template final_type<Concrete> final_type_helper(M);
