@@ -746,6 +746,7 @@ public:
 
   template<
     typename T,typename... Args,
+    typename std::enable_if<!std::is_const<T>::value>::type* =nullptr,
     typename M=Model,
     enable_if_ordered_collection<M> =nullptr
   >
@@ -1018,6 +1019,7 @@ public:
 
   template<
     typename T,typename InputIterator,
+    typename std::enable_if<!std::is_const<T>::value>::type* =nullptr,
     typename M=Model,
     enable_if_ordered_collection<M> =nullptr
   >
