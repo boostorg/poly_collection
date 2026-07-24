@@ -44,7 +44,7 @@ namespace detail{
  */
 
 template<typename StorageModel,typename Concrete>
-class split_segment:public segment_backend<StorageModel>
+class split_segment:segment_backend<StorageModel>
 {
   using value_type=typename StorageModel::value_type;
   using allocator_type=typename StorageModel::segment_allocator_type;

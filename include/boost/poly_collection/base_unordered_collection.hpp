@@ -40,27 +40,7 @@ public:
   base_unordered_collection(base_unordered_collection&& x)=default;
   base_unordered_collection& operator=(const base_unordered_collection& x)=default;
   base_unordered_collection& operator=(base_unordered_collection&& x)=default;
-   
-  template<typename B,typename A>
-  friend bool operator==(
-    const base_unordered_collection<B,A>&,const base_unordered_collection<B,A>&);
 };
-
-template<typename Base,typename Allocator>
-bool operator==(
-  const base_unordered_collection<Base,Allocator>& x,
-  const base_unordered_collection<Base,Allocator>& y)
-{
-  return x.base()==y.base();
-}
-
-template<typename Base,typename Allocator>
-bool operator!=(
-  const base_unordered_collection<Base,Allocator>& x,
-  const base_unordered_collection<Base,Allocator>& y)
-{
- return !(x==y);
-}
 
 template<typename Base,typename Allocator>
 void swap(

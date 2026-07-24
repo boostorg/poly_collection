@@ -19,7 +19,8 @@
 #include <boost/poly_collection/detail/base_polymorphism.hpp>
 #include <boost/poly_collection/detail/hub_stride_iterator.hpp>
 #include <boost/poly_collection/detail/packed_hub_segment.hpp>
-#include <boost/poly_collection/detail/segment_backend.hpp>
+#include <boost/poly_collection/detail/unordered_segment.hpp>
+#include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 #include <memory>
 
 namespace boost{
@@ -52,7 +53,8 @@ public:
   using iterator=hub_iterator<Derived>;
   template<typename Derived>
   using const_iterator=hub_iterator<const Derived>;
-  using segment_backend=detail::segment_backend<base_unordered_storage>;
+  using segment_backend=
+    detail::unordered_segment_backend<base_unordered_storage>;
   template<typename Derived>
   using segment_backend_implementation=
     packed_hub_segment<base_unordered_storage,Derived>;
@@ -85,6 +87,8 @@ struct base_unordered_model:
 {
   /* disambiguate multiply-inherited, identical typedef */
   using value_type=typename base_polymorphism<Base>::value_type;
+
+  using segment=detail::unordered_segment<base_unordered_model>;
 };
 
 } /* namespace poly_collection::detail */

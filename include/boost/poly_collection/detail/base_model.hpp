@@ -17,6 +17,8 @@
 #include <boost/poly_collection/detail/base_polymorphism.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
+#include <boost/poly_collection/detail/segment.hpp>
+#include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
 #include <memory>
 #include <type_traits>
@@ -80,6 +82,8 @@ struct base_model:base_polymorphism<Base>,base_storage<Base,Allocator>
 {
   /* disambiguate multiply-inherited, identical typedef */
   using value_type=typename base_polymorphism<Base>::value_type;
+
+  using segment=detail::segment<base_model>;
 };
 
 } /* namespace poly_collection::detail */

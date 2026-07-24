@@ -51,7 +51,7 @@ bool operator==(
   const base_collection<Base,Allocator>& x,
   const base_collection<Base,Allocator>& y)
 {
-  return x.base()==y.base();
+  return x.equal(y);
 }
 
 template<typename Base,typename Allocator>

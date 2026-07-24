@@ -18,6 +18,7 @@
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_iterator.hpp>
 #include <boost/poly_collection/detail/is_invocable.hpp>
+#include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
 #include <memory>
@@ -142,6 +143,8 @@ struct function_model<R(Args...),Allocator>:
 {
   /* disambiguate multiply-inherited, identical typedef */
   using value_type=typename function_polymorphism<R(Args...)>::value_type;
+
+  using segment=detail::segment<function_model>;
 };
 
 } /* namespace poly_collection::detail */

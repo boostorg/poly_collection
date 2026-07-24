@@ -55,7 +55,7 @@ bool operator==(
   const variant_collection<TypeList,Allocator>& x,
   const variant_collection<TypeList,Allocator>& y)
 {
-  return x.base()==y.base();
+  return x.equal(y);
 }
 
 template<typename TypeList,typename Allocator>

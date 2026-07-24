@@ -24,7 +24,7 @@
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_final.hpp>
-#include <boost/poly_collection/detail/segment.hpp>
+#include <boost/poly_collection/detail/is_unordered_collection.hpp>
 #include <boost/poly_collection/detail/segment_map.hpp>
 #include <boost/poly_collection/exception.hpp>
 #include <iterator>
@@ -55,6 +55,14 @@ class poly_collection
   template<typename Model_>
   using enable_if_open_collection=typename std::enable_if<
     !detail::is_closed_collection<Model_>::value
+  >::type*;
+  template<typename Model_>
+  using enable_if_ordered_collection=typename std::enable_if<
+    !detail::is_unordered_collection<Model_>::value
+  >::type*;
+  template<typename Model_>
+  using enable_if_unordered_collection=typename std::enable_if<
+    detail::is_unordered_collection<Model_>::value
   >::type*;
   template<typename T>
   struct is_implementation: /* using makes VS2015 choke, hence we derive */
@@ -111,7 +119,7 @@ class poly_collection
     typename std::enable_if<!is_constructible<T,U>::value>::type*;
 
   using segment_allocator_type=typename Model::segment_allocator_type;
-  using segment_type=detail::segment<Model>;
+  using segment_type=typename Model::segment;
   using segment_base_iterator=typename segment_type::base_iterator;
   using const_segment_base_iterator=
     typename segment_type::const_base_iterator;
@@ -678,7 +686,12 @@ public:
     };
   }
 
-  template<typename T,typename... Args,enable_if_acceptable<T> =nullptr>
+  template<
+    typename T,typename... Args,
+    enable_if_acceptable<T> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   iterator emplace_hint(const_iterator hint,Args&&... args)
   {
     auto  it=get_map_iterator_for<T>();
@@ -691,7 +704,23 @@ public:
     };
   }
 
-  template<typename T,typename... Args,enable_if_acceptable<T> =nullptr>
+  template<
+    typename T,typename... Args,
+    enable_if_acceptable<T> =nullptr,
+    typename M=Model,
+    enable_if_unordered_collection<M> =nullptr
+  >
+  iterator emplace_hint(const_iterator,Args&&... args)
+  {
+    return emplace<T>(std::forward<Args>(args)...);
+  }
+
+  template<
+    typename T,typename... Args,
+    enable_if_acceptable<T> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_base_iterator
   emplace_pos(local_base_iterator pos,Args&&... args)
   {
@@ -699,7 +728,12 @@ public:
       const_local_base_iterator{pos},std::forward<Args>(args)...);
   }
 
-  template<typename T,typename... Args,enable_if_acceptable<T> =nullptr>
+  template<
+    typename T,typename... Args,
+    enable_if_acceptable<T> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_base_iterator
   emplace_pos(const_local_base_iterator pos,Args&&... args)
   {
@@ -710,7 +744,11 @@ public:
     };
   }
 
-  template<typename T,typename... Args>
+  template<
+    typename T,typename... Args,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_iterator<T>
   emplace_pos(local_iterator<T> pos,Args&&... args)
   {
@@ -718,7 +756,11 @@ public:
       const_local_iterator<T>{pos},std::forward<Args>(args)...);
   }
 
-  template<typename T,typename... Args>
+  template<
+    typename T,typename... Args,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_iterator<T>
   emplace_pos(const_local_iterator<T> pos,Args&&... args)
   {
@@ -738,7 +780,9 @@ public:
   template<
     typename T,
     enable_if_not_same<const_iterator,T> =nullptr,
-    enable_if_implementation<T> =nullptr
+    enable_if_implementation<T> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
   >
   iterator insert(const_iterator hint,T&& x)
   {
@@ -752,9 +796,23 @@ public:
   }
 
   template<
+    typename T,
+    enable_if_not_same<const_iterator,T> =nullptr,
+    enable_if_implementation<T> =nullptr,
+    typename M=Model,
+    enable_if_unordered_collection<M> =nullptr
+  >
+  iterator insert(const_iterator,T&& x)
+  {
+    return insert(std::forward<T>(x));
+  }
+
+  template<
     typename BaseIterator,typename T,
     enable_if_not_same<local_iterator_impl<BaseIterator>,T> =nullptr,
-    enable_if_implementation<T> =nullptr
+    enable_if_implementation<T> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
   >
   nonconst_version<local_iterator_impl<BaseIterator>>
   insert(local_iterator_impl<BaseIterator> pos,T&& x)
@@ -763,6 +821,26 @@ public:
     return {
       pos.mapit,
       pos.segment().insert(pos.base(),std::forward<T>(x))
+    };
+  }
+
+  template<
+    typename BaseIterator,typename T,
+    enable_if_not_same<local_iterator_impl<BaseIterator>,T> =nullptr,
+    enable_if_implementation<T> =nullptr,
+    typename M=Model,
+    enable_if_unordered_collection<M> =nullptr
+  >
+  nonconst_version<local_iterator_impl<BaseIterator>>
+  insert(local_iterator_impl<BaseIterator> pos,T&& x)
+  {
+    using value_type=typename std::iterator_traits<
+      local_iterator_impl<BaseIterator>>::value_type;
+
+    BOOST_ASSERT(pos.type_info()==subindex(x));
+    return {
+      pos.mapit,
+      pos.segment().push_back_restituted<value_type>(std::forward<T>(x))
     };
   }
 
@@ -816,7 +894,9 @@ public:
   template<
     typename InputIterator,
     enable_if_derefs_to_implementation<InputIterator> =nullptr,
-    enable_if_derefs_to_not_terminal<InputIterator> =nullptr
+    enable_if_derefs_to_not_terminal<InputIterator> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
   >
   void insert(const_iterator hint,InputIterator first,InputIterator last)
   {
@@ -833,7 +913,9 @@ public:
   template<
     typename InputIterator,
     enable_if_derefs_to_implementation<InputIterator> =nullptr,
-    enable_if_derefs_to_terminal<InputIterator> =nullptr
+    enable_if_derefs_to_terminal<InputIterator> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
   >
   void insert(const_iterator hint,InputIterator first,InputIterator last) 
   {
@@ -847,7 +929,11 @@ public:
     else seg.insert(first,last);
   }
 
-  template<bool Const>
+  template<
+    bool Const,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   void insert(
     const_iterator hint,iterator_impl<Const> first,iterator_impl<Const> last)
   {
@@ -861,7 +947,11 @@ public:
     }
   }
 
-  template<typename BaseIterator>
+  template<
+    typename BaseIterator,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   void insert(
     const_iterator hint,
     local_iterator_impl<BaseIterator> first,
@@ -886,7 +976,9 @@ public:
 
   template<
     typename InputIterator,
-    enable_if_derefs_to_implementation<InputIterator> =nullptr
+    enable_if_derefs_to_implementation<InputIterator> =nullptr,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
   >
   local_base_iterator insert(
     const_local_base_iterator pos,InputIterator first,InputIterator last)
@@ -903,7 +995,11 @@ public:
     return {pos.mapit,it-n};
   }
 
-  template<typename T,typename InputIterator>
+  template<
+    typename T,typename InputIterator,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_iterator<T> insert(
     const_local_iterator<T> pos,InputIterator first,InputIterator last)
   {
@@ -919,7 +1015,11 @@ public:
     return {pos.mapit,it-n};
   }
 
-  template<typename T,typename InputIterator>
+  template<
+    typename T,typename InputIterator,
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
   local_iterator<T> insert(
     local_iterator<T> pos,InputIterator first,InputIterator last)
   {
@@ -1003,10 +1103,24 @@ public:
 
   void swap(poly_collection& x){map.swap(x.map);}
 
-private:
-  template<typename M>
-  friend bool operator==(const poly_collection<M>&,const poly_collection<M>&);
+protected:
+  template<
+    typename M=Model,
+    enable_if_ordered_collection<M> =nullptr
+  >
+  bool equal(const poly_collection& x)const
+  {
+    size_type s=0;
+    for(const auto& p:map){
+      auto ss=p.second.size();
+      auto it=x.map.find(p.first);
+      if(it==x.map.end()?ss!=0:p.second!=it->second)return false;
+      s+=ss;
+    }
+    return s==x.size(); 
+  }
 
+private:
   struct create_segment
   {
     segment_map& map;
@@ -1246,35 +1360,6 @@ private:
 
   segment_map map;
 };
-
-template<typename Model>
-bool operator==(
-  const poly_collection<Model>& x,const poly_collection<Model>& y)
-{
-  typename poly_collection<Model>::size_type s=0;
-  const auto &mapx=x.map,&mapy=y.map;
-  for(const auto& p:mapx){
-    auto ss=p.second.size();
-    auto it=mapy.find(p.first);
-    if(it==mapy.end()?ss!=0:p.second!=it->second)return false;
-    s+=ss;
-  }
-  return s==y.size(); 
-}
-
-template<typename Model>
-bool operator!=(
-  const poly_collection<Model>& x,const poly_collection<Model>& y)
-{
-  return !(x==y);
-}
-
-template<typename Model>
-void swap(
-  poly_collection<Model>& x,poly_collection<Model>& y)
-{
-  x.swap(y);
-}
 
 } /* namespace poly_collection::common_impl */
 

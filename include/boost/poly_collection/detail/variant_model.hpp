@@ -27,6 +27,7 @@
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/fixed_variant_iterator.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
+#include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <memory>
 #include <type_traits>
@@ -285,6 +286,8 @@ struct variant_model:
 {
   /* disambiguate multiply-inherited, identical typedef */
   using value_type=fixed_variant_impl::fixed_variant<Ts...>;
+
+  using segment=detail::segment<variant_model>;
 };
 
 } /* namespace poly_collection::detail */

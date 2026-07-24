@@ -52,7 +52,7 @@ bool operator==(
   const function_collection<Signature,Allocator>& x,
   const function_collection<Signature,Allocator>& y)
 {
-  return x.base()==y.base();
+  return x.equal(y);
 }
 
 template<typename Signature,typename Allocator>

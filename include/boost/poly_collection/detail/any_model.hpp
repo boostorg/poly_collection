@@ -19,6 +19,7 @@
 #include <boost/mpl/vector/vector10.hpp>
 #include <boost/poly_collection/detail/any_iterator.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
+#include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
@@ -223,6 +224,8 @@ struct any_model:any_polymorphism<Concept>,any_storage<Concept,Allocator>
 {
   /* disambiguate multiply-inherited, identical typedef */
   using value_type=typename any_polymorphism<Concept>::value_type;
+
+  using segment=detail::segment<any_model>;
 };
 
 } /* namespace poly_collection::detail */

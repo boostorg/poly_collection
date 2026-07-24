@@ -14,7 +14,7 @@
 #endif
 
 #include <boost/poly_collection/detail/hub_access.hpp>
-#include <boost/poly_collection/detail/segment_backend.hpp>
+#include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
 #include <algorithm>
 #include <memory>
@@ -28,8 +28,8 @@ namespace poly_collection{
 
 namespace detail{
 
-/* boost::container::hub-based segment_backend implementation where value_type&
- * and Concrete& actually refer to the same stored entity. 
+/* boost::container::hub-based unordered_segment_backend implementation where
+ * value_type& and Concrete& actually refer to the same stored entity. 
  *
  * Requires:
  *  - StorageModel provide a template function value_offset<Concrete>
@@ -47,7 +47,7 @@ namespace detail{
  */
 
 template<typename StorageModel,typename Concrete>
-class packed_hub_segment:public segment_backend<StorageModel>
+class packed_hub_segment:unordered_segment_backend<StorageModel>
 {
   template<typename M>
   static typename M::template final_type<Concrete> final_type_helper(M);
@@ -64,7 +64,7 @@ class packed_hub_segment:public segment_backend<StorageModel>
   >;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
-  using segment_backend=detail::segment_backend<StorageModel>;
+  using segment_backend=detail::unordered_segment_backend<StorageModel>;
 
   static_assert(
     std::is_pointer<
@@ -109,18 +109,6 @@ public:
     return new_(al,store{std::move(s),typename store::allocator_type{al}});
   }
 
-  virtual bool equal(const segment_backend& x)const
-  {
-    /* We temporarily provide O(n) equality, this will be eliminated when
-     * packed_hub_segment is made to derive from a new 
-     * unordered_segment_backend.
-     */
-
-    const auto& y=static_cast<const packed_hub_segment&>(x);
-    return s.size()==y.s.size()&&
-           std::is_permutation(s.begin(),s.end(),y.s.begin());
-  }
-
   virtual allocator_type get_allocator()const noexcept
   {
     return allocator_type{s.get_allocator()};
@@ -157,12 +145,6 @@ public:
   base_sentinel         nv_shrink_to_fit()
     {s.shrink_to_fit();return sentinel();}
 
-  template<typename Iterator,typename... Args>
-  range nv_emplace(Iterator,Args&&... args)
-  {
-    return nv_emplace_back(std::forward<Args>(args)...);
-  }
-
   template<typename... Args>
   range nv_emplace_back(Args&&... args)
   {
@@ -190,39 +172,11 @@ public:
     return range_from(s.emplace(std::move(x)));
   }
 
-  virtual range insert(const_base_iterator,const_value_pointer x)
-  {
-    return nv_push_back(const_concrete_ref(x));
-  }
-
-  range nv_insert(const_iterator,const Concrete& x)
-  {
-    return nv_push_back(x);
-  }
-
-  virtual range insert_move(const_base_iterator,value_pointer x)
-  {
-    return nv_push_back(std::move(concrete_ref(x)));
-  }
-
-  range nv_insert(const_iterator,Concrete&& x)
-  {
-    return nv_push_back(std::move(x));
-  }
-
   template<typename InputIterator>
-  range nv_insert(InputIterator first,InputIterator last)
+  base_sentinel nv_insert(InputIterator first,InputIterator last)
   {
-    if(first==last)return {nv_end(),sentinel()};
-    auto it=s.emplace(*first++);
-    while(first!=last)s.emplace(*first++);
-    return range_from(it);
-  }
-
-  template<typename InputIterator>
-  range nv_insert(const_iterator,InputIterator first,InputIterator last)
-  {
-    return nv_insert(first,last);
+    s.insert(first,last);
+    return sentinel();
   }
 
   virtual range erase(const_base_iterator p)

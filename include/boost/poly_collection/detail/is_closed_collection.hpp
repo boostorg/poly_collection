@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -39,10 +39,13 @@ struct is_closed_collection<
     mp11::mp_is_set<type_list>::value,
     "all types in a closed collection must be distinct");
 
+  // TODO: move this assertion to a place it really belongs
+#if 0
   static_assert(
     mp11::mp_all_of<type_list,is_moveable>::value,
     "all types of a closed collection must be nothrow move constructible "
     "or else move constructible and move assignable");
+#endif
 };
   
 } /* namespace poly_collection::detail */

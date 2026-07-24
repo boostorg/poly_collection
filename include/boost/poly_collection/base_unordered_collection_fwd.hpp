@@ -23,18 +23,9 @@ template<typename Base,typename Allocator=std::allocator<Base>>
 class base_unordered_collection;
 
 template<typename Base,typename Allocator>
-bool operator==(
-  const base_unordered_collection<Base,Allocator>& x,
-  const base_unordered_collection<Base,Allocator>& y);
-
-template<typename Base,typename Allocator>
-bool operator!=(
-  const base_unordered_collection<Base,Allocator>& x,
-  const base_unordered_collection<Base,Allocator>& y);
-
-template<typename Base,typename Allocator>
 void swap(
-  base_unordered_collection<Base,Allocator>& x,base_unordered_collection<Base,Allocator>& y);
+  base_unordered_collection<Base,Allocator>& x,
+  base_unordered_collection<Base,Allocator>& y);
 
 } /* namespace poly_collection */
 
