@@ -532,10 +532,11 @@ struct equal_aux_lambda
   >
   bool check()const
   {
-         if(is_registered<T>(p1)!=is_registered<T>(p2))return false;
-    else if(!is_registered<T>(p1))return true;
-    else if(p1.size<T>()!=p2.size<T>())return false;
-    else return std::equal(p1.begin<T>(),p1.end<T>(),p2.begin<T>());
+    if(is_registered<T>(p1)!=is_registered<T>(p2))return false;
+    if(!is_registered<T>(p1))return true;
+    if(p1.template size<T>()!=p2.template size<T>())return false;
+    return std::equal(
+      p1.template begin<T>(),p1.template end<T>(),p2.template begin<T>());
   }
 
   template<
