@@ -521,7 +521,7 @@ template<typename PolyCollection>
 struct equal_aux_lambda
 {
   equal_aux_lambda(const PolyCollection& p1_,const PolyCollection& p2_):
-    p1{p1_},p2{p2_}{}
+    p1(p1_),p2(p2_){}
 
   template<typename I>
   void operator()(I i){res=res&check<typename I::type>();}
