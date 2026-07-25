@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,7 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
 #include <boost/poly_collection/detail/is_moveable.hpp>
+#include <boost/poly_collection/detail/is_unordered_collection.hpp>
 #include <type_traits>
 
 namespace boost{
@@ -28,12 +29,15 @@ namespace detail{
  * the std type_traits classes fail to give the right info (as it can happen
  * with class templates whose nominally existing operators do not compile for
  * certain instantiations).
+ * Note we're conflating unorderedness with stability (i.e. not requiring
+ * moveability). We may revisit this in the future.
  */
 
 template<typename T,typename Model,typename=void>
 struct is_acceptable:std::integral_constant<
   bool,
-  Model::template is_implementation<T>::value&&is_moveable<T>::value
+  Model::template is_implementation<T>::value&&
+  (is_unordered_collection<Model>::value||is_moveable<T>::value)
 >{};
 
 /* Closed collections are defined by having a compile-time fixed list of

@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -30,10 +30,11 @@ namespace detail{
 
 /* Segments of a poly_collection maintain vectors of value_holder<T>
  * rather than directly T. This serves several purposes:
- *  - value_holder<T> is copy constructible and equality comparable even if T
- *    is not: executing the corresponding op results in a reporting exception
- *    being thrown. This allows the segment to offer its full virtual
- *    interface regardless of the properties of the concrete class contained.
+ *  - value_holder<T> is move constructible, copy constructible and equality
+ *    comparable even if T is not: executing the corresponding op results in a
+ *    reporting exception being thrown. This allows the segment to offer its
+ *    full virtual interface regardless of the properties of the concrete class
+ *    contained.
  *  - value_holder<T> emulates move assignment when T is not move assignable
  *    (nothrow move constructibility required); this happens most notably with
  *    lambda functions, whose assignment operator is deleted by standard
@@ -77,9 +78,10 @@ class value_holder:public value_holder_base<T>
     >::value
   >::type*;
 
-  using is_nothrow_move_constructible=std::is_nothrow_move_constructible<U>;
   using is_copy_constructible=std::is_copy_constructible<U>;
   using is_nothrow_copy_constructible=std::is_nothrow_copy_constructible<U>;
+  using is_move_constructible=std::is_move_constructible<U>;
+  using is_nothrow_move_constructible=std::is_nothrow_move_constructible<U>;
   using is_move_assignable=std::is_move_assignable<U>;
   using is_nothrow_move_assignable=std::is_nothrow_move_assignable<U>;
   using is_equality_comparable=detail::is_equality_comparable<U>;
@@ -106,7 +108,7 @@ public:
   >
   value_holder(Allocator& al,U&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {std::allocator_traits<Allocator>::construct(al,data(),std::move(x));}
+    {allocator_move(al,std::move(x));}
   template<
     typename Allocator,typename... Args,
     enable_if_not_emplacing_ctor_t<Allocator> =nullptr
@@ -127,8 +129,7 @@ public:
   >
   value_holder(Allocator& al,value_holder&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {std::allocator_traits<Allocator>::construct(
-      al,data(),std::move(x.value()));}
+    {allocator_move(al,std::move(x.value()));}
 
   /* stdlib implementations in current use are notoriously lacking at
    * complying with [container.requirements.general]/3, so we keep the
@@ -140,7 +141,7 @@ public:
     {copy(x);}
   value_holder(U&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {::new ((void*)data()) T(std::move(x));}
+    {move(std::move(x));}
   template<typename... Args>
   value_holder(value_holder_emplacing_ctor_t,Args&&... args)
     {::new ((void*)data()) T(std::forward<Args>(args)...);}
@@ -149,7 +150,7 @@ public:
     {copy(x.value());}
   value_holder(value_holder&& x)
     noexcept(is_nothrow_move_constructible::value)
-    {::new ((void*)data()) T(std::move(x.value()));}
+    {move(std::move(x.value()));}
  
   value_holder& operator=(const value_holder& x)=delete;
   value_holder& operator=(value_holder&& x)
@@ -187,6 +188,24 @@ private:
     throw not_copy_constructible{typeid(U)};
   }
 
+  template<typename Allocator,typename Q>
+  void allocator_move(Allocator& al,Q&& x)
+  {
+    allocator_move(al,std::forward<Q>(x),is_move_constructible{});
+  }
+
+  template<typename Allocator,typename Q>
+  void allocator_move(Allocator& al,Q&& x,std::true_type)
+  {
+    std::allocator_traits<Allocator>::construct(al,data(),std::forward<Q>(x));
+  }
+
+  template<typename Allocator,typename Q>
+  void allocator_move(Allocator&,Q&,std::false_type)
+  {
+    throw not_move_constructible{typeid(U)};
+  }
+
   template<typename Q>
   void copy(const Q& x){copy(x,is_copy_constructible{});}
 
@@ -200,6 +219,21 @@ private:
   void copy(const Q&,std::false_type)
   {
     throw not_copy_constructible{typeid(U)};
+  }
+
+  template<typename Q>
+  void move(Q&& x){move(std::forward<Q>(x),is_move_constructible{});}
+
+  template<typename Q>
+  void move(Q&& x,std::true_type)
+  {
+    ::new (data()) T(std::forward<Q>(x));
+  }
+
+  template<typename Q>
+  void move(Q&&,std::false_type)
+  {
+    throw not_move_constructible{typeid(U)};
   }
 
   void move_assign(T&& x){move_assign(std::move(x),is_move_assignable{});}

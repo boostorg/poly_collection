@@ -24,7 +24,8 @@ namespace poly_collection{
 
 template<typename Base,typename Allocator>
 class base_unordered_collection:
- public common_impl::poly_collection<detail::base_unordered_model<Base,Allocator>>
+  public common_impl::poly_collection<
+    detail::base_unordered_model<Base,Allocator>>
 {
   using base_type=common_impl::poly_collection<
     detail::base_unordered_model<Base,Allocator>>;
@@ -38,13 +39,15 @@ public:
   base_unordered_collection()=default;
   base_unordered_collection(const base_unordered_collection& x)=default;
   base_unordered_collection(base_unordered_collection&& x)=default;
-  base_unordered_collection& operator=(const base_unordered_collection& x)=default;
+  base_unordered_collection& operator=(
+    const base_unordered_collection& x)=default;
   base_unordered_collection& operator=(base_unordered_collection&& x)=default;
 };
 
 template<typename Base,typename Allocator>
 void swap(
-  base_unordered_collection<Base,Allocator>& x,base_unordered_collection<Base,Allocator>& y)
+  base_unordered_collection<Base,Allocator>& x,
+  base_unordered_collection<Base,Allocator>& y)
 {
   x.swap(y);
 }
