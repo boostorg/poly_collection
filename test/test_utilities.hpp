@@ -13,10 +13,12 @@
 #pragma once
 #endif
 
+#include <algorithm>
 #include <array>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/variant_collection_fwd.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
 #include <boost/type_traits/make_void.hpp>
@@ -500,6 +502,64 @@ template<
 std::size_t typeid_(const PolyCollection&)
 {
   return boost::mp11::mp_find<typename PolyCollection::value_type,T>::value;
+}
+
+template<typename PolyCollection>
+using is_ordered_collection=is_equality_comparable<PolyCollection>;
+
+template<
+  typename... T,typename PolyCollection,
+  typename std::enable_if<
+    is_ordered_collection<PolyCollection>::value>::type* =nullptr
+>
+bool equal(PolyCollection& p1,PolyCollection& p2)
+{
+  return p1==p2;
+}
+
+template<typename PolyCollection>
+struct equal_aux_lambda
+{
+  equal_aux_lambda(const PolyCollection& p1_,const PolyCollection& p2_):
+    p1{p1_},p2{p2_}{}
+
+  template<typename I>
+  void operator()(I i){res=res&check<typename I::type>();}
+
+  template<
+    typename T,
+    typename std::enable_if<is_equality_comparable<T>::value>::type* =nullptr
+  >
+  bool check()const
+  {
+         if(is_registered<T>(p1)!=is_registered<T>(p2))return false;
+    else if(!is_registered<T>(p1))return true;
+    else if(p1.size<T>()!=p2.size<T>())return false;
+    else return std::equal(p1.begin<T>(),p1.end<T>(),p2.begin<T>());
+  }
+
+  template<
+    typename T,
+    typename std::enable_if<!is_equality_comparable<T>::value>::type* =nullptr
+  >
+  bool check()const{return true;}
+
+  const PolyCollection &p1,&p2;
+  bool                  res=true;
+};
+
+template<
+  typename... T,typename PolyCollection,
+  typename std::enable_if<
+    !is_ordered_collection<PolyCollection>::value>::type* =nullptr
+>
+bool equal(PolyCollection& p1,PolyCollection& p2)
+{
+  using namespace boost::mp11;
+
+  equal_aux_lambda<PolyCollection> f(p1,p2);
+  mp_for_each<mp_transform<mp_identity,mp_list<T...>>>(f);
+  return f.res;
 }
 
 } /* namespace test_utilities */
