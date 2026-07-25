@@ -29,14 +29,19 @@ namespace detail{
  * the std type_traits classes fail to give the right info (as it can happen
  * with class templates whose nominally existing operators do not compile for
  * certain instantiations).
- * Note we're conflating unorderedness with stability (i.e. not requiring
+ * Note we're conflating unorderedness with stability (i.e. with not requiring
  * moveability). We may revisit this in the future.
+ * The !std::is_abstract check is needed to prevent base_unordered_collection
+ * from instantiating segment<C> (and potentially failing to do so) when a 
+ * reference to an abstract class C is passed in an insertion operation. Such
+ * a segment, of course, would never be created at run time.
  */
 
 template<typename T,typename Model,typename=void>
 struct is_acceptable:std::integral_constant<
   bool,
   Model::template is_implementation<T>::value&&
+  !std::is_abstract<T>::value&&
   (is_unordered_collection<Model>::value||is_moveable<T>::value)
 >{};
 
