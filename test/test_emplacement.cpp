@@ -118,8 +118,6 @@ void test_emplacement_unordered()
       Types...
     >;
     using iterator=typename PolyCollection::iterator;
-    using local_iterator=
-      typename PolyCollection::template local_iterator<type>;
 
     PolyCollection p;
 
