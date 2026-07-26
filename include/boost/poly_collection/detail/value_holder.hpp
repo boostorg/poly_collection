@@ -201,7 +201,7 @@ private:
   }
 
   template<typename Allocator,typename Q>
-  void allocator_move(Allocator&,Q&,std::false_type)
+  void allocator_move(Allocator&,Q&&,std::false_type)
   {
     throw not_move_constructible{typeid(U)};
   }
