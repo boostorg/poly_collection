@@ -106,6 +106,14 @@ using is_not_copy_constructible=std::integral_constant<
   !std::is_copy_constructible<T>::value
 >;
 
+using std::is_move_constructible;
+
+template<typename T>
+using is_not_move_constructible=std::integral_constant<
+  bool,
+  !std::is_move_constructible<T>::value
+>;
+
 template<typename T>
 using is_constructible_from_int=std::is_constructible<T,int>;
 
@@ -115,6 +123,14 @@ template<typename T>
 using is_not_copy_assignable=std::integral_constant<
   bool,
   !std::is_copy_assignable<T>::value
+>;
+
+using std::is_move_assignable;
+
+template<typename T>
+using is_not_move_assignable=std::integral_constant<
+  bool,
+  !std::is_move_assignable<T>::value
 >;
 
 template<typename T>
@@ -562,6 +578,16 @@ bool equal(PolyCollection& p1,PolyCollection& p2)
   mp_for_each<mp_transform<mp_identity,mp_list<T...>>>(f);
   return f.res;
 }
+
+template<typename Class>
+struct non_moveable:Class
+{
+  using Class::Class;
+  non_moveable(const non_moveable&)=delete;
+  non_moveable(non_moveable&&)=delete;
+  non_moveable& operator=(const non_moveable&)=delete;
+  non_moveable& operator=(non_moveable&&)=delete;
+};
 
 } /* namespace test_utilities */
 
