@@ -1067,7 +1067,7 @@ public:
     }
     else{                   /* range is included in one segment only */
       if(first==last){      /* to avoid segment(fseg) when fseg==end */
-        return {fseg,end,first.segpos};
+        return {fseg,end,Model::nonconst_iterator(first.segpos)};
       }
       else{
         return {fseg,end,segment(fseg).erase(first.segpos,last.segpos)};
