@@ -136,8 +136,8 @@ private:
     const segment_type& s,BaseIterator2 it)
   {
     segment_base_iterator bit=s.begin();
-    return BaseIterator{
-      std::next(bit,std::distance(static_cast<BaseIterator2>(bit),it))};
+    return static_cast<BaseIterator>(
+      std::next(bit,std::distance(static_cast<BaseIterator2>(bit),it)));
   } 
 
   base_iterator base()const noexcept
