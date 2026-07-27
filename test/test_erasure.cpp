@@ -22,11 +22,14 @@ template<typename Type,typename PolyCollection>
 void test_local_erase(const PolyCollection& p2)
 {
   using size_type=typename PolyCollection::size_type;
+  using local_iterator=typename PolyCollection::template local_iterator<Type>;
 
   for(size_type i=0;i<p2.template size<Type>();++i){
     PolyCollection p=p2;
-    auto it=p.erase(p.template cbegin<Type>()+i);
-    BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
+    auto it=p.erase(std::next(p.template cbegin<Type>(),i));
+    BOOST_TEST(
+      std::distance(p.template begin<Type>(),local_iterator(it))==
+      (std::ptrdiff_t)i);
     BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-1);
   }  
 }
@@ -35,14 +38,17 @@ template<typename Type,typename PolyCollection>
 void test_local_range_erase(const PolyCollection& p2)
 {
   using size_type=typename PolyCollection::size_type;
+  using local_iterator=typename PolyCollection::template local_iterator<Type>;
 
   for(size_type i=0;i<=p2.template size<Type>();++i){
     for(size_type j=i;j<=p2.template size<Type>();++j){
       PolyCollection p=p2;
-      auto first=p.template cbegin<Type>()+i,
-           last=p.template cbegin<Type>()+j;
+      auto first=std::next(p.template cbegin<Type>(),i),
+           last=std::next(p.template cbegin<Type>(),j);
       auto it=p.erase(first,last);
-      BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
+      BOOST_TEST(
+        std::distance(p.template begin<Type>(),local_iterator(it))==
+        (std::ptrdiff_t)i);
       BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-(j-i));
     }
   }
@@ -82,8 +88,8 @@ void test_erasure()
     auto& info=s.type_info();
     for(size_type i=0;i<p2.size(info);++i){
       p=p2;
-      auto it=p.erase(p.cbegin(info)+i);
-      BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+      auto it=p.erase(std::next(p.cbegin(info),i));
+      BOOST_TEST(std::distance(p.begin(info),it)==(std::ptrdiff_t)i);
       BOOST_TEST(p.size(info)==p2.size(info)-1);
     }
   }
@@ -107,10 +113,10 @@ void test_erasure()
     for(size_type i=0;i<=p2.size(info);++i){
       for(size_type j=i;j<=p2.size(info);++j){
         p=p2;
-        auto first=p.cbegin(info)+i,
-              last=p.cbegin(info)+j;
+        auto first=std::next(p.cbegin(info),i),
+              last=std::next(p.cbegin(info),j);
         auto it=p.erase(first,last);
-        BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+        BOOST_TEST(std::distance(p.begin(info),it)==(std::ptrdiff_t)i);
         BOOST_TEST(p.size(info)==p2.size(info)-(j-i));
       }
     }
@@ -154,10 +160,8 @@ void test_erasure()
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
 
-#if 0
   test_erasure<
     base_types::unordered_collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
-#endif
 }

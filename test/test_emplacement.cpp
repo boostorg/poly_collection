@@ -118,6 +118,8 @@ void test_emplacement_unordered()
       Types...
     >;
     using iterator=typename PolyCollection::iterator;
+    using local_iterator=
+      typename PolyCollection::template local_iterator<type>;
 
     PolyCollection p;
 
@@ -126,12 +128,10 @@ void test_emplacement_unordered()
     BOOST_TEST(&*it==&*p.begin(typeid_<type>(p)));
 
     iterator it2=p.template emplace_hint<type>(it,3);
-    BOOST_TEST(
-      *std::next(p.template begin<type>(),std::distance(it,it2))==type{3});
+    BOOST_TEST(*local_iterator(it2)==type{3});
 
     iterator it3=p.template emplace_hint<type>(p.cend(),5);
-    BOOST_TEST(
-      *std::next(p.template begin<type>(),std::distance(it,it3))==type{5});
+    BOOST_TEST(*local_iterator(it3)==type{5});
   }
   {
     using type=first_of<
