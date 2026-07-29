@@ -36,10 +36,7 @@ struct base_unordered_storage
 {
 private:
   template<typename Derived>
-  using hub_iterator=detail::hub_iterator<
-    typename pointer_traits<
-      typename std::allocator_traits<Allocator>::pointer
-    >::template rebind<Derived>>;
+  using hub_iterator=detail::hub_iterator<Derived*>;
 
 public:
   using value_type=Base;

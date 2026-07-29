@@ -22,14 +22,12 @@ template<typename Type,typename PolyCollection>
 void test_local_erase(const PolyCollection& p2)
 {
   using size_type=typename PolyCollection::size_type;
-  using local_iterator=typename PolyCollection::template local_iterator<Type>;
 
   for(size_type i=0;i<p2.template size<Type>();++i){
     PolyCollection p=p2;
     auto it=p.erase(std::next(p.template cbegin<Type>(),i));
     BOOST_TEST(
-      std::distance(p.template begin<Type>(),local_iterator(it))==
-      (std::ptrdiff_t)i);
+      std::distance(p.template begin<Type>(),it)==(std::ptrdiff_t)i);
     BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-1);
   }  
 }
@@ -38,7 +36,6 @@ template<typename Type,typename PolyCollection>
 void test_local_range_erase(const PolyCollection& p2)
 {
   using size_type=typename PolyCollection::size_type;
-  using local_iterator=typename PolyCollection::template local_iterator<Type>;
 
   for(size_type i=0;i<=p2.template size<Type>();++i){
     for(size_type j=i;j<=p2.template size<Type>();++j){
@@ -47,8 +44,7 @@ void test_local_range_erase(const PolyCollection& p2)
            last=std::next(p.template cbegin<Type>(),j);
       auto it=p.erase(first,last);
       BOOST_TEST(
-        std::distance(p.template begin<Type>(),local_iterator(it))==
-        (std::ptrdiff_t)i);
+        std::distance(p.template begin<Type>(),it)==(std::ptrdiff_t)i);
       BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-(j-i));
     }
   }

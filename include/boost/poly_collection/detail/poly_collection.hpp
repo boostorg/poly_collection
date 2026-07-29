@@ -354,9 +354,19 @@ private:
   static local_iterator<T>          nonconst_hlp(const_local_iterator<T>);
   static base_segment_info_iterator nonconst_hlp(
                                       const_base_segment_info_iterator);
+  template<typename Iterator>
+  struct nonconst_version_impl
+  {
+    using type=decltype(nonconst_hlp(std::declval<Iterator>()));
+    static_assert(
+      !std::is_const<typename std::remove_reference<
+         typename std::iterator_traits<type>::reference>::type>::value,
+      "nonconst_version failed, likely because T can't be deduced from "
+      "const_local_iterator<T>");
+  };
 
   template<typename Iterator>
-  using nonconst_version=decltype(nonconst_hlp(std::declval<Iterator>()));
+  using nonconst_version=typename nonconst_version_impl<Iterator>::type;
 
 public:
   class const_segment_traversal_info
