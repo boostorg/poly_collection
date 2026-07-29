@@ -845,9 +845,6 @@ public:
   nonconst_version<local_iterator_impl<BaseIterator>>
   insert(local_iterator_impl<BaseIterator> pos,T&& x)
   {
-    using value_type=typename std::iterator_traits<
-      local_iterator_impl<BaseIterator>>::value_type;
-
     BOOST_ASSERT(pos.type_info()==subindex(x));
     return {
       pos.mapit,
