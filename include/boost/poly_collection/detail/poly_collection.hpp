@@ -20,6 +20,7 @@
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/detail/iterator_impl.hpp>
+#include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
@@ -359,8 +360,7 @@ private:
   {
     using type=decltype(nonconst_hlp(std::declval<Iterator>()));
     static_assert(
-      !std::is_const<typename std::remove_reference<
-         typename std::iterator_traits<type>::reference>::type>::value,
+      !is_const_iterator<type>::value,
       "nonconst_version failed, likely because T can't be deduced from "
       "const_local_iterator<T>");
   };

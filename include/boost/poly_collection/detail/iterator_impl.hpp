@@ -98,7 +98,9 @@ public:
     typename std::enable_if<
       !is_constructible<BaseIterator,BaseIterator2>::value&&
       is_constructible<BaseIterator,segment_base_iterator>::value&&
-      is_constructible<BaseIterator2,segment_base_iterator>::value
+      is_constructible<BaseIterator2,segment_base_iterator>::value&&
+      (is_const_iterator<BaseIterator>::value||
+        !is_const_iterator<BaseIterator2>::value)
     >::type* =nullptr
   >
   explicit local_iterator_impl(

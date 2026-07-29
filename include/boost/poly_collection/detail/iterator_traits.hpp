@@ -51,16 +51,19 @@ struct model_of<common_impl::poly_collection<Model>>
 };
 
 template<typename Iterator>
+using is_const_iterator=typename std::is_const<
+  typename std::remove_reference<
+    typename std::iterator_traits<Iterator>::reference
+  >::type
+>::type;
+
+template<typename Iterator>
 struct iterator_traits
 {
   using container_type=typename poly_collection_of<Iterator>::type;
   using model_type=typename model_of<container_type>::type;
   using type_index=typename container_type::type_index;
-  using is_const_iterator=typename std::is_const<
-    typename std::remove_reference<
-      typename std::iterator_traits<Iterator>::reference
-    >::type
-  >::type;
+  using is_const_iterator=detail::is_const_iterator<Iterator>;
   using iterator=typename std::conditional<
     is_const_iterator::value,
     typename container_type::const_iterator,   
