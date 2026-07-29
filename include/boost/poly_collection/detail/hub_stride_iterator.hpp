@@ -82,7 +82,7 @@ public:
       (std::is_const<Value>::value||!std::is_const<Element>::value)
     >::type* = nullptr
   >
-  hub_stride_iterator(const hub_iterator<ValuePointer>& x)noexcept:
+  explicit hub_stride_iterator(const hub_iterator<ValuePointer>& x)noexcept:
     hub_stride_iterator{
       get_members(x),
       sizeof(Element),
