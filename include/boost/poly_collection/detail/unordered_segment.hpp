@@ -138,11 +138,51 @@ public:
     return filter(impl().push_back_move(subaddress(x)));
   }
 
+  template<typename T>
+  base_iterator push_back_hint(const_base_iterator,const T& x) 
+  {
+    return push_back(x);
+  }
+
+  template<typename T>
+  base_iterator push_back_hint(base_iterator,const T& x) 
+  {
+    return push_back(x);
+  }
+
   template<typename U,typename T>
-  base_iterator push_back_restituted(const T& x)
+  base_iterator push_back_hint(const_iterator<U>,const T& x)
   {
     return filter(
       impl<U>().nv_push_back(*static_cast<const U*>(subaddress(x))));
+  }
+
+  template<typename U,typename T>
+  base_iterator push_back_hint(iterator<U> it,const T& x)
+  {
+    return push_back_hint(const_iterator<U>{it},x);
+  }
+
+  template<
+    typename T,
+    typename std::enable_if<
+      !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
+    >::type* =nullptr
+  >
+  base_iterator push_back_hint(const_base_iterator,T&& x)
+  {
+    return push_back(std::forward<T>(x));
+  }
+
+  template<
+    typename T,
+    typename std::enable_if<
+      !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
+    >::type* =nullptr
+  >
+  base_iterator push_back_hint(base_iterator,T&& x)
+  {
+    return push_back(std::forward<T>(x));
   }
 
   template<
@@ -151,10 +191,21 @@ public:
       !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
     >::type* =nullptr
   >
-  base_iterator push_back_restituted(T&& x)
+  base_iterator push_back_hint(const_iterator<U>,T&& x)
   {
     return filter(
       impl<U>().nv_push_back(std::move(*static_cast<U*>(subaddress(x)))));
+  }
+
+  template<
+    typename U,typename T,
+    typename std::enable_if<
+      !std::is_lvalue_reference<T>::value&&!std::is_const<T>::value
+    >::type* =nullptr
+  >
+  base_iterator push_back_hint(iterator<U> it,T&& x)
+  {
+    return push_back_hint(const_iterator<U>{it},std::forward<T>(x));
   }
 
   template<typename U>

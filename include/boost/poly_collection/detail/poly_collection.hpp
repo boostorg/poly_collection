@@ -851,8 +851,7 @@ public:
     BOOST_ASSERT(pos.type_info()==subindex(x));
     return {
       pos.mapit,
-      pos.segment().template push_back_restituted<value_type>(
-        std::forward<T>(x))
+      pos.segment().push_back_hint(pos.base(),std::forward<T>(x))
     };
   }
 
