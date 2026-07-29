@@ -18,7 +18,64 @@
 using namespace test_utilities;
 
 template<typename PolyCollection,typename ValueFactory,typename... Types>
-void test_emplacement_ordered()
+void test_emplacement(std::false_type /* unordered */)
+{
+  {
+    using type=first_of<
+      constraints<
+        is_constructible_from_int,is_not_move_constructible,
+        is_not_move_assignable,
+        is_equality_comparable
+      >,
+      Types...
+    >;
+    using iterator=typename PolyCollection::iterator;
+    using local_iterator=
+      typename PolyCollection::template local_iterator<type>;
+
+    PolyCollection p;
+
+    iterator it=p.template emplace<type>(4);
+    BOOST_TEST(*p.template begin<type>()==type{4});
+    BOOST_TEST(&*it==&*p.begin(typeid_<type>(p)));
+
+    iterator it2=p.template emplace_hint<type>(it,3);
+    BOOST_TEST(*local_iterator(it2)==type{3});
+
+    iterator it3=p.template emplace_hint<type>(p.cend(),5);
+    BOOST_TEST(*local_iterator(it3)==type{5});
+  }
+  {
+    using type=first_of<
+      constraints<is_default_constructible>,
+      Types...
+    >;
+
+    PolyCollection p;
+
+    p.template emplace<type>();
+    p.template emplace_hint<type>(p.begin());
+    p.template emplace_hint<type>(p.cend());
+    BOOST_TEST(p.size()==3);
+  }
+  {
+    using type=first_of<
+      constraints<is_not_copy_constructible>,
+      Types...
+    >;
+
+    PolyCollection p;
+    ValueFactory   v;
+
+    p.template emplace<type>(v.template make<type>());
+    p.template emplace_hint<type>(p.begin(),v.template make<type>());
+    p.template emplace_hint<type>(p.cend(),v.template make<type>());
+    BOOST_TEST(p.size()==3);
+  }
+}
+
+template<typename PolyCollection,typename ValueFactory,typename... Types>
+void test_emplacement(std::true_type /* ordered */)
 {
   {
     using type=first_of<
@@ -106,82 +163,32 @@ void test_emplacement_ordered()
 }
 
 template<typename PolyCollection,typename ValueFactory,typename... Types>
-void test_emplacement_unordered()
+void test_emplacement()
 {
-  {
-    using type=first_of<
-      constraints<
-        is_constructible_from_int,is_not_move_constructible,
-        is_not_move_assignable,
-        is_equality_comparable
-      >,
-      Types...
-    >;
-    using iterator=typename PolyCollection::iterator;
-    using local_iterator=
-      typename PolyCollection::template local_iterator<type>;
-
-    PolyCollection p;
-
-    iterator it=p.template emplace<type>(4);
-    BOOST_TEST(*p.template begin<type>()==type{4});
-    BOOST_TEST(&*it==&*p.begin(typeid_<type>(p)));
-
-    iterator it2=p.template emplace_hint<type>(it,3);
-    BOOST_TEST(*local_iterator(it2)==type{3});
-
-    iterator it3=p.template emplace_hint<type>(p.cend(),5);
-    BOOST_TEST(*local_iterator(it3)==type{5});
-  }
-  {
-    using type=first_of<
-      constraints<is_default_constructible>,
-      Types...
-    >;
-
-    PolyCollection p;
-
-    p.template emplace<type>();
-    p.template emplace_hint<type>(p.begin());
-    p.template emplace_hint<type>(p.cend());
-    BOOST_TEST(p.size()==3);
-  }
-  {
-    using type=first_of<
-      constraints<is_not_copy_constructible>,
-      Types...
-    >;
-
-    PolyCollection p;
-    ValueFactory   v;
-
-    p.template emplace<type>(v.template make<type>());
-    p.template emplace_hint<type>(p.begin(),v.template make<type>());
-    p.template emplace_hint<type>(p.cend(),v.template make<type>());
-    BOOST_TEST(p.size()==3);
-  }
+  test_emplacement<PolyCollection,ValueFactory,Types...>(
+    is_ordered_collection<PolyCollection>{});
 }
 
 void test_emplacement()
 {
-  test_emplacement_ordered<
+  test_emplacement<
     any_types::collection,auto_increment,
     any_types::t1,any_types::t2,any_types::t3,
     any_types::t4,any_types::t5>();
-  test_emplacement_ordered<
+  test_emplacement<
     base_types::collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
-  test_emplacement_ordered<
+  test_emplacement<
     function_types::collection,auto_increment,
     function_types::t1,function_types::t2,function_types::t3,
     function_types::t4,function_types::t5>();
-  test_emplacement_ordered<
+  test_emplacement<
     variant_types::collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
 
-  test_emplacement_unordered<
+  test_emplacement<
     base_types::unordered_collection,auto_increment,
     base_types::t1,non_moveable<base_types::t2>,base_types::t3,
     base_types::t4,base_types::t5>();
