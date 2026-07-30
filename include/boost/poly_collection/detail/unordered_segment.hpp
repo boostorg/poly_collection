@@ -104,27 +104,27 @@ public:
   template<typename U>
   std::size_t          max_size()const noexcept
                          {return impl<U>().nv_max_size();}
-  void                 reserve(std::size_t n){filter(impl().reserve(n));}
+  void                 reserve(std::size_t n){impl().reserve(n);}
   template<typename U>
-  void                 reserve(std::size_t n){filter(impl<U>().nv_reserve(n));}
+  void                 reserve(std::size_t n){impl<U>().nv_reserve(n);}
   std::size_t          capacity()const noexcept{return impl().capacity();}
   template<typename U>
   std::size_t          capacity()const noexcept
                          {return impl<U>().nv_capacity();}
-  void                 shrink_to_fit(){filter(impl().shrink_to_fit());}
+  void                 shrink_to_fit(){impl().shrink_to_fit();}
   template<typename U>
-  void                 shrink_to_fit(){filter(impl<U>().nv_shrink_to_fit());}
+  void                 shrink_to_fit(){impl<U>().nv_shrink_to_fit();}
 
   template<typename U,typename... Args>
   base_iterator emplace_back(Args&&... args)
   {
-    return filter(impl<U>().nv_emplace_back(std::forward<Args>(args)...));
+    return impl<U>().nv_emplace_back(std::forward<Args>(args)...);
   }
 
   template<typename T>
   base_iterator push_back(const T& x)
   {
-    return filter(impl().push_back(subaddress(x)));
+    return impl().push_back(subaddress(x));
   }
 
   template<
@@ -135,7 +135,7 @@ public:
   >
   base_iterator push_back(T&& x)
   {
-    return filter(impl().push_back_move(subaddress(x)));
+    return impl().push_back_move(subaddress(x));
   }
 
   template<typename T>
@@ -153,8 +153,7 @@ public:
   template<typename U,typename T>
   base_iterator push_back_hint(const_iterator<U>,const T& x)
   {
-    return filter(
-      impl<U>().nv_push_back(*static_cast<const U*>(subaddress(x))));
+    return impl<U>().nv_push_back(*static_cast<const U*>(subaddress(x)));
   }
 
   template<typename U,typename T>
@@ -193,8 +192,7 @@ public:
   >
   base_iterator push_back_hint(const_iterator<U>,T&& x)
   {
-    return filter(
-      impl<U>().nv_push_back(std::move(*static_cast<U*>(subaddress(x)))));
+    return impl<U>().nv_push_back(std::move(*static_cast<U*>(subaddress(x))));
   }
 
   template<
@@ -211,55 +209,54 @@ public:
   template<typename U>
   base_iterator push_back_terminal(U&& x)
   {
-    return filter(
-      impl<typename std::decay<U>::type>().nv_push_back(std::forward<U>(x)));
+    return impl<typename std::decay<U>::type>().
+      nv_push_back(std::forward<U>(x));
   }
 
   template<typename InputIterator>
   void insert(InputIterator first,InputIterator last)
   {
-    filter(
-      impl<typename std::iterator_traits<InputIterator>::value_type>().
-        nv_insert(first,last));
+    impl<typename std::iterator_traits<InputIterator>::value_type>().
+      nv_insert(first,last);
   }
 
   base_iterator erase(const_base_iterator it)
   {
-    return filter(impl().erase(it));
+    return impl().erase(it);
   }
 
   template<typename U>
   base_iterator erase(const_iterator<U> it)
   {
-    return filter(impl<U>().nv_erase(it));
+    return impl<U>().nv_erase(it);
   }
 
   base_iterator erase(const_base_iterator f,const_base_iterator l)
   {
-    return filter(impl().erase(f,l));
+    return impl().erase(f,l);
   }
 
   template<typename U>
   base_iterator erase(const_iterator<U> f,const_iterator<U> l)
   {
-    return filter(impl<U>().nv_erase(f,l));
+    return impl<U>().nv_erase(f,l);
   }
 
   template<typename Iterator>
   base_iterator erase_till_end(Iterator f)
   {
-    return filter(impl().erase_till_end(f));
+    return impl().erase_till_end(f);
   }
 
   template<typename Iterator>
   base_iterator erase_from_begin(Iterator l)
   {
-    return filter(impl().erase_from_begin(l));
+    return impl().erase_from_begin(l);
   }
   
-  void                 clear()noexcept{filter(impl().clear());}
+  void                 clear()noexcept{impl().clear();}
   template<typename U>
-  void                 clear()noexcept{filter(impl<U>().nv_clear());}
+  void                 clear()noexcept{impl<U>().nv_clear();}
 
 private:
   using allocator_traits=std::allocator_traits<allocator_type>;
@@ -269,7 +266,6 @@ private:
     template segment_backend_implementation<Concrete>;
   using segment_backend_unique_ptr=
     typename segment_backend::segment_backend_unique_ptr;
-  using range=typename segment_backend::range;
 
   struct from_prototype{};
 
@@ -300,9 +296,7 @@ private:
   template<typename T>
   static const void*   subaddress(const T& x){return Model::subaddress(x);}
 
-  void          set_sentinel(){filter(impl().end());}
-  void          filter(base_sentinel x){snt=x;}
-  base_iterator filter(const range& x){snt=x.second;return x.first;}
+  void                 set_sentinel(){snt=impl().end();}
 
   segment_backend_unique_ptr pimpl;
   base_sentinel              snt;

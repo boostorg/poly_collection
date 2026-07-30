@@ -80,7 +80,6 @@ public:
   using const_iterator=
     typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
-  using typename segment_backend::range;
   using segment_allocator_type=typename std::allocator_traits<allocator_type>::
     template rebind_alloc<packed_hub_segment>;
 
@@ -118,14 +117,14 @@ public:
 
   base_iterator nv_begin()const noexcept
   {
-    return make_base_iterator(get_members(s.cbegin()));
+    return base_iterator_from(get_members(s.cbegin()));
   }
 
   virtual base_iterator end()const noexcept{return nv_end();}
 
   base_iterator nv_end()const noexcept
   {
-    return make_base_iterator(get_members(s.cend()));
+    return base_iterator_from(get_members(s.cend()));
   }
 
   virtual bool        empty()const noexcept{return nv_empty();}
@@ -137,80 +136,80 @@ public:
   virtual std::size_t capacity()const noexcept{return nv_capacity();}
   std::size_t         nv_capacity()const noexcept{return s.capacity();}
 
-  virtual base_sentinel reserve(std::size_t n){return nv_reserve(n);}
-  base_sentinel         nv_reserve(std::size_t n)
-    {s.reserve(n);return sentinel();}
+  virtual void        reserve(std::size_t n){nv_reserve(n);}
+  void                nv_reserve(std::size_t n){s.reserve(n);}
 
-  virtual base_sentinel shrink_to_fit(){return nv_shrink_to_fit();}
-  base_sentinel         nv_shrink_to_fit()
-    {s.shrink_to_fit();return sentinel();}
+  virtual void        shrink_to_fit(){nv_shrink_to_fit();}
+  void                nv_shrink_to_fit(){s.shrink_to_fit();;}
 
   template<typename... Args>
-  range nv_emplace_back(Args&&... args)
+  base_iterator nv_emplace_back(Args&&... args)
   {
-    return range_from(
+    return base_iterator_from(
       s.emplace(value_holder_emplacing_ctor,std::forward<Args>(args)...));
   }
 
-  virtual range push_back(const_value_pointer x)
+  virtual base_iterator push_back(const_value_pointer x)
   {
     return nv_push_back(const_concrete_ref(x));
   }
 
-  range nv_push_back(const Concrete& x)
+  base_iterator nv_push_back(const Concrete& x)
   {
-    return range_from(s.emplace(x));
+    return base_iterator_from(s.emplace(x));
   }
 
-  virtual range push_back_move(value_pointer x)
+  virtual base_iterator push_back_move(value_pointer x)
   {
     return nv_push_back(std::move(concrete_ref(x)));
   }
 
-  range nv_push_back(Concrete&& x)
+  base_iterator nv_push_back(Concrete&& x)
   {
-    return range_from(s.emplace(std::move(x)));
+    return base_iterator_from(s.emplace(std::move(x)));
   }
 
   template<typename InputIterator>
-  base_sentinel nv_insert(InputIterator first,InputIterator last)
+  void nv_insert(InputIterator first,InputIterator last)
   {
     s.insert(first,last);
-    return sentinel();
   }
 
-  virtual range erase(const_base_iterator p)
+  virtual base_iterator erase(const_base_iterator p)
   {
-    return range_from(s.erase(iterator_from(p)));
+    return base_iterator_from(s.erase(iterator_from(p)));
   }
 
-  range nv_erase(const_iterator p)
+  base_iterator nv_erase(const_iterator p)
   {
-    return range_from(s.erase(iterator_from(p)));
+    return base_iterator_from(s.erase(iterator_from(p)));
   }
 
-  virtual range erase(const_base_iterator first,const_base_iterator last)
+  virtual base_iterator erase(
+    const_base_iterator first,const_base_iterator last)
   {
-    return range_from(s.erase(iterator_from(first),iterator_from(last)));
+    return base_iterator_from(
+      s.erase(iterator_from(first),iterator_from(last)));
   }
 
-  range nv_erase(const_iterator first,const_iterator last)
+  base_iterator nv_erase(const_iterator first,const_iterator last)
   {
-    return range_from(s.erase(iterator_from(first),iterator_from(last)));
+    return base_iterator_from(
+      s.erase(iterator_from(first),iterator_from(last)));
   }
 
-  virtual range erase_till_end(const_base_iterator first)
+  virtual base_iterator erase_till_end(const_base_iterator first)
   {
-    return range_from(s.erase(iterator_from(first),s.cend()));
+    return base_iterator_from(s.erase(iterator_from(first),s.cend()));
   }
 
-  virtual range erase_from_begin(const_base_iterator last)
+  virtual base_iterator erase_from_begin(const_base_iterator last)
   {
-    return range_from(s.erase(s.cbegin(),iterator_from(last)));
+    return base_iterator_from(s.erase(s.cbegin(),iterator_from(last)));
   }
 
-  virtual base_sentinel clear()noexcept{return nv_clear();}
-  base_sentinel         nv_clear()noexcept{s.clear();return sentinel();}
+  virtual void clear()noexcept{return nv_clear();}
+  void         nv_clear()noexcept{s.clear();}
 
 private:
   template<typename... Args>
@@ -260,21 +259,21 @@ private:
     return make_hub_iterator<const_store_iterator>(get_members(p));
   }
 
-  static base_iterator make_base_iterator(hub_iterator_members m)noexcept
+  static base_iterator base_iterator_from(hub_iterator_members m)noexcept
   {
     return {
       m.pbb,m.n,sizeof(store_value_type),
       StorageModel::template value_offset<Concrete>()};
   }
 
-  base_sentinel sentinel()const noexcept
+  static base_iterator base_iterator_from(store_iterator it)noexcept
   {
-    return {make_base_iterator(get_members(s.cend()))};
+    return base_iterator_from(get_members(it));
   }
 
-  range range_from(store_iterator it)const noexcept
+  base_sentinel sentinel()const noexcept
   {
-    return {make_base_iterator(get_members(it)),sentinel()};
+    return {base_iterator_from(get_members(s.cend()))};
   }
 
   store s;

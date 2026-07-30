@@ -30,12 +30,9 @@ namespace detail{
  *  - Although insertion is not guaranteed to happen at the end, *_back
  *    naming has been retained so that poly_collection can handle both ordered
  *    and unordered variants generically.
- *  - Functions return ranges ((iterator, sentinel) pairs) and sentinels even
- *    though current boost::container::hub-based implementations of this
- *    interface don't ever invalidate their end() iterator. This would allow us
- *    to switch to std::hive-based implementations without such guarantee;
- *    we may revisit this design decision in the future, though, on performance
- *    grounds.
+ *  - Unlike segment_backend, here we don't piggyback sentinels as part of the
+ *    return value of modifier functions because boost::container::hub::end()
+ *    is always stable.
  */
 
 template<typename StorageModel>
@@ -52,7 +49,6 @@ struct unordered_segment_backend
   template<typename T>
   using const_iterator=typename StorageModel::template const_iterator<T>;
   using base_sentinel=typename StorageModel::base_sentinel;
-  using range=std::pair<base_iterator,base_sentinel>;
 
   unordered_segment_backend()=default;
   unordered_segment_backend(const unordered_segment_backend&)=delete;
@@ -72,15 +68,15 @@ struct unordered_segment_backend
   virtual std::size_t    size()const noexcept=0;
   virtual std::size_t    max_size()const noexcept=0;
   virtual std::size_t    capacity()const noexcept=0;
-  virtual base_sentinel  reserve(std::size_t)=0;
-  virtual base_sentinel  shrink_to_fit()=0;
-  virtual range          push_back(const_value_pointer)=0;
-  virtual range          push_back_move(value_pointer)=0;
-  virtual range          erase(const_base_iterator)=0;
-  virtual range          erase(const_base_iterator,const_base_iterator)=0;
-  virtual range          erase_till_end(const_base_iterator)=0;
-  virtual range          erase_from_begin(const_base_iterator)=0;
-  virtual base_sentinel  clear()noexcept=0;
+  virtual void           reserve(std::size_t)=0;
+  virtual void           shrink_to_fit()=0;
+  virtual base_iterator  push_back(const_value_pointer)=0;
+  virtual base_iterator  push_back_move(value_pointer)=0;
+  virtual base_iterator  erase(const_base_iterator)=0;
+  virtual base_iterator  erase(const_base_iterator,const_base_iterator)=0;
+  virtual base_iterator  erase_till_end(const_base_iterator)=0;
+  virtual base_iterator  erase_from_begin(const_base_iterator)=0;
+  virtual void           clear()noexcept=0;
 };
 
 } /* namespace poly_collection::detail */
