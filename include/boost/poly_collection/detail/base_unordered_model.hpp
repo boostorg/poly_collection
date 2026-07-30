@@ -17,8 +17,8 @@
 #include <boost/core/pointer_traits.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/base_polymorphism.hpp>
-#include <boost/poly_collection/detail/hub_stride_iterator.hpp>
 #include <boost/poly_collection/detail/packed_hub_segment.hpp>
+#include <boost/poly_collection/detail/stride_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 #include <memory>
@@ -42,8 +42,8 @@ public:
   using value_type=Base;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=hub_stride_iterator<Base>;
-  using const_base_iterator=hub_stride_iterator<const Base>;
+  using base_iterator=stride_hub_iterator<Base>;
+  using const_base_iterator=stride_hub_iterator<const Base>;
   using base_sentinel=base_iterator;
   using const_base_sentinel=const_base_iterator;
   template<typename Derived>

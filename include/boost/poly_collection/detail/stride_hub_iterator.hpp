@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_POLY_COLLECTION_DETAIL_HUB_STRIDE_ITERATOR_HPP
-#define BOOST_POLY_COLLECTION_DETAIL_HUB_STRIDE_ITERATOR_HPP
+#ifndef BOOST_POLY_COLLECTION_DETAIL_STRIDE_HUB_ITERATOR_HPP
+#define BOOST_POLY_COLLECTION_DETAIL_STRIDE_HUB_ITERATOR_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -34,28 +34,28 @@ namespace detail{
  */
 
 template<typename Value>
-class hub_stride_iterator:
+class stride_hub_iterator:
   public boost::iterator_facade<
-    hub_stride_iterator<Value>,
+    stride_hub_iterator<Value>,
     Value,
     boost::bidirectional_traversal_tag
   >
 {
 public:
-  hub_stride_iterator()=default;
-  hub_stride_iterator(
+  stride_hub_iterator()=default;
+  stride_hub_iterator(
     hub_block_base* pbb,int n,
     std::size_t stride,std::ptrdiff_t offset)noexcept:
     pbb{pbb},n{n},stride_{stride},offset_{offset}{}
-  hub_stride_iterator(const hub_stride_iterator&)=default;
-  hub_stride_iterator& operator=(const hub_stride_iterator&)=default;
+  stride_hub_iterator(const stride_hub_iterator&)=default;
+  stride_hub_iterator& operator=(const stride_hub_iterator&)=default;
 
   template<
     typename NonConstValue,
     typename std::enable_if<
       std::is_same<Value,const NonConstValue>::value>::type* =nullptr
   >
-  hub_stride_iterator(const hub_stride_iterator<NonConstValue>& x)noexcept:
+  stride_hub_iterator(const stride_hub_iterator<NonConstValue>& x)noexcept:
     pbb{x.pbb},n{x.n},stride_{x.stride_},offset_{x.offset_}{}
 
   template<
@@ -63,8 +63,8 @@ public:
     typename std::enable_if<
       std::is_same<Value,const NonConstValue>::value>::type* =nullptr
   >
-  hub_stride_iterator& operator=(
-    const hub_stride_iterator<NonConstValue>& x)noexcept
+  stride_hub_iterator& operator=(
+    const stride_hub_iterator<NonConstValue>& x)noexcept
   {
     pbb=x.pbb;n=x.n;stride_=x.stride_;offset_=x.offset_;
     return *this;
@@ -82,8 +82,8 @@ public:
       (std::is_const<Value>::value||!std::is_const<Element>::value)
     >::type* = nullptr
   >
-  explicit hub_stride_iterator(const hub_iterator<ValuePointer>& x)noexcept:
-    hub_stride_iterator{
+  explicit stride_hub_iterator(const hub_iterator<ValuePointer>& x)noexcept:
+    stride_hub_iterator{
       get_members(x),
       sizeof(Element),
       base_offset<
@@ -109,9 +109,9 @@ public:
 
   /* nullification used by poly_collection global iterators */
 
-  hub_stride_iterator& operator=(std::nullptr_t)
+  stride_hub_iterator& operator=(std::nullptr_t)
   {
-    return *this=hub_stride_iterator{};
+    return *this=stride_hub_iterator{};
   }
 
   hub_block_base* block()const noexcept{return pbb;}
@@ -121,10 +121,10 @@ public:
 
 private:
   template<typename>
-  friend class hub_stride_iterator;
+  friend class stride_hub_iterator;
   friend class boost::iterator_core_access;
 
-  hub_stride_iterator(
+  stride_hub_iterator(
     hub_iterator_members m,std::size_t stride,std::ptrdiff_t offset)noexcept:
     pbb{m.pbb},n{m.n},stride_{stride},offset_{offset}{}
 
@@ -141,7 +141,7 @@ private:
 
 #include <boost/poly_collection/detail/end_no_sanitize.hpp>
 
-  bool equal(const hub_stride_iterator& x)const noexcept
+  bool equal(const stride_hub_iterator& x)const noexcept
     {return pbb==x.pbb&&n==x.n;}
 
   void increment()noexcept
