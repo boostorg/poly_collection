@@ -22,6 +22,7 @@
 #include <boost/poly_collection/variant_collection_fwd.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
 #include <boost/type_traits/make_void.hpp>
+#include <initializer_list>
 #include <iterator>
 #include <memory>
 #include <type_traits>
@@ -32,6 +33,9 @@ namespace test_utilities{
 
 template<typename... Values>
 void do_(Values...){}
+
+/* to be used if there are unsequencing problems */
+inline void do_(std::initializer_list<int>){} 
 
 template<typename Exception,typename F>
 void check_throw_case(F f)

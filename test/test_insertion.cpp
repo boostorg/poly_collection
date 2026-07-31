@@ -161,11 +161,11 @@ void test_insertion(std::false_type /* unordered*/)
     fill<constraints<>,Types...>(p,v,2);
     std::size_t s;
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
   }
   {
     PolyCollection p;
@@ -174,51 +174,51 @@ void test_insertion(std::false_type /* unordered*/)
     fill<constraints<>,Types...>(p,v,2);
     std::size_t s;
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.begin(),constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.cbegin(),constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.begin(typeid_<Types>(p)),
         constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.cbegin(typeid_<Types>(p)),
         constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.template begin<Types>(),
         constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
 
-    do_((
+    do_({(
       s=p.template size<Types>(),
       p.insert(
         p.template cbegin<Types>(),
         constref_if_copy_constructible(v.template make<Types>())),
       BOOST_TEST(p.template size<Types>()==s+1)
-    ,0)...);
+    ,0)...});
   }
   {
     PolyCollection p,p2;
