@@ -23,6 +23,11 @@
 #include <memory>
 #include <type_traits>
 
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4714) /* marked as __forceinline not inlined */
+#endif
+
 namespace boost{
 
 namespace poly_collection{
@@ -101,8 +106,7 @@ public:
       (!std::is_const<Value>::value||std::is_const<Element>::value)
     >::type* = nullptr
   >
-  explicit operator
-  boost::container::hub_detail::iterator<ValuePointer>()const noexcept
+  explicit operator hub_iterator<ValuePointer>()const noexcept
   {
     return make_hub_iterator<hub_iterator<ValuePointer>>({pbb,n});
   }
@@ -131,7 +135,7 @@ private:
 #include <boost/poly_collection/detail/begin_no_sanitize.hpp>
 
   BOOST_POLY_COLLECTION_NO_SANITIZE
-  Value& dereference()const noexcept
+  BOOST_FORCEINLINE Value& dereference()const noexcept
   {
     auto p=static_cast<char*>(
       static_cast<const hub_type_erased_block*>(pbb)->data_);
@@ -144,27 +148,31 @@ private:
   bool equal(const stride_hub_iterator& x)const noexcept
     {return pbb==x.pbb&&n==x.n;}
 
-  void increment()noexcept
+  BOOST_FORCEINLINE void increment()noexcept
   {
     constexpr auto full=hub_block_base::full;
     auto mask=pbb->mask&(full<<1<<n);
     if(BOOST_UNLIKELY(mask==0)){
       pbb=pbb->next;
+      BOOST_POLY_COLLECTION_PREFETCH(pbb->next->next);
+      BOOST_POLY_COLLECTION_PREFETCH(pbb->next);
       mask=pbb->mask;
     }
-    n=boost::container::dtl::unchecked_countr_zero(mask);
+    n=unchecked_countr_zero(mask);
   }
 
-  void decrement()noexcept
+  BOOST_FORCEINLINE void decrement()noexcept
   {
     constexpr auto full=hub_block_base::full;
     constexpr int  N=hub_block_base::N;
     auto mask=pbb->mask&(full>>1>>(N-1-n));
     if(BOOST_UNLIKELY(mask==0)){
       pbb=pbb->prev;
+      BOOST_POLY_COLLECTION_PREFETCH(pbb->prev->prev);
+      BOOST_POLY_COLLECTION_PREFETCH(pbb->prev);
       mask=pbb->mask;
     }
-    n=N-1-boost::container::dtl::unchecked_countl_zero(mask);
+    n=N-1-unchecked_countl_zero(mask);
   }
 
   hub_block_base* pbb=nullptr;
@@ -178,5 +186,9 @@ private:
 } /* namespace poly_collection */
 
 } /* namespace boost */
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4714 */
+#endif
 
 #endif
