@@ -155,7 +155,7 @@ private:
     if(BOOST_UNLIKELY(mask==0)){
       pbb=pbb->next;
       BOOST_POLY_COLLECTION_PREFETCH(pbb->next->next);
-      BOOST_POLY_COLLECTION_PREFETCH(pbb->next);
+      BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->next);
       mask=pbb->mask;
     }
     n=unchecked_countr_zero(mask);
@@ -169,7 +169,7 @@ private:
     if(BOOST_UNLIKELY(mask==0)){
       pbb=pbb->prev;
       BOOST_POLY_COLLECTION_PREFETCH(pbb->prev->prev);
-      BOOST_POLY_COLLECTION_PREFETCH(pbb->prev);
+      BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->prev);
       mask=pbb->mask;
     }
     n=N-1-unchecked_countl_zero(mask);
