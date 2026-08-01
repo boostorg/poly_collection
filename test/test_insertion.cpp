@@ -553,9 +553,4 @@ void test_insertion()
     base_types::unordered_collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
-
-  test_insertion<
-    base_types::unordered_collection,auto_increment,
-    base_types::t1,base_types::t2,base_types::t3,
-    base_types::t4,base_types::t5>();
 }
