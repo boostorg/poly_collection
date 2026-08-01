@@ -231,6 +231,12 @@ public:
     return impl<U>().nv_erase(it);
   }
 
+  template<typename U>
+  base_iterator erase(iterator<U> it)
+  {
+    return erase(const_iterator<U>{it});
+  }
+
   base_iterator erase(const_base_iterator f,const_base_iterator l)
   {
     return impl().erase(f,l);
@@ -240,6 +246,12 @@ public:
   base_iterator erase(const_iterator<U> f,const_iterator<U> l)
   {
     return impl<U>().nv_erase(f,l);
+  }
+
+  template<typename U>
+  base_iterator erase(iterator<U> f,iterator<U> l)
+  {
+    return erase(const_iterator<U>{f},const_iterator<U>{l});
   }
 
   template<typename Iterator>

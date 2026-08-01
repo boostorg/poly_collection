@@ -24,11 +24,17 @@ void test_local_erase(const PolyCollection& p2)
   using size_type=typename PolyCollection::size_type;
 
   for(size_type i=0;i<p2.template size<Type>();++i){
-    PolyCollection p=p2;
-    auto it=p.erase(std::next(p.template cbegin<Type>(),i));
+    PolyCollection p3=p2;
+    auto it3=p3.erase(std::next(p3.template cbegin<Type>(),i));
     BOOST_TEST(
-      std::distance(p.template begin<Type>(),it)==(std::ptrdiff_t)i);
-    BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-1);
+      std::distance(p3.template begin<Type>(),it3)==(std::ptrdiff_t)i);
+    BOOST_TEST(p3.template size<Type>()==p2.template size<Type>()-1);
+
+    PolyCollection p4=p2;
+    auto it4=p4.erase(std::next(p4.template begin<Type>(),i));
+    BOOST_TEST(
+      std::distance(p4.template begin<Type>(),it4)==(std::ptrdiff_t)i);
+    BOOST_TEST(p4.template size<Type>()==p2.template size<Type>()-1);
   }  
 }
 
@@ -39,13 +45,21 @@ void test_local_range_erase(const PolyCollection& p2)
 
   for(size_type i=0;i<=p2.template size<Type>();++i){
     for(size_type j=i;j<=p2.template size<Type>();++j){
-      PolyCollection p=p2;
-      auto first=std::next(p.template cbegin<Type>(),i),
-           last=std::next(p.template cbegin<Type>(),j);
-      auto it=p.erase(first,last);
+      PolyCollection p3=p2;
+      auto first3=std::next(p3.template cbegin<Type>(),i),
+           last3=std::next(p3.template cbegin<Type>(),j);
+      auto it3=p3.erase(first3,last3);
       BOOST_TEST(
-        std::distance(p.template begin<Type>(),it)==(std::ptrdiff_t)i);
-      BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-(j-i));
+        std::distance(p3.template begin<Type>(),it3)==(std::ptrdiff_t)i);
+      BOOST_TEST(p3.template size<Type>()==p2.template size<Type>()-(j-i));
+
+      PolyCollection p4=p2;
+      auto first4=std::next(p4.template begin<Type>(),i),
+           last4=std::next(p4.template begin<Type>(),j);
+      auto it4=p4.erase(first4,last4);
+      BOOST_TEST(
+        std::distance(p4.template begin<Type>(),it4)==(std::ptrdiff_t)i);
+      BOOST_TEST(p4.template size<Type>()==p2.template size<Type>()-(j-i));
     }
   }
 }
