@@ -20,10 +20,6 @@
 #include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
-#include <memory>
-#include <type_traits>
-#include <typeinfo>
-#include <utility>
 
 namespace boost{
 

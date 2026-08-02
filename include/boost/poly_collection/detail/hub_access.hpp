@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp>
 #include <boost/assert.hpp>
 #include <boost/core/bit.hpp>
 #include <boost/core/pointer_traits.hpp>
@@ -31,6 +32,11 @@
 
 #if defined(BOOST_POLY_COLLECTION_SSE2)
 #include <emmintrin.h>
+#endif
+
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4714) /* marked as __forceinline not inlined */
 #endif
 
 namespace boost{
@@ -161,10 +167,41 @@ inline int unchecked_countl_zero(std::uint64_t x)
 #endif
 }
 
+BOOST_FORCEINLINE void increment(hub_block_base*& pbb,int& n)noexcept
+{
+  constexpr auto full=hub_block_base::full;
+  auto mask=pbb->mask&(full<<1<<n);
+  if(BOOST_UNLIKELY(mask==0)){
+    pbb=pbb->next;
+    BOOST_POLY_COLLECTION_PREFETCH(pbb->next->next);
+    BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->next);
+    mask=pbb->mask;
+  }
+  n=unchecked_countr_zero(mask);
+}
+
+BOOST_FORCEINLINE void decrement(hub_block_base*& pbb,int& n)noexcept
+{
+  constexpr auto full=hub_block_base::full;
+  constexpr int  N=hub_block_base::N;
+  auto mask=pbb->mask&(full>>1>>(N-1-n));
+  if(BOOST_UNLIKELY(mask==0)){
+    pbb=pbb->prev;
+    BOOST_POLY_COLLECTION_PREFETCH(pbb->prev->prev);
+    BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->prev);
+    mask=pbb->mask;
+  }
+  n=N-1-unchecked_countl_zero(mask);
+}
+
 } /* namespace poly_collection::detail */
 
 } /* namespace poly_collection */
 
 } /* namespace boost */
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4714 */
+#endif
 
 #endif

@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp>
 #include <boost/core/pointer_traits.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/base_offset.hpp>
 #include <boost/poly_collection/detail/hub_access.hpp>
@@ -148,32 +147,8 @@ private:
   bool equal(const stride_hub_iterator& x)const noexcept
     {return pbb==x.pbb&&n==x.n;}
 
-  BOOST_FORCEINLINE void increment()noexcept
-  {
-    constexpr auto full=hub_block_base::full;
-    auto mask=pbb->mask&(full<<1<<n);
-    if(BOOST_UNLIKELY(mask==0)){
-      pbb=pbb->next;
-      BOOST_POLY_COLLECTION_PREFETCH(pbb->next->next);
-      BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->next);
-      mask=pbb->mask;
-    }
-    n=unchecked_countr_zero(mask);
-  }
-
-  BOOST_FORCEINLINE void decrement()noexcept
-  {
-    constexpr auto full=hub_block_base::full;
-    constexpr int  N=hub_block_base::N;
-    auto mask=pbb->mask&(full>>1>>(N-1-n));
-    if(BOOST_UNLIKELY(mask==0)){
-      pbb=pbb->prev;
-      BOOST_POLY_COLLECTION_PREFETCH(pbb->prev->prev);
-      BOOST_POLY_COLLECTION_PREFETCH_HUB_BLOCK(pbb->prev);
-      mask=pbb->mask;
-    }
-    n=N-1-unchecked_countl_zero(mask);
-  }
+  BOOST_FORCEINLINE void increment()noexcept{detail::increment(pbb,n);}
+  BOOST_FORCEINLINE void decrement()noexcept{detail::decrement(pbb,n);}
 
   hub_block_base* pbb=nullptr;
   int             n=0;

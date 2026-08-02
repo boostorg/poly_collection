@@ -414,7 +414,7 @@ void test_insertion(std::true_type /* ordered*/)
 
     auto remove_original=[](PolyCollection& p)
     {
-      auto it=p.segment_traversal().begin()->end();
+      auto it=p.template end<type>();
       p.erase(it-2,it);
     };
 
@@ -487,6 +487,7 @@ void test_insertion()
     is_ordered_collection<PolyCollection>{});
 }
 
+template<template<typename...>class VariantPolyCollection>
 void test_variant_insertion()
 {
   struct move_track
@@ -497,7 +498,7 @@ void test_variant_insertion()
     int n;
   };
 
-  boost::variant_collection<
+  VariantPolyCollection<
     boost::mp11::mp_list<int,char,double,move_track>> c1;
 
   c1.insert(1);
@@ -547,10 +548,15 @@ void test_insertion()
     variant_types::collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
-  test_variant_insertion();
+  test_variant_insertion<boost::variant_collection>();
 
   test_insertion<
     base_types::unordered_collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
+  test_insertion<
+    variant_types::unordered_collection,auto_increment,
+    variant_types::t1,variant_types::t2,variant_types::t3,
+    variant_types::t4,variant_types::t5>();
+  test_variant_insertion<boost::variant_unordered_collection>();
 }

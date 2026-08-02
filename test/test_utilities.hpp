@@ -583,16 +583,6 @@ bool equal(PolyCollection& p1,PolyCollection& p2)
   return f.res;
 }
 
-template<typename Class>
-struct non_moveable:Class
-{
-  using Class::Class;
-  non_moveable(const non_moveable&)=delete;
-  non_moveable(non_moveable&&)=delete;
-  non_moveable& operator=(const non_moveable&)=delete;
-  non_moveable& operator=(non_moveable&&)=delete;
-};
-
 } /* namespace test_utilities */
 
 #endif

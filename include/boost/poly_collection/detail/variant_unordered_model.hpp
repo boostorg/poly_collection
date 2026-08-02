@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-#ifndef BOOST_POLY_COLLECTION_DETAIL_BASE_UNORDERED_MODEL_HPP
-#define BOOST_POLY_COLLECTION_DETAIL_BASE_UNORDERED_MODEL_HPP
+#ifndef BOOST_POLY_COLLECTION_DETAIL_VARIANT_UNORDERED_MODEL_HPP
+#define BOOST_POLY_COLLECTION_DETAIL_VARIANT_UNORDERED_MODEL_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -16,11 +16,11 @@
 #include <boost/container/hub.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/base_offset.hpp>
-#include <boost/poly_collection/detail/base_polymorphism.hpp>
+#include <boost/poly_collection/detail/fixed_variant_hub_iterator.hpp>
 #include <boost/poly_collection/detail/packed_hub_segment.hpp>
-#include <boost/poly_collection/detail/stride_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
+#include <boost/poly_collection/detail/variant_polymorphism.hpp>
 
 namespace boost{
 
@@ -28,32 +28,28 @@ namespace poly_collection{
 
 namespace detail{
 
-/* model for base_unordered_collection */
+/* model for variant_unordered_collection */
 
-template<typename Base,typename Allocator>
-struct base_unordered_storage
+template<typename Allocator,typename... Ts>
+struct variant_unordered_storage
 {
-private:
-  template<typename Derived>
-  using hub_iterator=detail::hub_iterator<Derived*>;
-
-public:
-  using value_type=Base;
+  using value_type=fixed_variant_impl::fixed_variant<Ts...>;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=stride_hub_iterator<Base>;
-  using const_base_iterator=stride_hub_iterator<const Base>;
+  using base_iterator=fixed_variant_hub_iterator<value_type>;
+  using const_base_iterator=fixed_variant_hub_iterator<const value_type>;
   using base_sentinel=base_iterator;
   using const_base_sentinel=const_base_iterator;
-  template<typename Derived>
-  using iterator=hub_iterator<Derived>;
-  template<typename Derived>
-  using const_iterator=hub_iterator<const Derived>;
+  template<typename T>
+  using iterator=fixed_variant_alternative_hub_iterator<value_type,T>;
+  template<typename T>
+  using const_iterator=
+    fixed_variant_alternative_hub_iterator<value_type,const T>;
   using segment_backend=
-    detail::unordered_segment_backend<base_unordered_storage>;
-  template<typename Derived>
+    detail::unordered_segment_backend<variant_unordered_storage>;
+  template<typename T>
   using segment_backend_implementation=
-    packed_hub_segment<base_unordered_storage,Derived>;
+    packed_hub_segment<variant_unordered_storage,T>;
 
   static base_iterator nonconst_iterator(const_base_iterator it)
   {
@@ -63,28 +59,31 @@ public:
   template<typename T>
   static iterator<T> nonconst_iterator(const_iterator<T> it)
   {
-    return make_hub_iterator<iterator<T>>(get_members(it));
+    return {it.block(),it.slot()};
   }
 
 private:
   template<typename,typename>
   friend class packed_hub_segment;
 
-  template<typename Derived>
+  template<typename T>
+  using final_type=fixed_variant_impl::fixed_variant_closure<T,value_type>;
+
+  template<typename T>
   static std::ptrdiff_t value_offset()noexcept
   {
-    return base_offset<Base,Derived>();
+    return base_offset<value_type,final_type<T>>();
   }
 };
 
-template<typename Base,typename Allocator>
-struct base_unordered_model:
-  base_polymorphism<Base>,base_unordered_storage<Base,Allocator>
+template<typename Allocator,typename... Ts>
+struct variant_unordered_model:
+  variant_polymorphism<Ts...>,variant_unordered_storage<Allocator,Ts...>
 {
   /* disambiguate multiply-inherited, identical typedef */
-  using value_type=typename base_polymorphism<Base>::value_type;
+  using value_type=fixed_variant_impl::fixed_variant<Ts...>;
 
-  using segment=detail::unordered_segment<base_unordered_model>;
+  using segment=detail::unordered_segment<variant_unordered_model>;
 };
 
 } /* namespace poly_collection::detail */

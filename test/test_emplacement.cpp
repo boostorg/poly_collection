@@ -13,6 +13,7 @@
 #include "base_types.hpp"
 #include "function_types.hpp"
 #include "variant_types.hpp"
+#include "non_moveable.hpp"
 #include "test_utilities.hpp"
 
 using namespace test_utilities;
@@ -192,4 +193,8 @@ void test_emplacement()
     base_types::unordered_collection,auto_increment,
     base_types::t1,non_moveable<base_types::t2>,base_types::t3,
     base_types::t4,base_types::t5>();
+  test_emplacement<
+    variant_types::extended_unordered_collection,auto_increment,
+    variant_types::t1,variant_types::t2,non_moveable<variant_types::t2>,
+    variant_types::t3,variant_types::t4,variant_types::t5>();
 }

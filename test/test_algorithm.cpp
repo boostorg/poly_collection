@@ -12,6 +12,7 @@
 #include "test_algorithm3.hpp"
 #include "test_algorithm4.hpp"
 #include "test_algorithm6.hpp"
+#include "test_algorithm8.hpp"
 
 /* test split in chunks to avoid problems with compilation object sizes */
 
@@ -22,4 +23,5 @@ void test_algorithm()
   test_algorithm3();
   test_algorithm4();
   test_algorithm6();
+  test_algorithm8();
 }

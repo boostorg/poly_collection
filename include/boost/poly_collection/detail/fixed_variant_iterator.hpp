@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,8 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/config.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <type_traits>
