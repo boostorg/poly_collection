@@ -507,25 +507,25 @@ void test_variant_insertion()
 
   auto c2=c1;
   c1.insert(*c2.begin());
-  BOOST_TEST_EQ(c1.size<int>(),2);
+  BOOST_TEST_EQ(c1.template size<int>(),2);
 
   boost::variant2::variant<move_track,double,char> v1('a');
   c1.insert(v1);
-  BOOST_TEST_EQ(c1.size<char>(),2);
+  BOOST_TEST_EQ(c1.template size<char>(),2);
 
-  v1.emplace<move_track>(1);
+  v1.template emplace<move_track>(1);
   c1.insert(std::move(v1));
-  BOOST_TEST_EQ(c1.size<move_track>(),1);
+  BOOST_TEST_EQ(c1.template size<move_track>(),1);
   BOOST_TEST(boost::variant2::get<move_track>(v1).n==0);
 
 #if !defined(BOOST_NO_CXX17_HDR_VARIANT)
   std::variant<int,move_track,double> v2(3.1416);
   c1.insert(v2);
-  BOOST_TEST_EQ(c1.size<double>(),2);
+  BOOST_TEST_EQ(c1.template size<double>(),2);
 
-  v2.emplace<move_track>(1);
+  v2.template emplace<move_track>(1);
   c1.insert(std::move(v2));
-  BOOST_TEST_EQ(c1.size<move_track>(),2);
+  BOOST_TEST_EQ(c1.template size<move_track>(),2);
   BOOST_TEST(std::get<move_track>(v2).n==0);
 #endif
 }
