@@ -13,10 +13,6 @@
 #pragma once
 #endif
 
-#if defined(_MSC_VER)
-#pragma once
-#endif
-
 #include <boost/config.hpp>
 #include <boost/core/addressof.hpp>
 #include <boost/mp11/algorithm.hpp>

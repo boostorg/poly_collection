@@ -84,7 +84,7 @@ public:
         typename std::remove_const<Value>::type,
         typename std::remove_const<Element>::type>::value&&
       (std::is_const<Value>::value||!std::is_const<Element>::value)
-    >::type* = nullptr
+    >::type* =nullptr
   >
   explicit stride_hub_iterator(const hub_iterator<ValuePointer>& x)noexcept:
     stride_hub_iterator{
@@ -103,7 +103,7 @@ public:
         typename std::remove_const<Value>::type,
         typename std::remove_const<Element>::type>::value&&
       (!std::is_const<Value>::value||std::is_const<Element>::value)
-    >::type* = nullptr
+    >::type* =nullptr
   >
   explicit operator hub_iterator<ValuePointer>()const noexcept
   {

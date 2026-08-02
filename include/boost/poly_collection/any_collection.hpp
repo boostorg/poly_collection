@@ -69,7 +69,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace  */
+} /* namespace poly_collection */
 
 using poly_collection::any_collection;
 

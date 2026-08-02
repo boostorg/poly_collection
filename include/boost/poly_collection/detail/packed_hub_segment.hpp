@@ -140,7 +140,7 @@ public:
   void                nv_reserve(std::size_t n){s.reserve(n);}
 
   virtual void        shrink_to_fit(){nv_shrink_to_fit();}
-  void                nv_shrink_to_fit(){s.shrink_to_fit();;}
+  void                nv_shrink_to_fit(){s.shrink_to_fit();}
 
   template<typename... Args>
   base_iterator nv_emplace_back(Args&&... args)
@@ -269,11 +269,6 @@ private:
   static base_iterator base_iterator_from(store_iterator it)noexcept
   {
     return base_iterator_from(get_members(it));
-  }
-
-  base_sentinel sentinel()const noexcept
-  {
-    return {base_iterator_from(get_members(s.cend()))};
   }
 
   store s;

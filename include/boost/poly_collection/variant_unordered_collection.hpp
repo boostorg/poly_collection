@@ -57,7 +57,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace  */
+} /* namespace poly_collection */
 
 using poly_collection::variant_unordered_collection;
 using poly_collection::variant_unordered_collection_of;

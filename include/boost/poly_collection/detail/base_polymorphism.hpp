@@ -34,7 +34,7 @@ struct base_polymorphism
   template<typename Derived>
   using is_implementation=std::is_base_of<Base,Derived>;
   template<typename T>
-  using is_terminal=is_final<T>; //TODO: should we say !is_polymorhpic||is_final?
+  using is_terminal=is_final<T>; //TODO: should we say !is_polymorphic||is_final?
 
 private:
   template<typename T>

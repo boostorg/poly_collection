@@ -52,7 +52,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace  */
+} /* namespace poly_collection */
 
 using poly_collection::base_unordered_collection;
 
