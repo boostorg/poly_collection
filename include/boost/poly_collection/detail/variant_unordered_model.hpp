@@ -59,7 +59,11 @@ struct variant_unordered_storage
   template<typename T>
   static iterator<T> nonconst_iterator(const_iterator<T> it)
   {
-    return {it.block(),it.slot()};
+    using base_value_type=
+      fixed_variant_alternative_hub_iterator_base_value_type<value_type,T>;
+
+    return iterator<T>{
+      make_hub_iterator<hub_iterator<base_value_type*>>(get_members(it))};
   }
 
 private:
