@@ -551,7 +551,7 @@ BOOST_FORCEINLINE std::ptrdiff_t fast_distance(
   else{
     std::ptrdiff_t m=std::distance(
       traits::local_base_iterator_from(first),sfirst->end());
-    while(++sfirst!=slast)m+=std::distance(sfirst->begin(),sfirst->end());
+    while(++sfirst!=slast)m+=static_cast<std::ptrdiff_t>(sfirst->size());
     if(slast!=traits::end_base_segment_info_iterator_from(last)){
       m+=std::distance(
         slast->begin(),traits::local_base_iterator_from(last));

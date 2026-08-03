@@ -208,6 +208,8 @@ public:
     template<typename T>
     const_local_iterator<T> cend()const noexcept{return end<T>();}
 
+    size_type size()const noexcept{return it->second.size();}
+
     const type_index& type_info()const{return it->first;}
 
   protected:
@@ -256,6 +258,8 @@ public:
       {return {it,it->second.end()};}
     const_local_iterator<T> cbegin()const noexcept{return begin();}
     const_local_iterator<T> cend()const noexcept{return end();}
+
+    size_type size()const noexcept{return it->second.size();}
 
   protected:
     friend class poly_collection;
