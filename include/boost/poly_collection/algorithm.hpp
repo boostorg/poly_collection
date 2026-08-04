@@ -134,9 +134,10 @@ struct for_each_n_alg
     typename InputIterator,typename Size,typename Function
   >
   InputIterator operator()(
-    InputIterator first,Size n,Function& f)const /* note the & */
+    InputIterator first,InputIterator last,
+    Size& n,Function& f)const /* note the &s */
   {
-    for(;n>0;++first,(void)--n)f(*first);
+    for(;first!=last&&n>0;++first,(void)--n)f(*first);
     return first;
   }
 };
@@ -150,23 +151,19 @@ BOOST_FORCEINLINE Iterator for_each_n(const Iterator& first,Size n,Function f)
   using traits=iterator_traits<Iterator>;
   using model_type=typename traits::model_type;
   using local_base_iterator=typename traits::local_base_iterator;
+  using range_info=typename segment_splitter<Iterator>::info;
 
   if(n<=0)return first;
 
-  auto alg=restitute_iterator<model_type,Ts...>(
-         cast_return<local_base_iterator>(for_each_n_alg{}));
+  auto alg=restitute_range<model_type,Ts...>(
+         cast_return<local_base_iterator>(for_each_n_alg{}),n,f);
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    Size m=static_cast<Size>(std::distance(lbit,sit->end()));
-    if(n<=m){
-      auto it=alg(sit->type_info(),lbit,n,f);
+    auto it=alg(range_info{sit->type_info(),lbit,sit->end()});
+    if(n==0){
       return traits::iterator_from(
         it,traits::end_base_segment_info_iterator_from(first));
-    }
-    else{
-      alg(sit->type_info(),lbit,m,f);
-      n-=m;
     }
     ++sit;
     lbit=sit->begin();
@@ -806,7 +803,19 @@ BOOST_FORCEINLINE OutputIterator copy(
   return generic_copy<std_copy,Ts...>(first,last,res);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_n,std::copy_n)
+struct copy_n_alg
+{
+  template<
+    typename InputIterator,typename Size,typename OutputIterator
+  >
+  OutputIterator operator()(
+    InputIterator first,InputIterator last,
+    Size& n,OutputIterator res)const /* note the & */
+  {
+    for(;first!=last&&n>0;++first,(void)--n)*res++=*first;
+    return res;
+  }
+};
 
 template<
   typename... Ts,typename Iterator,typename Size,typename OutputIterator,
@@ -817,16 +826,16 @@ BOOST_FORCEINLINE OutputIterator copy_n(
 {
   using traits=iterator_traits<Iterator>;
   using model_type=typename traits::model_type;
+  using range_info=typename segment_splitter<Iterator>::info;
 
   if(count<=0)return res;
 
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    auto n=(std::min)(count,static_cast<Size>(std::distance(lbit,sit->end())));
-    auto alg=restitute_iterator<model_type,Ts...>(std_copy_n{},n,res);
-    res=alg(sit->type_info(),lbit);
-    if((count-=n)==0)break;
+    auto alg=restitute_range<model_type,Ts...>(copy_n_alg{},count,res);
+    res=alg(range_info{sit->type_info(),lbit,sit->end()});
+    if(count==0)break;
     ++sit;
     lbit=sit->begin();
   }
