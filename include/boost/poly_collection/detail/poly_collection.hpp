@@ -19,6 +19,7 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
+#include <boost/poly_collection/detail/check_acceptability.hpp>
 #include <boost/poly_collection/detail/iterator_impl.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
@@ -45,9 +46,8 @@ using namespace detail;
 template<typename Model>
 class poly_collection
 {
-  /* used only to early force closed collection acceptability checks */
-  static constexpr bool is_closed_collection=
-    detail::is_closed_collection<Model>::value;
+  /* check the types of closed collections */
+  static constexpr bool check_=check_acceptability<Model>();
 
   template<typename...>
   struct for_all_types{using type=void*;};

@@ -54,21 +54,21 @@ struct any_storage;
 template<typename Concept,typename Allocator>
 struct any_model;
 
-/* Refine is_acceptable to cover type_erasure::any classes whose assignment
- * operator won't compile.
+/* Specialize is_storable to deal with type_erasure::any classes whose
+ * nominally existing assignment operator won't compile.
  */
 
 template<typename Concept,typename Allocator,typename Concept2,typename T>
-struct is_acceptable<
-  type_erasure::any<Concept2,T>,any_model<Concept,Allocator>,
-  typename std::enable_if<
-    !type_erasure::is_relaxed<Concept2>::value&&
-    !type_erasure::is_subconcept<type_erasure::assignable<>,Concept2>::value&&
-    !type_erasure::is_subconcept<
+struct is_storable<type_erasure::any<Concept2,T>,any_model<Concept,Allocator>>:
+  std::integral_constant<
+    bool,
+    type_erasure::is_relaxed<Concept2>::value||
+    type_erasure::is_subconcept<type_erasure::assignable<>,Concept2>::value||
+    type_erasure::is_subconcept<
       type_erasure::assignable<type_erasure::_self,type_erasure::_self&&>,
       Concept2>::value
-  >::type
->:std::false_type{};
+  >
+{};
 
 /* is_terminal defined out-class to allow for partial specialization */
 

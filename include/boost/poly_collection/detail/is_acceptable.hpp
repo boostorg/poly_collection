@@ -15,8 +15,7 @@
 
 #include <boost/mp11/algorithm.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
-#include <boost/poly_collection/detail/is_moveable.hpp>
-#include <boost/poly_collection/detail/is_unordered_collection.hpp>
+#include <boost/poly_collection/detail/is_storable.hpp>
 #include <type_traits>
 
 namespace boost{
@@ -25,35 +24,27 @@ namespace poly_collection{
 
 namespace detail{
 
-/* is_acceptable can be further specialized by (open collection) Model when
- * the std type_traits classes fail to give the right info (as it can happen
- * with class templates whose nominally existing operators do not compile for
- * certain instantiations).
- * Note we're conflating unorderedness with stability (i.e. with not requiring
- * moveability). We may revisit this in the future.
- * The !std::is_abstract check is needed to prevent base_unordered_collection
- * from instantiating segment<C> (and potentially failing to do so) when a 
- * reference to an abstract class C is passed in an insertion operation. Such
- * a segment, of course, would never be created at run time.
- */
-
-template<typename T,typename Model,typename=void>
-struct is_acceptable:std::integral_constant<
-  bool,
-  Model::template is_implementation<T>::value&&
-  !std::is_abstract<T>::value&&
-  (is_unordered_collection<Model>::value||is_moveable<T>::value)
->{};
-
-/* Closed collections are defined by having a compile-time fixed list of
- * acceptable types. 
+/* is_acceptable does not check type storability in the case of closed
+ * collections: this is done once at poly_collection instantiation time with
+ * check_acceptability.
  */
 
 template<typename T,typename Model>
-struct is_acceptable<
-  T,Model,
-  typename std::enable_if<is_closed_collection<Model>::value>::type
->:mp11::mp_contains<typename Model::acceptable_type_list,T>{};
+struct is_acceptable_open_collection:std::integral_constant<
+  bool,
+  Model::template is_implementation<T>::value&&is_storable<T,Model>::value
+>{};
+
+template<typename T,typename Model>
+struct is_acceptable_closed_collection:
+  mp11::mp_contains<typename Model::acceptable_type_list,T>{};
+
+template<typename T,typename Model>
+using is_acceptable=typename std::conditional<
+  is_closed_collection<Model>::value,
+  is_acceptable_closed_collection<T,Model>,
+  is_acceptable_open_collection<T,Model>
+>::type;
 
 } /* namespace poly_collection::detail */
 
