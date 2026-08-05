@@ -17,6 +17,7 @@
 #include <boost/mp11/bind.hpp>
 #include <boost/mp11/set.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
+#include <boost/poly_collection/detail/is_storable.hpp>
 #include <boost/poly_collection/detail/is_unordered_collection.hpp>
 #include <type_traits>
 

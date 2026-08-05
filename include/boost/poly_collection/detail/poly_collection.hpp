@@ -47,7 +47,7 @@ template<typename Model>
 class poly_collection
 {
   /* check the types of closed collections */
-  static constexpr bool check_=check_acceptability<Model>();
+  static_assert(check_acceptability<Model>(),"");
 
   template<typename...>
   struct for_all_types{using type=void*;};
