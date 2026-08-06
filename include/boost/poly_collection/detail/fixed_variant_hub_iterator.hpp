@@ -110,7 +110,7 @@ hub_iterator_members get_members(
 }
 
 /* Iterator over the sequence of fixed_variant base objects in a
- * boost::container::hub of * fixed_variant_closure<T,fixed_variant<...>>s. 
+ * boost::container::hub of fixed_variant_closure<T,fixed_variant<...>>s. 
  * As T is not part of the iterator definition, the stride between values and
  * the offset between fixed_variant and fixed_variant_closure are run-time 
  * values.
