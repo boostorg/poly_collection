@@ -194,6 +194,10 @@ void test_emplacement()
     base_types::t1,non_moveable<base_types::t2>,base_types::t3,
     base_types::t4,base_types::t5>();
   test_emplacement<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,non_moveable<function_types::t2>,
+    function_types::t3,function_types::t4,function_types::t5>();
+  test_emplacement<
     variant_types::extended_unordered_collection,auto_increment,
     variant_types::t1,variant_types::t2,non_moveable<variant_types::t2>,
     variant_types::t3,variant_types::t4,variant_types::t5>();

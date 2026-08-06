@@ -13,18 +13,13 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_iterator.hpp>
-#include <boost/poly_collection/detail/is_invocable.hpp>
+#include <boost/poly_collection/detail/function_polymorphism.hpp>
 #include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
-#include <memory>
-#include <type_traits>
-#include <typeinfo>
-#include <utility>
 
 namespace boost{
 
@@ -34,68 +29,11 @@ namespace detail{
 
 /* model for function_collection */
 
-template<typename Signature>
-struct function_polymorphism;
-
 template<typename Signature,typename Allocator>
 struct function_storage;
 
 template<typename Signature,typename Allocator>
 struct function_model;
-
-/* is_terminal defined out-class to allow for partial specialization */
-
-template<typename T>
-struct function_model_is_terminal:std::true_type{};
-
-template<typename Signature>
-struct function_model_is_terminal<callable_wrapper<Signature>>:
-  std::false_type{};
-
-template<typename R,typename... Args>
-struct function_polymorphism<R(Args...)>
-{
-  using value_type=callable_wrapper<R(Args...)>;
-
-  using type_index=std::type_info;
-
-  template<typename Callable>
-  using is_implementation=is_invocable_r<R,Callable&,Args...>;
-
-  template<typename T>
-  using is_terminal=function_model_is_terminal<T>;
-
-  template<typename T> 
-  static const std::type_info& index(){return typeid(T);}
-
-  template<typename T>
-  static const std::type_info& subindex(const T&){return typeid(T);}
-
-  template<typename Signature>
-  static const std::type_info& subindex(
-    const callable_wrapper<Signature>& f)
-  {
-    return f.target_type();
-  }
-
-  template<typename T>
-  static void* subaddress(T& x){return boost::addressof(x);}
-
-  template<typename T>
-  static const void* subaddress(const T& x){return boost::addressof(x);}
-
-  template<typename Signature>
-  static void* subaddress(callable_wrapper<Signature>& f)
-  {
-    return f.data();
-  }
-  
-  template<typename Signature>
-  static const void* subaddress(const callable_wrapper<Signature>& f)
-  {
-    return f.data();
-  }
-};
 
 template<typename R,typename... Args,typename Allocator>
 struct function_storage<R(Args...),Allocator>

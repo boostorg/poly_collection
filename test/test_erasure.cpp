@@ -175,6 +175,10 @@ void test_erasure()
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
   test_erasure<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,function_types::t2,function_types::t3,
+    function_types::t4,function_types::t5>();
+  test_erasure<
     variant_types::unordered_collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
