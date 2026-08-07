@@ -114,7 +114,7 @@ public:
       std::is_constructible<T,Args&&...>::value
     >::type* =nullptr
   >
-  fixed_variant_closure(Args&&... args)
+  explicit fixed_variant_closure(Args&&... args)
     noexcept(std::is_nothrow_constructible<T,Args&&...>::value):
     fixed_variant_store<T>{std::forward<Args>(args)...},
     Base{this->value}

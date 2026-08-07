@@ -48,7 +48,7 @@ public:
       std::is_constructible<Concrete,Args&&...>::value
     >::type* =nullptr
   >
-  any_closure(Args&&... args):
+  explicit any_closure(Args&&... args):
     store{std::forward<Args>(args)...},
     Any{make_any<Any>(this->value)}
     {}

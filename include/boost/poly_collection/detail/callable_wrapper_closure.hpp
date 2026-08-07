@@ -48,7 +48,7 @@ public:
       std::is_constructible<Callable,Args&&...>::value
     >::type* =nullptr
   >
-  callable_wrapper_closure(Args&&... args)
+  explicit callable_wrapper_closure(Args&&... args)
     noexcept(std::is_nothrow_constructible<Callable,Args&&...>::value):
     store{std::forward<Args>(args)...},
     Wrapper{this->value}
