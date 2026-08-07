@@ -33,10 +33,10 @@ struct function_polymorphism;
 /* is_terminal defined out-class to allow for partial specialization */
 
 template<typename T>
-struct function_model_is_terminal:std::true_type{};
+struct function_polymorphism_is_terminal:std::true_type{};
 
 template<typename Signature>
-struct function_model_is_terminal<callable_wrapper<Signature>>:
+struct function_polymorphism_is_terminal<callable_wrapper<Signature>>:
   std::false_type{};
 
 template<typename R,typename... Args>
@@ -50,7 +50,7 @@ struct function_polymorphism<R(Args...)>
   using is_implementation=is_invocable_r<R,Callable&,Args...>;
 
   template<typename T>
-  using is_terminal=function_model_is_terminal<T>;
+  using is_terminal=function_polymorphism_is_terminal<T>;
 
   template<typename T>
   static const std::type_info& index(){return typeid(T);}
