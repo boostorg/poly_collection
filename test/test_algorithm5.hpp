@@ -6,4 +6,4 @@
  * See http://www.boost.org/libs/poly_collection for library home page.
  */
 
-void test_algorithm7();
+void test_algorithm5();

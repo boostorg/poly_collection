@@ -11,6 +11,7 @@
 #include "test_algorithm2.hpp"
 #include "test_algorithm3.hpp"
 #include "test_algorithm4.hpp"
+#include "test_algorithm5.hpp"
 #include "test_algorithm6.hpp"
 #include "test_algorithm7.hpp"
 #include "test_algorithm8.hpp"
@@ -23,6 +24,7 @@ void test_algorithm()
   test_algorithm2();
   test_algorithm3();
   test_algorithm4();
+  test_algorithm5();
   test_algorithm6();
   test_algorithm7();
   test_algorithm8();

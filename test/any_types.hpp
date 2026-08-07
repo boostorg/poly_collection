@@ -1,4 +1,4 @@
-/* Copyright 2016-2018 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <boost/mpl/vector/vector10.hpp>
 #include <boost/poly_collection/any_collection.hpp>
+#include <boost/poly_collection/any_unordered_collection.hpp>
 #include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/builtin.hpp>
 #include <boost/type_erasure/call.hpp>
@@ -44,6 +45,7 @@ struct incrementable3
 
 using concept_=boost::type_erasure::incrementable<>;
 using collection=boost::any_collection<concept_>;
+using unordered_collection=boost::any_unordered_collection<concept_>;
 
 template<typename T=boost::type_erasure::_self>
 struct convertible_to_int

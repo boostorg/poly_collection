@@ -190,6 +190,10 @@ void test_emplacement()
     variant_types::t4,variant_types::t5>();
 
   test_emplacement<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5,non_moveable<any_types::t1>>();
+  test_emplacement<
     base_types::unordered_collection,auto_increment,
     base_types::t1,non_moveable<base_types::t2>,base_types::t3,
     base_types::t4,base_types::t5>();

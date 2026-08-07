@@ -396,6 +396,10 @@ void test_iterators()
     variant_types::t4,variant_types::t5>();
 
   test_iterators<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_iterators<
     base_types::unordered_collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();

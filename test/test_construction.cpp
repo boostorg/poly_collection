@@ -379,6 +379,10 @@ void test_construction()
   test_scoped_allocator();
 
   test_construction<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_construction<
     base_types::unordered_collection,auto_increment,
     base_types::t1,base_types::t2,base_types::t3,
     base_types::t4,base_types::t5>();
