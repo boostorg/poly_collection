@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
@@ -238,10 +239,21 @@ private:
 
   void move_assign(T&& x){move_assign(std::move(x),is_move_assignable{});}
 
+#if defined(BOOST_GCC)
+/* Confirmed bogus. TODO: investigate bugzilla and maybe file a bug report.
+ */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
+
   void move_assign(T&& x,std::true_type)
   {
     value()=std::move(x);    
   }
+
+#if defined(BOOST_GCC)
+#pragma GCC diagnostic pop
+#endif
 
   void move_assign(T&& x,std::false_type)
   {
