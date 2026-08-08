@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/config.hpp>
+#include <boost/config/workaround.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
@@ -239,7 +240,7 @@ private:
 
   void move_assign(T&& x){move_assign(std::move(x),is_move_assignable{});}
 
-#if defined(BOOST_GCC)
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=70100)
 /* Confirmed bogus. TODO: investigate bugzilla and maybe file a bug report.
  */
 #pragma GCC diagnostic push
@@ -251,7 +252,7 @@ private:
     value()=std::move(x);    
   }
 
-#if defined(BOOST_GCC)
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=70100)
 #pragma GCC diagnostic pop
 #endif
 
