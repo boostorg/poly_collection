@@ -156,9 +156,16 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 20.04 GCC 9* S390x",
+        "Linux 20.04 GCC 9* S390x C++11-14",
         "cppalliance/droneubuntu2004:multiarch",
-        { TOOLSET: 'gcc', COMPILER: 'g++', CXXSTD: '11,14,17,2a' },
+        { TOOLSET: 'gcc', COMPILER: 'g++', CXXSTD: '11,14' },
+        arch="s390x",
+    ),
+
+    linux_pipeline(
+        "Linux 20.04 GCC 9* S390x C++17-2a",
+        "cppalliance/droneubuntu2004:multiarch",
+        { TOOLSET: 'gcc', COMPILER: 'g++', CXXSTD: '17,2a' },
         arch="s390x",
     ),
 
