@@ -394,7 +394,8 @@ struct func_unordered_collection:
 };
 
 template<typename Signature,typename... T>
-struct poly_for_each_func_unordered_collection:func_collection<Signature>
+struct poly_for_each_func_unordered_collection:
+  func_unordered_collection<Signature>
 {
   template<typename F>
   BOOST_FORCEINLINE void for_each(F f)
