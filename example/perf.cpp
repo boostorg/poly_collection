@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -64,13 +64,18 @@ void resume_timing()
 
 #include <algorithm>
 #include <array>
+#include <boost/container/hub.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/variant2/variant.hpp>
 #include <boost/poly_collection/algorithm.hpp>
 #include <boost/poly_collection/any_collection.hpp>
+#include <boost/poly_collection/any_unordered_collection.hpp>
 #include <boost/poly_collection/base_collection.hpp>
+#include <boost/poly_collection/base_unordered_collection.hpp>
 #include <boost/poly_collection/function_collection.hpp>
+#include <boost/poly_collection/function_unordered_collection.hpp>
 #include <boost/poly_collection/variant_collection.hpp>
+#include <boost/poly_collection/variant_unordered_collection.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
 #include <boost/type_erasure/any.hpp>
 #include <boost/type_erasure/callable.hpp>
@@ -78,6 +83,8 @@ void resume_timing()
 #include <boost/type_erasure/operators.hpp>
 #include <boost/type_erasure/typeid_of.hpp>
 #include <functional>
+#include <iterator>
+#include <memory>
 #include <random>
 #include <string>
 #include <utility>
@@ -203,6 +210,76 @@ struct poly_for_each_base_collection:base_collection<Base>
   }
 };
 
+template<typename Base>
+struct ptr_hub:boost::container::hub<std::unique_ptr<Base>>
+{
+public:
+  template<typename T>
+  BOOST_FORCEINLINE void insert(const T& x)
+  {
+    this->emplace(new T{x});
+  }
+
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    using value_type=typename ptr_hub::value_type;
+    boost::container::for_each(
+      this->begin(),this->end(),[&](value_type& x){f(*x);});
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Base>
+struct sorted_ptr_hub:ptr_hub<Base>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename sorted_ptr_hub::value_type;
+    this->sort(
+      [](const value_type& x,const value_type& y)
+      {return typeid(*x).before(typeid(*y));});
+  }
+};
+
+template<typename Base>
+struct shuffled_ptr_hub:ptr_hub<Base>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename shuffled_ptr_hub::value_type;
+    std::vector<value_type> v(
+      std::make_move_iterator(this->begin()),
+      std::make_move_iterator(this->end()));
+    std::shuffle(v.begin(),v.end(),std::mt19937(1));
+    this->assign(
+      std::make_move_iterator(v.begin()),std::make_move_iterator(v.end()));
+  }
+};
+
+template<typename Base>
+struct base_unordered_collection:boost::base_unordered_collection<Base>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Base,typename... T>
+struct poly_for_each_base_unordered_collection:base_unordered_collection<Base>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    boost::poly_collection::for_each<T...>(this->begin(),this->end(),f);
+  }
+};
+
 template<typename Signature>
 struct func_vector:std::vector<std::function<Signature>>
 {
@@ -256,6 +333,68 @@ struct func_collection:boost::function_collection<Signature>
 
 template<typename Signature,typename... T>
 struct poly_for_each_func_collection:func_collection<Signature>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    boost::poly_collection::for_each<T...>(this->begin(),this->end(),f);
+  }
+};
+
+template<typename Signature>
+struct func_hub:boost::container::hub<std::function<Signature>>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Signature>
+struct sorted_func_hub:func_hub<Signature>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename sorted_func_hub::value_type;
+    this->sort(
+      [](const value_type& x,const value_type& y)
+      {return x.target_type().before(y.target_type());});
+  }
+};
+
+template<typename Signature>
+struct shuffled_func_hub:func_hub<Signature>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename shuffled_func_hub::value_type;
+    std::vector<value_type> v(
+      std::make_move_iterator(this->begin()),
+      std::make_move_iterator(this->end()));
+    std::shuffle(v.begin(),v.end(),std::mt19937(1));
+    this->assign(
+      std::make_move_iterator(v.begin()),std::make_move_iterator(v.end()));
+  }
+};
+
+template<typename Signature>
+struct func_unordered_collection:
+  boost::function_unordered_collection<Signature>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Signature,typename... T>
+struct poly_for_each_func_unordered_collection:func_collection<Signature>
 {
   template<typename F>
   BOOST_FORCEINLINE void for_each(F f)
@@ -325,6 +464,67 @@ struct poly_for_each_any_collection:any_collection<Concept>
   }
 };
 
+template<typename Concept>
+struct any_hub:boost::container::hub<boost::type_erasure::any<Concept>>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Concept>
+struct sorted_any_hub:any_hub<Concept>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename sorted_any_hub::value_type;
+    this->sort(
+      [](const value_type& x,const value_type& y)
+      {return typeid_of(x).before(typeid_of(y));});
+  }
+};
+
+template<typename Concept>
+struct shuffled_any_hub:any_hub<Concept>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename shuffled_any_hub::value_type;
+    std::vector<value_type> v(
+      std::make_move_iterator(this->begin()),
+      std::make_move_iterator(this->end()));
+    std::shuffle(v.begin(),v.end(),std::mt19937(1));
+    this->assign(
+      std::make_move_iterator(v.begin()),std::make_move_iterator(v.end()));
+  }
+};
+
+template<typename Concept>
+struct any_unordered_collection:boost::any_unordered_collection<Concept>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename Concept,typename... T>
+struct poly_for_each_any_unordered_collection:any_unordered_collection<Concept>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    boost::poly_collection::for_each<T...>(this->begin(),this->end(),f);
+  }
+};
+
 template<typename L>
 struct variant_vector:
   std::vector<boost::mp11::mp_rename<L,boost::variant2::variant>>
@@ -379,6 +579,69 @@ struct variant_collection:boost::variant_collection<L>
 
 template<typename L,typename... T>
 struct poly_for_each_variant_collection:variant_collection<L>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    boost::poly_collection::for_each<T...>(this->begin(),this->end(),f);
+  }
+};
+
+template<typename L>
+struct variant_hub:
+  boost::container::hub<boost::mp11::mp_rename<L,boost::variant2::variant>>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename L>
+struct sorted_variant_hub:variant_hub<L>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename sorted_variant_hub::value_type;
+    this->sort(
+      [](const value_type& x,const value_type& y)
+      {return x.index()<y.index();});
+  }
+};
+
+template<typename L>
+struct shuffled_variant_hub:variant_hub<L>
+{
+  void prepare_for_for_each()
+  {
+    using value_type=typename shuffled_variant_hub::value_type;
+    std::vector<value_type> v(
+      std::make_move_iterator(this->begin()),
+      std::make_move_iterator(this->end()));
+    std::shuffle(v.begin(),v.end(),std::mt19937(1));
+    this->assign(
+      std::make_move_iterator(v.begin()),std::make_move_iterator(v.end()));
+  }
+};
+
+template<typename L>
+struct variant_unordered_collection:boost::variant_unordered_collection<L>
+{
+  template<typename F>
+  BOOST_FORCEINLINE void for_each(F f)
+  {
+    std::for_each(this->begin(),this->end(),f);
+  }
+
+  void prepare_for_for_each(){}
+};
+
+template<typename L,typename... T>
+struct poly_for_each_variant_unordered_collection:
+  variant_unordered_collection<L>
 {
   template<typename F>
   BOOST_FORCEINLINE void for_each(F f)
@@ -595,22 +858,38 @@ int main(int argc,char *argv[])
   bool all=false,
        insert_base=false,
        for_each_base=false,
+       insert_base_unordered=false,
+       for_each_base_unordered=false,
        insert_function=false,
        for_each_function=false,
+       insert_function_unordered=false,
+       for_each_function_unordered=false,
        insert_any=false,
        for_each_any=false,
+       insert_any_unordered=false,
+       for_each_any_unordered=false,
        insert_variant=false,
-       for_each_variant=false;
-  std::array<test,9> tests={{
+       for_each_variant=false,
+       insert_variant_unordered=false,
+       for_each_variant_unordered=false;
+  std::array<test,17> tests={{
     {"all",all},
     {"insert_base",insert_base},
     {"for_each_base",for_each_base},
+    {"insert_base_unordered",insert_base_unordered},
+    {"for_each_base_unordered",for_each_base_unordered},
     {"insert_function",insert_function},
     {"for_each_function",for_each_function},
+    {"insert_function_unordered",insert_function_unordered},
+    {"for_each_function_unordered",for_each_function_unordered},
     {"insert_any",insert_any},
     {"for_each_any",for_each_any},
+    {"insert_any_unordered",insert_any_unordered},
+    {"for_each_any_unordered",for_each_any_unordered},
     {"insert_variant",insert_variant},
-    {"for_each_variant",for_each_variant}
+    {"for_each_variant",for_each_variant},
+    {"insert_variant_unordered",insert_variant_unordered},
+    {"for_each_variant_unordered",for_each_variant_unordered}
   }};
 
   if(argc<2){
@@ -655,6 +934,29 @@ int main(int argc,char *argv[])
       n0,n1,dsav,seq,f,pv,spv,shpv,bc,fbc,rfbc);
   }
   {
+    auto seq=  element_sequence<derived1,derived2,derived3>{};
+    auto f=    for_each_callable{};
+    auto ph=   label<ptr_hub<base>>
+               {"ptr_hub"};
+    auto sph=  label<sorted_ptr_hub<base>>
+               {"sorted ptr_hub"};
+    auto shph= label<shuffled_ptr_hub<base>>
+               {"shuffled ptr_hub"};
+    auto buc=  label<base_unordered_collection<base>>
+               {"base_unordered_collection"};
+    auto fbuc= label<poly_for_each_base_unordered_collection<base>>
+               {"base_unordered_collection (poly::for_each)"};
+    auto rfbuc=label<
+                 poly_for_each_base_unordered_collection<
+                   base,derived1,derived2,derived3>
+               >
+               {"base_unordered_collection (restituted poly::for_each)"};
+
+    if(all||insert_base_unordered)insert_perf(n0,n1,dsav,seq,ph,buc);
+    if(all||for_each_base_unordered)for_each_perf(
+      n0,n1,dsav,seq,f,ph,sph,shph,buc,fbuc,rfbuc);
+  }
+  {
     using signature=int(int);
 
     auto seq=  element_sequence<concrete1,concrete2,concrete3>{};
@@ -678,15 +980,37 @@ int main(int argc,char *argv[])
       n0,n1,dsav,seq,f,fv,sfv,shfv,fc,ffc,rffc);
   }
   {
-//[perf_any_types
-    using concept_=boost::mpl::vector<
-      boost::type_erasure::copy_constructible<>,
-      boost::type_erasure::relaxed,
-      boost::type_erasure::typeid_<>,
-      boost::type_erasure::incrementable<>
-    >;
-//]
+    using signature=int(int);
 
+    auto seq=  element_sequence<concrete1,concrete2,concrete3>{};
+    auto f =   for_each_callable{};
+    auto fh=   label<func_hub<signature>>
+               {"func_hub"};
+    auto sfh=  label<sorted_func_hub<signature>>
+               {"sorted func_hub"};
+    auto shfh= label<shuffled_func_hub<signature>>
+               {"shuffled func_hub"};
+    auto fuc=  label<func_unordered_collection<signature>>
+               {"function_unordered_collection"};
+    auto ffuc= label<poly_for_each_func_unordered_collection<signature>>
+               {"function_unordered_collection (poly::for_each)"};
+    auto rffuc=label<poly_for_each_func_unordered_collection<
+                 signature,concrete1,concrete2,concrete3>>
+               {"function_unordered_collection (restituted poly::for_each)"};
+
+    if(all||insert_function_unordered)insert_perf(n0,n1,dsav,seq,fh,fuc);
+    if(all||for_each_function_unordered)for_each_perf(
+      n0,n1,dsav,seq,f,fh,sfh,shfh,fuc,ffuc,rffuc);
+  }
+//[perf_any_types
+  using concept_=boost::mpl::vector<
+    boost::type_erasure::copy_constructible<>,
+    boost::type_erasure::relaxed,
+    boost::type_erasure::typeid_<>,
+    boost::type_erasure::incrementable<>
+  >;
+//]
+  {
     auto seq=  element_sequence<int,double,char>{};
     auto f=    for_each_incrementable{};
     auto av=   label<any_vector<concept_>>
@@ -707,10 +1031,30 @@ int main(int argc,char *argv[])
       n0,n1,dsav,seq,f,av,sav,shav,ac,fac,rfac);
   }
   {
-//[perf_variant_types
-    using type_list=boost::mp11::mp_list<int,double,char>;
-//]
+    auto seq=  element_sequence<int,double,char>{};
+    auto f=    for_each_incrementable{};
+    auto ah=   label<any_hub<concept_>>
+               {"any_hub"};
+    auto sah=  label<sorted_any_hub<concept_>>
+               {"sorted any_hub"};
+    auto shah= label<shuffled_any_hub<concept_>>
+               {"shuffled any_hub"};
+    auto auc=  label<any_unordered_collection<concept_>>
+               {"any_unordered_collection"};
+    auto fauc= label<poly_for_each_any_unordered_collection<concept_>>
+               {"any_collection (poly::for_each)"};
+    auto rfauc=label<poly_for_each_any_unordered_collection<
+                 concept_,int,double,char>>
+               {"any_collection (restituted poly::for_each)"};
 
+    if(all||insert_any_unordered)insert_perf(n0,n1,dsav,seq,ah,auc);
+    if(all||for_each_any_unordered)for_each_perf(
+      n0,n1,dsav,seq,f,ah,sah,shah,auc,fauc,rfauc);
+  }
+//[perf_variant_types
+  using type_list=boost::mp11::mp_list<int,double,char>;
+//]
+  {
     auto seq=  element_sequence<int,double,char>{};
     auto f=    for_each_alternative{};
     auto vv=   label<variant_vector<type_list>>
@@ -731,5 +1075,27 @@ int main(int argc,char *argv[])
     if(all||insert_variant)insert_perf(n0,n1,dsav,seq,vv,vc);
     if(all||for_each_variant)for_each_perf(
       n0,n1,dsav,seq,f,vv,svv,shvv,vc,fvc,rfvc);
+  }
+  {
+    auto seq=  element_sequence<int,double,char>{};
+    auto f=    for_each_alternative{};
+    auto vh=   label<variant_hub<type_list>>
+               {"variant_hub"};
+    auto svh=  label<sorted_variant_hub<type_list>>
+               {"sorted variant_hub"};
+    auto shvh= label<shuffled_variant_hub<type_list>>
+               {"shuffled variant_hub"};
+    auto vuc=  label<variant_unordered_collection<type_list>>
+               {"variant_unordered_collection"};
+    auto fvuc= label<poly_for_each_variant_unordered_collection<type_list>>
+               {"variant_unordered_collection (poly::for_each)"};
+    auto rfvuc=label<
+                 poly_for_each_variant_unordered_collection<
+                   type_list,boost::poly_collection::all_types>>
+               {"variant_unordered_collection (restituted poly::for_each)"};
+
+    if(all||insert_variant_unordered)insert_perf(n0,n1,dsav,seq,vh,vuc);
+    if(all||for_each_variant_unordered)for_each_perf(
+      n0,n1,dsav,seq,f,vh,svh,shvh,vuc,fvuc,rfvuc);
   }
 }
