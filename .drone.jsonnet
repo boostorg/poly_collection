@@ -511,30 +511,57 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 24.04 Clang 18 ASAN",
+        "Linux 24.04 Clang 18 ASAN C++11-14",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'clang', COMPILER: 'clang++-18', CXXSTD: '11,14,17,20,2b' } + asan,
+        { TOOLSET: 'clang', COMPILER: 'clang++-18', CXXSTD: '11,14' } + asan,
+        "clang-18",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 Clang 18 ASAN C++17-2b",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'clang', COMPILER: 'clang++-18', CXXSTD: '17,20,2b' } + asan,
         "clang-18",
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 UBSAN C++11-14",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14' } + ubsan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++11",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11' } + ubsan,
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 UBSAN C++17-2a",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17,2a' } + ubsan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++14",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '14' } + ubsan,
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 ASAN C++11-14",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11,14' } + asan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++17",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17' } + ubsan,
     ),
 
     macos_pipeline(
-        "MacOS 10.15 Xcode 12.2 ASAN C++17-2a",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17,2a' } + asan,
+        "MacOS 10.15 Xcode 12.2 UBSAN C++2a",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '2a' } + ubsan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++11",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11' } + asan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++14",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '14' } + asan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++17",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17' } + asan,
+    ),
+
+    macos_pipeline(
+        "MacOS 10.15 Xcode 12.2 ASAN C++2a",
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '2a' } + asan,
     ),
 
     macos_pipeline(
