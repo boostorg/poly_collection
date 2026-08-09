@@ -29,26 +29,52 @@ namespace detail{
 
 /* model for base_collection */
 
+struct base_storage_iterator_traits /* for stride_iterator */
+{
+  template<typename Base,typename Derived>
+  using is_implementation=
+    typename base_polymorphism<Base>::template is_implementation<Derived>;
+  template<typename Base,typename Derived>
+  using iterator=Derived*;
+
+#include <boost/poly_collection/detail/begin_no_sanitize.hpp>
+  template<typename Iterator,typename Base>
+  static BOOST_POLY_COLLECTION_NO_SANITIZE Iterator make_iterator(
+    Base* p)noexcept
+  {
+    return static_cast<Iterator>(p);
+  }
+#include <boost/poly_collection/detail/end_no_sanitize.hpp>
+
+  template<typename Base,typename Derived>
+  static const Base* base_pointer_from(const Derived *p)noexcept{return p;}
+
+  template<typename Derived>
+  static std::size_t stride_from(Derived*)noexcept{return sizeof(Derived);}
+};
+
 template<typename Base,typename Allocator>
 struct base_storage
 {
-  using value_type=Base;
+  using value_type=typename base_polymorphism<Base>::value_type;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=stride_iterator<Base>;
-  using const_base_iterator=stride_iterator<const Base>;
+  using base_iterator=stride_iterator<Base,base_storage_iterator_traits>;
+  using const_base_iterator=
+    stride_iterator<const Base,base_storage_iterator_traits>;
   using base_sentinel=Base*;
   using const_base_sentinel=const Base*;
   template<typename Derived>
-  using iterator=Derived*;
+  using iterator=typename base_storage_iterator_traits::
+    template iterator<value_type,Derived>;
   template<typename Derived>
-  using const_iterator=const Derived*;
+  using const_iterator=typename base_storage_iterator_traits::
+    template iterator<value_type,const Derived>;
   using segment_backend=detail::segment_backend<base_storage>;
   template<typename Derived>
-  using segment_backend_implementation=
-    packed_segment<base_storage,Derived>;
+  using segment_backend_implementation=packed_segment<base_storage,Derived>;
 
-  static base_iterator nonconst_iterator(const_base_iterator it)
+  static base_iterator nonconst_iterator(const_base_iterator it)noexcept
   {
     return {
       const_cast<value_type*>(static_cast<const value_type*>(it)),
@@ -57,7 +83,7 @@ struct base_storage
   }
 
   template<typename T>
-  static iterator<T> nonconst_iterator(const_iterator<T> it)
+  static iterator<T> nonconst_iterator(const_iterator<T> it)noexcept
   {
     return const_cast<iterator<T>>(it);
   }

@@ -33,6 +33,7 @@ namespace detail{
  * Requires:
  *  - [const_]base_iterator is a stride iterator constructible from
  *    {value_type*,sizeof(store_value_type)}.
+ *  - const_iterator is convertible to const Concrete*.
  *  - StorageModel provides a function value_ptr for
  *    const Concrete* -> const value_type* conversion.
  *  - If StorageModel provides a final_type<Concrete> template alias, it is this
