@@ -13,9 +13,8 @@
 #pragma once
 #endif
 
-#include <boost/config.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_facade.hpp>
+#include <cstddef>
 #include <type_traits>
 
 namespace boost{
@@ -25,7 +24,7 @@ namespace poly_collection{
 namespace detail{
 
 /* Random-access iterator to Base elements laid out stride *chars* apart.
- * Traits provides user-defined machinery for interoperatibility with
+ * Traits provides user-defined machinery for interoperability with
  * associated typed iterators.
  */
 
