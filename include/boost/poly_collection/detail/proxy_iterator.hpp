@@ -81,7 +81,8 @@ public:
 
   proxy_iterator& operator=(std::nullptr_t)noexcept
   {
-    return *this=proxy_iterator{};
+    this->base_reference()=nullptr;
+    return *this;
   }
 
 private:
