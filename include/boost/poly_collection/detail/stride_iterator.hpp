@@ -97,11 +97,11 @@ public:
 
   /* comparability with Base* sentinel (if used) */
 
-  operator Base*()const{return p;}
+  operator Base*()const noexcept{return p;}
 
   /* nullification used by poly_collection global iterators */
 
-  stride_iterator& operator=(std::nullptr_t)
+  stride_iterator& operator=(std::nullptr_t)noexcept
   {
     return *this=stride_iterator{};
   }
