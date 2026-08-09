@@ -14,14 +14,15 @@
 #endif
 
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
-#include <boost/poly_collection/detail/any_iterator.hpp>
 #include <boost/poly_collection/detail/any_polymorphism.hpp>
 #include <boost/poly_collection/detail/is_storable.hpp>
 #include <boost/poly_collection/detail/make_any.hpp>
+#include <boost/poly_collection/detail/proxy_iterator.hpp>
 #include <boost/poly_collection/detail/segment.hpp>
 #include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/split_segment.hpp>
 #include <boost/type_erasure/any.hpp>
+#include <boost/type_erasure/any_cast.hpp>
 #include <boost/type_erasure/builtin.hpp>
 #include <boost/type_erasure/is_subconcept.hpp>
 #include <boost/type_erasure/relaxed.hpp>
@@ -35,8 +36,18 @@ namespace detail{
 
 /* model for any_collection */
 
-template<typename Concept,typename Allocator>
-struct any_storage;
+struct any_storage_iterator_traits /* for proxy_iterator */
+{
+  /* can't compile-time check concept compliance, see any_polymorphism */
+  template<typename Any,typename Concrete>
+  using is_implementation=std::true_type;
+
+  template<typename Any>
+  static const void* target_address(Any* p)noexcept
+  {
+    return type_erasure::any_cast<const void*>(p);
+  }
+};
 
 template<typename Concept,typename Allocator>
 struct any_model;
@@ -63,8 +74,10 @@ struct any_storage
   using value_type=any_polymorphism_value_type<Concept>;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=any_iterator<value_type>;
-  using const_base_iterator=any_iterator<const value_type>;
+  using base_iterator=
+    proxy_iterator<value_type,any_storage_iterator_traits>;
+  using const_base_iterator=
+    proxy_iterator<const value_type,any_storage_iterator_traits>;
   using base_sentinel=value_type*;
   using const_base_sentinel=const value_type*;
   template<typename Concrete>
