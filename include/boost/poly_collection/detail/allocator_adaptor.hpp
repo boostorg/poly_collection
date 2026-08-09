@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/config.hpp>
+#include <boost/config/workaround.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/integer_sequence.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
@@ -208,7 +209,7 @@ struct allocator_adaptor:Allocator
     p->~T();
   }
 
-#if defined(BOOST_GCC)
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=50100)
 /* Confirmed bogus, triggered whitin std::vector::_M_erase. TODO: investigate
  * bugzilla and maybe file a bug report.
  */
@@ -224,7 +225,7 @@ struct allocator_adaptor:Allocator
       reinterpret_cast<T*>(static_cast<value_holder_base<T>*>(p)));
   }
 
-#if defined(BOOST_GCC)
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=50100)
 #pragma GCC diagnostic pop
 #endif
 
