@@ -14,13 +14,15 @@
 #endif
 
 #include <boost/container/hub.hpp>
+#include <boost/mp11/algorithm.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/base_offset.hpp>
 #include <boost/poly_collection/detail/callable_wrapper.hpp>
 #include <boost/poly_collection/detail/callable_wrapper_closure.hpp>
-#include <boost/poly_collection/detail/callable_wrapper_hub_iterator.hpp>
 #include <boost/poly_collection/detail/function_polymorphism.hpp>
 #include <boost/poly_collection/detail/packed_hub_segment.hpp>
+#include <boost/poly_collection/detail/stride_hub_iterator.hpp>
+#include <boost/poly_collection/detail/subvalue_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 
@@ -32,11 +34,25 @@ namespace detail{
 
 /* model for function_unordered_collection */
 
-template<typename Signature,typename Allocator>
-struct function_unordered_storage;
+template<typename CWrapper,typename Callable>
+using function_unordered_storage_final_type=callable_wrapper_closure<
+  typename std::remove_const<Callable>::type,CWrapper>;
+
+/* for stride_hub_iterator */
+struct function_unordered_storage_iterator_traits:
+  subvalue_hub_iterator_traits
+{
+  template<typename CWrapper,typename Callable>
+  using is_implementation=
+    typename mp11::mp_rename<CWrapper,function_polymorphism>::
+      template is_implementation<Callable>;
+  template<typename CWrapper,typename Callable>
+  using iterator=subvalue_hub_iterator<
+    function_unordered_storage_final_type<CWrapper,Callable>,Callable>;
+};
 
 template<typename Signature,typename Allocator>
-struct function_unordered_model;
+struct function_unordered_storage;
 
 template<typename R,typename... Args,typename Allocator>
 struct function_unordered_storage<R(Args...),Allocator>
@@ -44,15 +60,18 @@ struct function_unordered_storage<R(Args...),Allocator>
   using value_type=callable_wrapper<R(Args...)>;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=callable_wrapper_hub_iterator<value_type>;
-  using const_base_iterator=callable_wrapper_hub_iterator<const value_type>;
+  using base_iterator=stride_hub_iterator<
+    value_type,function_unordered_storage_iterator_traits>;
+  using const_base_iterator=stride_hub_iterator<
+    const value_type,function_unordered_storage_iterator_traits>;
   using base_sentinel=base_iterator;
   using const_base_sentinel=const_base_iterator;
   template<typename Callable>
-  using iterator=callable_wrapper_target_hub_iterator<value_type,Callable>;
+  using iterator=typename function_unordered_storage_iterator_traits::
+    template iterator<value_type,Callable>;
   template<typename Callable>
-  using const_iterator=
-    callable_wrapper_target_hub_iterator<value_type,const Callable>;
+  using const_iterator=typename function_unordered_storage_iterator_traits::
+    template iterator<value_type,const Callable>;
   using segment_backend=
     detail::unordered_segment_backend<function_unordered_storage>;
   template<typename Callable>
@@ -67,11 +86,8 @@ struct function_unordered_storage<R(Args...),Allocator>
   template<typename T>
   static iterator<T> nonconst_iterator(const_iterator<T> it)
   {
-    using base_value_type=
-      callable_wrapper_target_hub_iterator_base_value_type<value_type,T>;
-
-    return iterator<T>{
-      make_hub_iterator<hub_iterator<base_value_type*>>(get_members(it))};
+    return function_unordered_storage_iterator_traits::
+      make_iterator<iterator<T>>(get_members(it));
   }
 
 private:
@@ -79,7 +95,8 @@ private:
   friend class packed_hub_segment;
 
   template<typename Callable>
-  using final_type=callable_wrapper_closure<Callable,value_type>;
+  using final_type=
+    function_unordered_storage_final_type<value_type,Callable>;
 
   template<typename Callable>
   static std::ptrdiff_t value_offset()noexcept
@@ -87,6 +104,9 @@ private:
     return base_offset<value_type,final_type<Callable>>();
   }
 };
+
+template<typename Signature,typename Allocator>
+struct function_unordered_model;
 
 template<typename R,typename... Args,typename Allocator>
 struct function_unordered_model<R(Args...),Allocator>:

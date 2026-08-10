@@ -16,8 +16,10 @@
 #include <boost/container/hub.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/base_offset.hpp>
-#include <boost/poly_collection/detail/fixed_variant_hub_iterator.hpp>
+#include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <boost/poly_collection/detail/packed_hub_segment.hpp>
+#include <boost/poly_collection/detail/stride_hub_iterator.hpp>
+#include <boost/poly_collection/detail/subvalue_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 #include <boost/poly_collection/detail/variant_polymorphism.hpp>
@@ -30,21 +32,41 @@ namespace detail{
 
 /* model for variant_unordered_collection */
 
+template<typename Variant,typename T>
+using variant_unordered_storage_final_type=
+  fixed_variant_impl::fixed_variant_closure<
+    typename std::remove_const<T>::type,Variant>;
+
+struct variant_unordered_storage_iterator_traits: /* for stride_hub_iterator */
+  subvalue_hub_iterator_traits
+{
+  template<typename Variant,typename T>
+  using is_implementation=
+    typename mp11::mp_rename<Variant,variant_polymorphism>::
+      template is_implementation<T>;
+  template<typename Variant,typename T>
+  using iterator=subvalue_hub_iterator<
+    variant_unordered_storage_final_type<Variant,T>,T>;
+};
+
 template<typename Allocator,typename... Ts>
 struct variant_unordered_storage
 {
   using value_type=fixed_variant_impl::fixed_variant<Ts...>;
   using allocator_type=Allocator;
   using segment_allocator_type=allocator_adaptor<Allocator>;
-  using base_iterator=fixed_variant_hub_iterator<value_type>;
-  using const_base_iterator=fixed_variant_hub_iterator<const value_type>;
+  using base_iterator=stride_hub_iterator<
+    value_type,variant_unordered_storage_iterator_traits>;
+  using const_base_iterator=stride_hub_iterator<
+    const value_type,variant_unordered_storage_iterator_traits>;
   using base_sentinel=base_iterator;
   using const_base_sentinel=const_base_iterator;
   template<typename T>
-  using iterator=fixed_variant_alternative_hub_iterator<value_type,T>;
+  using iterator=typename variant_unordered_storage_iterator_traits::
+    template iterator<value_type,T>;
   template<typename T>
-  using const_iterator=
-    fixed_variant_alternative_hub_iterator<value_type,const T>;
+  using const_iterator=typename variant_unordered_storage_iterator_traits::
+    template iterator<value_type,const T>;
   using segment_backend=
     detail::unordered_segment_backend<variant_unordered_storage>;
   template<typename T>
@@ -59,11 +81,8 @@ struct variant_unordered_storage
   template<typename T>
   static iterator<T> nonconst_iterator(const_iterator<T> it)
   {
-    using base_value_type=
-      fixed_variant_alternative_hub_iterator_base_value_type<value_type,T>;
-
-    return iterator<T>{
-      make_hub_iterator<hub_iterator<base_value_type*>>(get_members(it))};
+    return variant_unordered_storage_iterator_traits::
+      make_iterator<iterator<T>>(get_members(it));
   }
 
 private:
@@ -71,7 +90,7 @@ private:
   friend class packed_hub_segment;
 
   template<typename T>
-  using final_type=fixed_variant_impl::fixed_variant_closure<T,value_type>;
+  using final_type=variant_unordered_storage_final_type<value_type,T>;
 
   template<typename T>
   static std::ptrdiff_t value_offset()noexcept
