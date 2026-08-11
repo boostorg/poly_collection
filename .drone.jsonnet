@@ -526,22 +526,22 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
 
     macos_pipeline(
         "MacOS 10.15 Xcode 12.2 UBSAN C++11",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11' } + ubsan,
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '11', VARIANT: 'debug' } + ubsan,
     ),
 
     macos_pipeline(
         "MacOS 10.15 Xcode 12.2 UBSAN C++14",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '14' } + ubsan,
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '14', VARIANT: 'debug' } + ubsan,
     ),
 
     macos_pipeline(
         "MacOS 10.15 Xcode 12.2 UBSAN C++17",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17' } + ubsan,
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '17', VARIANT: 'debug' } + ubsan,
     ),
 
     macos_pipeline(
         "MacOS 10.15 Xcode 12.2 UBSAN C++2a",
-        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '2a' } + ubsan,
+        { TOOLSET: 'clang', COMPILER: 'clang++', CXXSTD: '2a', VARIANT: 'debug' } + ubsan,
     ),
 
     macos_pipeline(

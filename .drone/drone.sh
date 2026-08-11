@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Copyright 2022 Peter Dimov
+# Copyright 2026 Joaquin M Lopez Munoz
 # Distributed under the Boost Software License, Version 1.0.
 # https://www.boost.org/LICENSE_1_0.txt
 
@@ -22,4 +23,4 @@ python tools/boostdep/depinst/depinst.py -I examples $LIBRARY
 ./b2 -d0 headers
 
 echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
-./b2 -j3 libs/$LIBRARY/test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release ${ADDRMD:+address-model=$ADDRMD} ${UBSAN:+undefined-sanitizer=norecover debug-symbols=on} ${ASAN:+address-sanitizer=norecover debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS} ${LINK:+link=$LINK}
+./b2 -j3 libs/$LIBRARY/test toolset=$TOOLSET cxxstd=$CXXSTD variant=${VARIANT:-debug,release} ${ADDRMD:+address-model=$ADDRMD} ${UBSAN:+undefined-sanitizer=norecover debug-symbols=on} ${ASAN:+address-sanitizer=norecover debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS} ${LINK:+link=$LINK}
