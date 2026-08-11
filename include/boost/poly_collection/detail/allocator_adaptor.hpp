@@ -18,8 +18,9 @@
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/integer_sequence.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
-#include <new>
+#include <cstddef>
 #include <memory>
+#include <new>
 #include <tuple>
 #include <type_traits>
 #include <utility>

@@ -13,10 +13,10 @@
 #pragma once
 #endif
 
+#include <boost/container/hub.hpp>
 #include <boost/poly_collection/detail/hub_access.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
 #include <boost/poly_collection/detail/value_holder.hpp>
-#include <algorithm>
 #include <memory>
 #include <new>
 #include <type_traits>

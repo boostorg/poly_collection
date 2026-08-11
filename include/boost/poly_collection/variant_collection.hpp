@@ -13,11 +13,10 @@
 #pragma once
 #endif
 
-#include <boost/poly_collection/variant_collection_fwd.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/poly_collection/detail/poly_collection.hpp>
 #include <boost/poly_collection/detail/variant_model.hpp>
-#include <utility>
+#include <boost/poly_collection/variant_collection_fwd.hpp>
 
 namespace boost{
 

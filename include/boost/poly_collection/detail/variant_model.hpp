@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/mp11/list.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
@@ -21,6 +22,8 @@
 #include <boost/poly_collection/detail/size_of.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
 #include <boost/poly_collection/detail/variant_polymorphism.hpp>
+#include <cstddef>
+#include <memory>
 
 namespace boost{
 

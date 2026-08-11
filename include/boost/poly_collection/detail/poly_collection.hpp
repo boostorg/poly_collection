@@ -20,17 +20,19 @@
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/detail/check_acceptability.hpp>
-#include <boost/poly_collection/detail/iterator_impl.hpp>
-#include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/is_closed_collection.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
-#include <boost/poly_collection/detail/is_final.hpp>
 #include <boost/poly_collection/detail/is_unordered_collection.hpp>
+#include <boost/poly_collection/detail/iterator_impl.hpp>
+#include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/segment_map.hpp>
 #include <boost/poly_collection/exception.hpp>
+#include <cstddef>
 #include <iterator>
+#include <memory>
 #include <type_traits>
+#include <typeinfo>
 #include <utility>
 
 namespace boost{

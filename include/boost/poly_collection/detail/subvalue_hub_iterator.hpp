@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/iterator/iterator_adaptor.hpp>
+#include <boost/poly_collection/detail/base_offset.hpp>
 #include <boost/poly_collection/detail/hub_access.hpp>
 #include <cstddef>
 #include <type_traits>

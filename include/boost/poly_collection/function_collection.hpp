@@ -13,10 +13,9 @@
 #pragma once
 #endif
 
-#include <boost/poly_collection/function_collection_fwd.hpp>
 #include <boost/poly_collection/detail/function_model.hpp>
 #include <boost/poly_collection/detail/poly_collection.hpp>
-#include <utility>
+#include <boost/poly_collection/function_collection_fwd.hpp>
 
 namespace boost{
 

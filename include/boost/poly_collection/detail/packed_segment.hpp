@@ -18,8 +18,8 @@
 #include <boost/poly_collection/detail/value_holder.hpp>
 #include <memory>
 #include <new>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace boost{
 

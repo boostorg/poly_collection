@@ -20,7 +20,6 @@
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <iterator>
 #include <type_traits>
-#include <typeinfo>
 
 namespace boost{
 

@@ -16,7 +16,6 @@
 #include <boost/poly_collection/any_collection_fwd.hpp>
 #include <boost/poly_collection/detail/any_model.hpp>
 #include <boost/poly_collection/detail/poly_collection.hpp>
-#include <utility>
 
 namespace boost{
 

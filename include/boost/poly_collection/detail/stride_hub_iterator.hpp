@@ -17,7 +17,6 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/hub_access.hpp>
 #include <cstddef>
-#include <memory>
 #include <type_traits>
 
 #if defined(BOOST_MSVC)

@@ -13,11 +13,11 @@
 #pragma once
 #endif
 
-#include <boost/config.hpp>
 #include <boost/assert.hpp>
+#include <boost/config.hpp>
+#include <boost/container/hub.hpp>
 #include <boost/core/bit.hpp>
 #include <boost/core/pointer_traits.hpp>
-#include <boost/container/hub.hpp>
 #include <cstdint>
 #include <cstring>
 #include <type_traits>

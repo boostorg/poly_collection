@@ -15,12 +15,11 @@
 
 #include <boost/config.hpp>
 #include <boost/config/workaround.hpp>
-#include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/is_equality_comparable.hpp>
 #include <boost/poly_collection/detail/is_nothrow_eq_comparable.hpp>
 #include <boost/poly_collection/exception.hpp>
-#include <new>
 #include <memory>
+#include <new>
 #include <type_traits>
 #include <utility>
 

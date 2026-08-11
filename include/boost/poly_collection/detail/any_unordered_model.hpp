@@ -13,7 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/container/hub.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/any_closure.hpp>
 #include <boost/poly_collection/detail/any_polymorphism.hpp>
@@ -23,6 +22,8 @@
 #include <boost/poly_collection/detail/subvalue_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
+#include <cstddef>
+#include <type_traits>
 
 namespace boost{
 

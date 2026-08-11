@@ -13,7 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/container/hub.hpp>
 #include <boost/poly_collection/detail/allocator_adaptor.hpp>
 #include <boost/poly_collection/detail/base_offset.hpp>
 #include <boost/poly_collection/detail/base_polymorphism.hpp>
@@ -21,6 +20,8 @@
 #include <boost/poly_collection/detail/stride_hub_iterator.hpp>
 #include <boost/poly_collection/detail/unordered_segment.hpp>
 #include <boost/poly_collection/detail/unordered_segment_backend.hpp>
+#include <cstddef>
+#include <type_traits>
 
 namespace boost{
 

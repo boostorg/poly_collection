@@ -17,8 +17,8 @@
 #include <boost/mpl/pair.hpp>
 #include <boost/type_erasure/any.hpp>
 #include <boost/type_erasure/binding.hpp>
+#include <boost/type_erasure/call.hpp>
 #include <boost/type_erasure/concept_of.hpp>
-#include <boost/type_erasure/static_binding.hpp>
 
 namespace boost{
 

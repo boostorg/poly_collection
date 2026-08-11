@@ -18,7 +18,6 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/set.hpp>
-#include <boost/poly_collection/detail/is_acceptable.hpp>
 #include <boost/poly_collection/detail/fixed_variant.hpp>
 #include <type_traits>
 #include <typeinfo>

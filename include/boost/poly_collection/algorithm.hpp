@@ -21,8 +21,10 @@
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/segment_split.hpp>
 #include <boost/poly_collection/detail/type_restitution.hpp>
+#include <cstddef>
 #include <iterator>
 #include <random>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
