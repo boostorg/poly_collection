@@ -28,9 +28,6 @@ class base_collection:
   using base_type=common_impl::poly_collection<
     detail::base_model<Base,Allocator>>;
 
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
-
 public:
   using base_type::base_type;
 

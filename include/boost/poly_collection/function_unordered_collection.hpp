@@ -29,9 +29,6 @@ class function_unordered_collection:
   using base_type=common_impl::poly_collection<
     detail::function_unordered_model<Signature,Allocator>>;
 
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
-
 public:
   using base_type::base_type;
 

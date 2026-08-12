@@ -33,9 +33,6 @@ class variant_unordered_collection:
       mp11::mp_push_front<TypeList,Allocator>,
       detail::variant_unordered_model>>;
 
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
-
 public:
   using base_type::base_type;
 

@@ -32,9 +32,6 @@ class variant_collection:
     mp11::mp_rename<
       mp11::mp_push_front<TypeList,Allocator>,detail::variant_model>>;
 
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
-
 public:
   using base_type::base_type;
 
