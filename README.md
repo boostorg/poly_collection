@@ -13,12 +13,14 @@ implements a
 [novel data structure](http://www.boost.org/doc/html/poly_collection/an_efficient_polymorphic_data_st.html)
 that is able to contiguously store polymorphic objects without such indirection,
 thus providing a value-semantics user interface and better performance.
-Four *polymorphic collections* are provided:
+Four *polymorphic collections*, along with 
+[*unordered variants*](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.unordered_collections),
+are provided:
 
-* [`boost::base_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection) 
-* [`boost::function_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection)
-* [`boost::any_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection)
-* [`boost::variant_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_variant_collection)
+* [`boost::base_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection), `boost::base_unordered_collection`` 
+* [`boost::function_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection), `boost::function_unordered_collection`
+* [`boost::any_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection), `boost::any_unordered_collection`
+* [`boost::variant_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_variant_collection), `boost::variant_unordered_collection`
 
 dealing respectively with classic base/derived or OOP polymorphism, function wrapping
 in the spirit of `std::function`, so-called

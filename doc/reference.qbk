@@ -47,8 +47,8 @@ Static polymorphism is the trivial case where *subobject*(`x`) = `x` for all
 * *subobject*(`x`) = `static_cast<Derived&>(x)` with `typeid(x)==typeid(Derived)`.
 
 A polymorphism model is called /closed/ if, for any `I` \u2208 *Interface*,
-*suboject* ranges over a finite subset ot types of *Implementation*(`I`),
-that is, there is only a finite number of types subojects can belong in.
+*subobject* ranges over a finite subset ot types of *Implementation*(`I`),
+that is, there is only a finite number of types subobjects can belong in.
 A non-closed model is called /open/.
 
 [endsect]
@@ -63,8 +63,8 @@ model. Polymorphic containers satisfy the requirements for _Container_ and
 _AllocatorAwareContainer_ with the following modifications:
 
 * Where it occurs, replace the requirement that `T` be _CopyInsertable_,
-_CopyAssignable_, _MoveInsertable_,  _MoveAssignable_ or
-_EqualityComparable_,  with the following semantic clause: may throw if
+_CopyAssignable_, _MoveInsertable_, _MoveAssignable_ or
+_EqualityComparable_, with the following semantic clause: may throw if
 some subobject in the container is not
 _CopyConstructible_ (respectively, _CopyAssignable_, _MoveConstructible_, 
 _MoveAssignable_, _EqualityComparable_).
@@ -73,7 +73,7 @@ _MoveAssignable_, _EqualityComparable_).
 implementing `I` and the associated type `A` =
 `std::allocator_traits<allocator_type>::rebind_alloc<U>`, `U` is
 _CopyInsertable_ (respectively _MoveInsertable_) with respect to `A` if and
-only if `U` is  _CopyConstructible_ (respectively _MoveConstructible_);
+only if `U` is _CopyConstructible_ (respectively _MoveConstructible_);
 all subobjects of type `U` stored in these containers shall be constructed
 using the `std::allocator_traits<A>::construct` function and
 destroyed using the `std::allocator_traits<A>::destroy` function;
@@ -84,20 +84,44 @@ any other type (internal or public) used by the container.
 [section Polymorphic collections]
 
 [def _PolymorphicCollection_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections [* `PolymorphicCollection`]]]
+[def _base_collection_ [link poly_collection.reference.header_boost_poly_collection_ba0.class_template_base_collection `base_collection`]]
+[def _base_unordered_collection_ [link poly_collection.reference.header_boost_poly_collection_ba2.class_template_base_unordered_co `base_unordered_collection`]]
+[def _function_collection_ [link poly_collection.reference.header_boost_poly_collection_fu0.class_template_function_collecti `function_collection`]]
+[def _function_unordered_collection_ [link poly_collection.reference.header_boost_poly_collection_fu2.class_template_function_unordere `function_unordered_collection`]]
+[def _any_collection_ [link poly_collection.reference.header_boost_poly_collection_an0.class_template_any_collection `any_collection`]]
+[def _any_unordered_collection_ [link poly_collection.reference.header_boost_poly_collection_an2.class_template_any_unordered_col `any_unordered_collection`]]
+[def _variant_collection_ [link poly_collection.reference.header_boost_poly_collection_va0.class_template_variant_collectio `variant_collection`]]
+[def _variant_unordered_collection_ [link poly_collection.reference.header_boost_poly_collection_va2.class_template_variant_unordered `variant_unordered_collection`]]
 
 /Polymorphic collections/ store their objects of type `value_type` in
-/segments/ dedicated to each of the types of the contained subojects.
+/segments/ dedicated to each of the types of the contained subobjects. 
+Polymorphic collections are classified as
+
+* /open/ (resp. /closed/) if its associated polymorphism model
+is open (resp. closed);
+* /ordered/ if the user can control the position of
+an inserted element within the segment it belongs in (/unordered/ otherwise).
+
+[table Classification of collections provided by Boost.PolyCollection
+[[]                [[*open]]                      [[*closed]]]
+[[[*ordered]]      [_base_collection_[br]
+                    _function_collection_[br]
+                    _any_collection_]             [_variant_collection_]]
+[[[*unordered]]    [_base_unordered_collection_[br]
+                    _function_unordered_collection_[br]
+                    _any_unordered_collection_]   [_variant_unordered_collection_]]
+]
+
 Only objects whose subobjects are of an /acceptable/ type are allowed,
 where a type `U` is said to be acceptable if
 
 * it implements the interface associated to the container,
-* it is _MoveConstructible_,
-* it is _MoveAssignable_ or
-[@http://en.cppreference.com/w/cpp/types/is_move_constructible
-`std::is_nothrow_move_constructible<U>::value`] is `true`.
+* (additionally for ordered collections)
+  * it is _MoveConstructible_,
+  * it is _MoveAssignable_ or
+  [@http://en.cppreference.com/w/cpp/types/is_move_constructible
+  `std::is_nothrow_move_constructible<U>::value`] is `true`.
 
-The collection is /open/ (resp. /closed/) if its associated polymorphism model
-is open (resp. closed).
 Polymorphic collections conform
 to the requirements of _PolymorphicContainer_ with the following
 modifications and extra guarantees:
@@ -105,11 +129,16 @@ modifications and extra guarantees:
 * The complexity of `empty()` and `size()` is linear on the number of
 segments of the collection.
 * `max_size()` is not provided.
-* `a==b` evaluates to `true` iff for each non-empty segment of subojects
-of type `U` in `a` there is a segment of `U` in `b` with the same size
-and equal elements in the same order, and vice versa.
-* No exceptions are thrown associated to some subobject type not being
-_CopyAssignable_, _MoveConstructible_ or _MoveAssignable_.
+* (ordered collections)
+  * `a==b` evaluates to `true` iff for each non-empty segment of subobjects
+  of type `U` in `a` there is a segment of `U` in `b` with the same size
+  and equal elements in the same order, and vice versa.
+  * No exceptions are thrown associated to some subobject type not being
+  _CopyAssignable_, _MoveConstructible_ or _MoveAssignable_.
+* (unordered collections)
+  * `a==b` and `a!=b` are not provided.
+  * No exceptions are thrown associated to some subobject type not being
+  _CopyAssignable_ or _MoveAssignable_.
 
 A type `U` is said to be /registered/ into the collection if a
 (possibly empty) segment for `U` has been created. Registered types
@@ -118,9 +147,10 @@ moved from, assigned to, or swapped. For closed collections, all
 acceptable types are automatically registered upon construction.
 
 Each segment has an associated capacity indicating the maximum size
-that it can attain without reallocation. When the limit
+that it can attain without allocation. When the limit
 is exceeded (or explicitly through `reserve`) new storage space is
-allocated with greater capacity and elements are moved.
+allocated to acquire greater capacity (and in the case of ordered
+collections elements are moved to the new space).
 
 Collection traversal goes through the elements of the first segment,
 then the second, etc. For open collections, the order in which segments
@@ -134,19 +164,23 @@ counterparts) whose objects can be used to iterate over the segment
 for `U` (in the same order followed by global traversal).
 Local base iterators refer to `value_type`, whereas
 (`const_`)`local_iterator<U>` refers to `U`. All local iterators model
-_RandomAccessIterator_. Local base iterators may not be used
+_RandomAccessIterator_ if the collection is ordered, or
+_BidirectionalIterator_ if it is unordered. Local base iterators may not be used
 to iterate across segments, and comparing local base iterators
 associated to different segments is undefined behavior. A (const)
 local base iterator to a segment for `U` can be explicitly converted
 to (`const_`)`local_iterator<U>` pointing to the same position,
 and vice versa.
 
-Insertion and erasure do not invalidate iterators (global or local)
+For ordered collections, insertion and erasure do not invalidate iterators (global or local)
 except those from the insertion/erasure point to the end of the
 affected segment, if its capacity is not exceeded, or all
 iterators/references to the segment otherwise
 [footnote The global `end()` iterator lies outside any segment, hence
-it always remain valid.].
+it always remains valid.].
+For unordered collections, insertion and erasure do not ever invalidate global
+or local iterators (including past-the-end iterators) except, naturally, 
+those to an erased element.
 
 For the description of the remaining requirements of polymorphic collections,
 we use the following notation:
@@ -191,14 +225,37 @@ Can be either `std::type_info` or `std::size_t`. We define `index<U>` as follows
 element in `Us...`, where `Us...` is the list of acceptable types as specified in the
 associated polymorphism model.
 
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.iterator]
+[def _iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.iterator `iterator`]]
+
+`C::iterator`
+
+_ForwardIterator_ to `C::value_type`.
+Implicitly convertible to `C::const_iterator`.
+Explicitly convertible to `C::local_base_iterator` if dereferenceable.
+Explicitly convertible to `C::local_iterator<U>` if it dereferences to an element
+with subobject of type `U`.
+
+[#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_iterator]
+[def _const_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_iterator `const_iterator`]]
+
+`C::const_iterator`
+
+_ForwardIterator_ to `const C::value_type`.
+Explicitly convertible to `C::const_local_base_iterator` if dereferenceable.
+Explicitly convertible to `C::const_local_iterator<U>` if it dereferences to an element
+with subobject of type `U`.
+
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.local_base_iterator]
 [def _local_base_iterator_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.local_base_iterator `local_base_iterator`]]
 
 `C::local_base_iterator`
 
-_RandomAccessIterator_ with same value type, difference type and pointer and
+Iterator with same value type, difference type and pointer and
 reference types as `C::iterator`, valid for accessing elements of a given
-segment. Implicily convertible to `C::const_local_base_iterator`, explicitly
+segment. Models _RandomAccessIterator_ if the collection is ordered,
+_BidirectionalIterator_ if it is unordered.
+Implicily convertible to `C::const_local_base_iterator`, explicitly
 convertible to `C::local_iterator<U>` if the segment it points to is actually
 that for `U`.
 
@@ -207,9 +264,11 @@ that for `U`.
 
 `C::const_local_base_iterator`
 
-_RandomAccessIterator_ with same value type, difference type and pointer and
+Iterator with same value type, difference type and pointer and
 reference types as `C::const_iterator`, valid for accessing elements of a given
-segment. Explicitly convertible to `C::const_local_iterator<U>` if the segment
+segment. Models _RandomAccessIterator_ if the collection is ordered,
+_BidirectionalIterator_ if it is unordered.
+Explicitly convertible to `C::const_local_iterator<U>` if the segment
 it points to is actually that for `U`.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.local_iterator]
@@ -217,9 +276,11 @@ it points to is actually that for `U`.
 
 `C::local_iterator<U>`
 
-_RandomAccessIterator_ with value type `U`, reference type `U&`, pointer type
+Iterator with value type `U`, reference type `U&`, pointer type
 `U*` and the same difference type as `C::iterator`, valid for accessing elements
-of the segment for `U`. Implicily convertible to `C::const_local_iterator<U>`,
+of the segment for `U`. Models _RandomAccessIterator_ if the collection is ordered,
+_BidirectionalIterator_ if it is unordered.
+Implicily convertible to `C::const_local_iterator<U>`,
 explicitly convertible to `C::local_base_iterator`.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_local_iterator]
@@ -227,9 +288,11 @@ explicitly convertible to `C::local_base_iterator`.
 
 `C::const_local_iterator<U>`
 
-_RandomAccessIterator_ with value type `U`, reference type `const U&`, pointer
+Iterator with value type `U`, reference type `const U&`, pointer
 type `const U*` and the same difference type as `C::iterator`, valid for
-accessing elements of the segment for `U`. Explicitly convertible to
+accessing elements of the segment for `U`. Models _RandomAccessIterator_ if the collection is ordered,
+_BidirectionalIterator_ if it is unordered.
+Explicitly convertible to
 `C::const_local_base_iterator`.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.const_base_segment_info]
@@ -249,6 +312,7 @@ segment of a collection. If `ci` is a possibly `const` object of type
 * `ci.cend()==c.cend(index<U>)`
 * `ci.end<U>()==c.cend<U>()`
 * `ci.cend<U>()==c.cend<U>()`
+* `ci.size()==c.size(index<U>)`
 * `ci.type_info()==index<U>`
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.base_segment_info]
@@ -279,6 +343,7 @@ associated to the collection `c`, then
 * `ci.cbegin()==c.cbegin<U>()`
 * `ci.end()==c.cend<U>()`
 * `ci.cend()==c.cend<U>()`
+* `ci.size()==c.size<U>()`
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info]
 [def _segment_info_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.types.segment_info `segment_info`]]
@@ -470,7 +535,7 @@ the indicated type.[br]
 `cc.capacity<U>()`[br]
 
 [*Returns:] The maximum size that the segment for the indicated type can
-attain without requiring reallocation.[br]
+attain without requiring allocation of element space.[br]
 [*Throws:] If the indicated type is not registered.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.capacity.reserve]
@@ -485,11 +550,21 @@ collection.
 (2) `c.reserve<U>(n)`
 
 [*Effects:] Throws if the type indicated by `info` is not registered (1)
-or registers `U` if needed (2). If `n` is greater than the current
+or registers `U` if needed (2).
+
+* (ordered collections) If `n` is greater than the current
 capacity of the segment for the indicated type, new storage space is allocated
-with a capacity of at least `n` and elements are moved there.[br]
-[*Complexity:] Linear in the size of the segment if reallocation happens,
-constant otherwise.[br]
+with a capacity of at least `n` and elements are moved there.
+* (unordered collections) If `n` is greater than the current
+capacity of the segment for the indicated type, new storage space is allocated
+for a total capacity of at least `n`.
+
+[*Complexity:]
+
+* (ordered collections) Linear in the size of the segment if reallocation happens,
+constant otherwise.
+* (unordered collections) Linear in the size of the newly allocated storage space.
+
 [*Throws:] `std::length_error` if `n` is greater than the return value of
 `max_size` for the segment.
 
@@ -505,9 +580,13 @@ collection.
 `c.shrink_to_fit<U>()`
 
 [*Effects:] Non-binding request to reduce memory usage while preserving the
-sequence of elements of the segment for the indicated type. May invalidate
-all iterators and references to the segment.[br]
-[*Throws:] If the indicated type is not registered.
+sequence of elements of the segment for the indicated type 
+((unordered collections) possibly in a different order). May invalidate
+all iterators and references to the segment
+((unordered collections) except past-the-end iterators).[br]
+[*Throws:] If the indicated type is not registered. 
+(unordered collections) If element rearrangement is attempted and the element
+type of the segment is not _MoveConstructible_.
 
 [endsect]
 
@@ -522,19 +601,26 @@ all iterators and references to the segment.[br]
 
 [*Requires:] `U` is constructible from `std::forward<Args>(args)...`.[br]
 [*Effects:] Registers `U` (if needed) and inserts a new element with
-a subobject constructed from `std::forward<Args>(args)...`: (1) at the end of
+a subobject constructed from `std::forward<Args>(args)...`:
+
+* (ordered collections) (1) at the end of
 the segment for `U`; (2) just before the
 position indicated by `it`, if it points to the segment for `U`, or at the
-end of the segment for `U` otherwise.[br]
+end of the segment for `U` otherwise.
+* (unordered collections) at an unspecified location in the segment.
+
 [*Returns:] An `iterator` to the newly inserted element.[br]
-[*Complexity:] Amortized constant time plus linear in the distance from the
+[*Complexity:] 
+
+* (ordered collections) Amortized constant time plus linear in the distance from the
 insertion position to the end of the segment.
+* (unordered collections) Constant.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.emplace_pos]
 [def _emplace_pos_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.emplace_pos `emplace_pos`]]
 
-(1) `c.emplace_pos<U>(lbit,args...)`[br]
-(2) `c.emplace_pos(lit,args...)`
+(1) `c.emplace_pos<U>(lbit,args...)` (ordered collections only)[br]
+(2) `c.emplace_pos(lit,args...)` (ordered collections only)
 
 [*Requires:] `U` is constructible from `std::forward<Args>(args)...`.
 (1) `lbit` points to the segment for `U`.[br]
@@ -557,14 +643,22 @@ the insertion position to the end of the segment.
 `Q` = `T` and `T` is acceptable, registers `T` if needed.
 If `Q` = `T` and `T` is not acceptable, throws.
 If `Q` \u2260 `T` and `Q` is not registered, throws.
+(unordered collections) If `x` is a non-const rvalue expression and `Q` is not _MoveConstructible_, throws.
 If `x` is not a non-const rvalue expression and `Q` is not _CopyConstructible_, throws.
 Inserts an element with a subobject move constructed or copy constructed
-from the subobject of `x`: (1) at the end of the corresponding segment;
+from the subobject of `x`: 
+
+* (ordered collections) (1) at the end of the corresponding segment;
 (2) just before the position indicated by `it`, if it points to the
-corresponding segment, or at the end of the segment otherwise.[br]
+corresponding segment, or at the end of the segment otherwise.
+* (unordered collections) at an unspecified location in the segment.
+
 [*Returns:] An `iterator` to the newly inserted element.[br]
-[*Complexity:] Amortized constant time plus linear in the distance
-from the insertion position to the end of the segment.
+[*Complexity:] 
+
+* (ordered collections) Amortized constant time plus linear in the distance from the
+insertion position to the end of the segment.
+* (unordered collections) Constant.
 
 (1) `c.insert(lbit,x)`[br]
 (2) `c.insert(lit,x)`
@@ -572,12 +666,18 @@ from the insertion position to the end of the segment.
 [*Requires:] The type of the subobject of `x` corresponds to the indicated
 segment.[br]
 [*Effects:] Inserts an element with a subobject move constructed or copy
-constructed from the subobject of `x` just before the
-position indicated.[br]
+constructed from the subobject of `x`:
+
+* (ordered collections) just before the position indicated.
+* (unordered collections) at an unspecified location in the segment.
+
 [*Returns:] A `local_base_iterator` (1) or `local_iterator<U>` (2) to the
 newly inserted element.[br]
-[*Complexity:] Amortized constant time plus linear in the distance
-from the insertion position to the end of the segment.
+[*Complexity:] 
+
+* (ordered collections) Amortized constant time plus linear in the distance from the
+insertion position to the end of the segment.
+* (unordered collections) Constant.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_range]
 [def _insert_range_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_range `insert`]]
@@ -598,7 +698,7 @@ due to type registration problems.].
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_hint_range]
 [def _insert_hint_range_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.insert_hint_range `insert`]]
 
-`c.insert(it,i1,i2)`
+`c.insert(it,i1,i2)` (ordered collections only)
 
 [*Effects:] If `it==c.end()`, equivalent to `while(i1!=i2)c.insert(it,*i1++)`,
 otherwise inserts each of the elements in \[`i1`, `i2`) in succession with a hint
@@ -606,9 +706,9 @@ pointing to `*it`
 [footnote That is, the hint remains stable even if `it` may become invalid due
 to reallocations.].
 
-`c.insert(it,it1,it2)`[br]
-`c.insert(it,lbit1,lbit2)`[br]
-`c.insert(it,lit1,lit2)`
+`c.insert(it,it1,it2)` (ordered collections only)[br]
+`c.insert(it,lbit1,lbit2)` (ordered collections only)[br]
+`c.insert(it,lit1,lit2)` (ordered collections only)
 
 [*Effects:] If `it==c.end()`, equivalent to the corresponding hint-less version,
 otherwise for each of the elements in \[`i1`, `i2`) in succession registers the
@@ -616,15 +716,15 @@ type of its subobject if needed and inserts it into the collection with a hint
 pointing to `*it`
 [footnote The two previous notes apply here.].
 
-`c.insert(lbit,i1,i2)`
+`c.insert(lbit,i1,i2)` (ordered collections only)
 
-[*Requires:] The subojects of elements in  \[`i1`, `i2`) are all of the type
+[*Requires:] The subobjects of elements in  \[`i1`, `i2`) are all of the type
 corresponding to the indicated segment.[br]
 [*Effects:] Inserts a range of elements with subobjects copy constructed from
 those in \[`i1`, `i2`) just before `lbit`.[br]
 [*Returns:] A `local_base_iterator` to the beginning of the inserted range.
 
-`c.insert(lit,j1,j2)`
+`c.insert(lit,j1,j2)` (ordered collections only)
 
 [*Requires:] For each value `x` in \[`j1`, `j2`) either (a) `x` is of a type
 implementing the interface associated to the collection and the subobject of
@@ -643,8 +743,11 @@ just before `lit`.[br]
 [*Effects:] Erases the indicated element(s).[br]
 [*Returns:] A non-const iterator of the same category as `xit` pointing
 to the position just after the erased element(s).[br]
-[*Complexity:] Linear on the number of elements erased plus the distance
+[*Complexity:] 
+
+* (ordered collections) Linear on the number of elements erased plus the distance
 from the last one to the end of its segment.
+* (unordered collections) Linear on the number of elements erased.
 
 [#poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.clear]
 [def _clear_ [link poly_collection.reference.polymorphic_containers.polymorphic_collections.modifiers.clear `clear`]]
@@ -668,7 +771,9 @@ from the last one to the end of its segment.
 [endsect]
 
 [import poly_collection_synopsis.qbk] [/ template poly_collection_synopsis]
+[import unordered_poly_collection_synopsis.qbk] [/ template unordered_poly_collection_synopsis]
 [import closed_poly_collection_synopsis.qbk] [/ template closed_poly_collection_synopsis]
+[import closed_unordered_poly_collection_synopsis.qbk] [/ template closed_unordered_poly_collection_synopsis]
 
 [section Header `"boost/poly_collection/exception.hpp"` synopsis]
 
@@ -680,6 +785,7 @@ All the collections in Boost.PolyCollection use the following exceptions
   namespace poly_collection{
 
   struct ``[link poly_collection.reference.header_boost_poly_collection_exc.class_unregistered_type unregistered_type]``;
+  struct ``[link poly_collection.reference.header_boost_poly_collection_exc.class_not_move_constructible not_move_constructible]``;
   struct ``[link poly_collection.reference.header_boost_poly_collection_exc.class_not_copy_constructible not_copy_constructible]``;
   struct ``[link poly_collection.reference.header_boost_poly_collection_exc.class_not_equality_comparable not_equality_comparable]``;
 
@@ -703,6 +809,25 @@ does not yet have an associated segment.
 
 [*Effects:] Constructs an `unregistered_type` object with the specified type
 information.
+
+[endsect]
+
+[section Class `not_move_constructible`]
+
+  struct not_move_constructible:std::logic_error
+  {
+    not_move_constructible(const std::type_info& info);
+
+    const std::type_info* pinfo;
+  };
+
+`not_move_constructible` is thrown when a move operation is tried that
+involves a non-_MoveConstructible_ type.
+
+`not_move_constructible(const std::type_info& info);`
+
+[*Effects:] Constructs a `not_move_constructible` object with the specified
+type information.
 
 [endsect]
 
@@ -748,8 +873,6 @@ type information.
 
 [section Header `"boost/poly_collection/base_collection_fwd.hpp"` synopsis]
 
-[def _base_collection_ [link poly_collection.reference.header_boost_poly_collection_ba0.class_template_base_collection `base_collection`]]
-
   #include <memory>
 
   namespace boost{
@@ -771,7 +894,8 @@ type information.
 
   template<typename Base,typename Allocator>
   void swap(
-    base_collection<Base,Allocator>& x,base_collection<Base,Allocator>& y);
+    base_unordered_collection<Base,Allocator>& x,
+    base_unordered_collection<Base,Allocator>& y);
 
   } /* namespace poly_collection */
 
@@ -817,7 +941,7 @@ namespace.
 
 [section Class template `base_collection`]
 
-`base_collection<Base,Allocator>` is an open _PolymorphicCollection_ associated to
+`base_collection<Base,Allocator>` is an open, ordered _PolymorphicCollection_ associated to
 the classic base/derived _polymorphism_model_:
 
 * *Interface* = { `Base` : `std::is_polymorphic_v<Base>` }.
@@ -830,9 +954,71 @@ the classic base/derived _polymorphism_model_:
 
 [endsect]
 
+[section Header `"boost/poly_collection/base_unordered_collection_fwd.hpp"` synopsis]
+
+  #include <memory>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  template<typename Base,typename Allocator=std::allocator<Base>>
+  class _base_unordered_collection_;
+
+  template<typename Base,typename Allocator>
+  void swap(
+    base_unordered_collection<Base,Allocator>& x,base_unordered_collection<Base,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  using poly_collection::base_unordered_collection;
+
+  } /* namespace boost */
+
+Forward declares the class template _base_unordered_collection_
+and specifies its default template arguments. Forward declares associated free
+functions and brings `boost::poly_collection::base_unordered_collection` to the `boost`
+namespace.
+
+[endsect]
+
+[section Header `"boost/poly_collection/base_unordered_collection.hpp"` synopsis]
+
+  #include <boost/poly_collection/base_unordered_collection_fwd.hpp>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  template<typename Base,typename Allocator>
+  class _base_unordered_collection_;
+
+  template<typename Base,typename Allocator>
+  void swap(
+    base_unordered_collection<Base,Allocator>& x,
+    base_unordered_collection<Base,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  } /* namespace boost */
+
+[section Class template `base_unordered_collection`]
+
+`base_unordered_collection<Base,Allocator>` is an open, unordered _PolymorphicCollection_ associated to
+the classic base/derived _polymorphism_model_:
+
+* *Interface* = { `Base` : `std::is_polymorphic_v<Base>` }.
+* *Implementation*(`Base`) = { `Derived` : `std::is_base_of_v<Base,Derived>` }.
+* *subobject*(`x`) = `static_cast<Derived&>(x)` with `typeid(x)==typeid(Derived)`.
+
+[unordered_poly_collection_synopsis `base_unordered_collection`..`template<typename Base,typename Allocator>`..`Base`..`std::type_info`]
+
+[endsect]
+
+[endsect]
+
 [section Header `"boost/poly_collection/function_collection_fwd.hpp"` synopsis]
 
-[def _function_collection_ [link poly_collection.reference.header_boost_poly_collection_fu0.class_template_function_collecti `function_collection`]]
 [def _function_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_fu0.alias_template_function_collecti `function_collection_value_type`]]
 
   #include <memory>
@@ -997,7 +1183,7 @@ wrapped callable object.
 
 [section Class template `function_collection`]
 
-`function_collection<Signature,Allocator>` is an open _PolymorphicCollection_ associated to
+`function_collection<Signature,Allocator>` is an open, ordered _PolymorphicCollection_ associated to
 a dynamic _polymorphism_model_ based on call signature compatibility:
 
 * *Interface* = { `Signature` : `Signature` = `R(Args...)` }.
@@ -1012,9 +1198,96 @@ a dynamic _polymorphism_model_ based on call signature compatibility:
 
 [endsect]
 
+[section Header `"boost/poly_collection/function_unordered_collection_fwd.hpp"` synopsis]
+
+[def _function_unordered_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_fu2.alias_template_function_unordere `function_unordered_collection_value_type`]]
+
+  #include <memory>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  template<typename Signature>
+  using _function_unordered_collection_value_type_=``/implementation-defined/``;
+
+  template<
+    typename Signature,
+    typename Allocator=std::allocator<function_unordered_collection_value_type<Signature>>
+  >
+  class _function_unordered_collection_;
+
+  template<typename Signature,typename Allocator>
+  void swap(
+    function_unordered_collection<Signature,Allocator>& x,
+    function_unordered_collection<Signature,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  using poly_collection::function_unordered_collection;
+
+  } /* namespace boost */
+
+Defines the alias template _function_unordered_collection_value_type_ (the actual type
+it refers to, though, is merely forward declared).
+Forward declares the class template _function_unordered_collection_
+and specifies its default template arguments. Forward declares associated free
+functions and brings `boost::poly_collection::function_unordered_collection` to the
+`boost` namespace.
+
+[endsect]
+
+[section Header `"boost/poly_collection/function_unordered_collection.hpp"` synopsis]
+
+  #include <boost/poly_collection/function_unordered_collection_fwd.hpp>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  // defines the type ``_function_unordered_collection_value_type_`` refers to
+
+  template<typename Signature,typename Allocator>
+  class _function_unordered_collection_;
+
+  template<typename Signature,typename Allocator>
+  void swap(
+    function_unordered_collection<Signature,Allocator>& x,
+    function_unordered_collection<Signature,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  } /* namespace boost */
+
+[section Alias template `function_unordered_collection_value_type`]
+
+`function_unordered_collection_value_type<Signature>` is the `value_type` of
+`boost::function_unordered_collection<Signature,Allocator>`, where `Signature` must be a type
+of the form `R(Args...)`. 
+`function_unordered_collection_value_type<Signature>` is the same type
+as _function_collection_value_type_`<Signature>`.
+
+[endsect]
+
+[section Class template `function_unordered_collection`]
+
+`function_unordered_collection<Signature,Allocator>` is an open, unordered _PolymorphicCollection_ associated to
+a dynamic _polymorphism_model_ based on call signature compatibility:
+
+* *Interface* = { `Signature` : `Signature` = `R(Args...)` }.
+* *Implementation*(`Signature`) = { `Callable` : `std::is_invocable_r_v<R,Callable,Args...>` }.
+* *subobject*(`x`) =
+  * `x.target<T>()` with `typeid(T)==x.target_type()`, if `x` is an instantiation of _function_unordered_collection_value_type_,
+  * `x`, otherwise.
+
+[unordered_poly_collection_synopsis `function_unordered_collection`..`template<typename Signature,typename Allocator>`..`_function_unordered_collection_value_type_<Signature>`..`std::type_info`]
+
+[endsect]
+
+[endsect]
+
 [section Header `"boost/poly_collection/any_collection_fwd.hpp"` synopsis]
 
-[def _any_collection_ [link poly_collection.reference.header_boost_poly_collection_an0.class_template_any_collection `any_collection`]]
 [def _any_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_an0.alias_template_any_collection_va `any_collection_value_type`]]
 
   #include <memory>
@@ -1113,7 +1386,7 @@ The exact definition of `Concept2` is implementation defined.
 
 [section Class template `any_collection`]
 
-`any_collection<Concept,Allocator>` is an open _PolymorphicCollection_ associated to
+`any_collection<Concept,Allocator>` is an open, ordered _PolymorphicCollection_ associated to
 a dynamic _polymorphism_model_ based on _duck_typing_ as implemented by
 _Boost.TypeErasure_:
 
@@ -1135,9 +1408,106 @@ _Boost.TypeErasure_:
 
 [endsect]
 
+[section Header `"boost/poly_collection/any_unordered_collection_fwd.hpp"` synopsis]
+
+[def _any_unordered_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_an2.alias_template_any_unordered_col `any_unordered_collection_value_type`]]
+
+  #include <memory>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  template<typename Concept>
+  using _any_unordered_collection_value_type_=``/implementation-defined/``;
+
+  template<
+    typename Concept,
+    typename Allocator=std::allocator<any_unordered_collection_value_type<Concept>>
+  >
+  class _any_unordered_collection_;
+
+  template<typename Concept,typename Allocator>
+  void swap(
+    any_unordered_collection<Concept,Allocator>& x,
+    any_unordered_collection<Concept,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  using poly_collection::any_unordered_collection;
+
+  } /* namespace boost */
+
+Defines the alias template _any_unordered_collection_value_type_ (the actual type
+it refers to, though, is merely forward declared).
+Forward declares the class template _any_unordered_collection_
+and specifies its default template arguments. Forward declares associated free
+functions and brings `boost::poly_collection::any_unordered_collection` to the
+`boost` namespace.
+
+[endsect]
+
+[section Header `"boost/poly_collection/any_unordered_collection.hpp"` synopsis]
+
+  #include <boost/poly_collection/any_unordered_collection_fwd.hpp>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  // defines the type ``_any_unordered_collection_value_type_`` refers to
+
+  template<typename Concept,typename Allocator>
+  class _any_unordered_collection_;
+
+  template<typename Concept,typename Allocator>
+  void swap(
+    any_unordered_collection<Concept,Allocator>& x,
+    any_unordered_collection<Concept,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  } /* namespace boost */
+
+[section Alias template `any_unordered_collection_value_type`]
+
+`any_unordered_collection_value_type<Concept>` is the `value_type` of
+`boost::any_unordered_collection<Concept,Allocator>`, where `Concept` is defined according to
+the [@boost:/doc/html/boost_typeerasure/conceptdef.html requisites]
+of _Boost.TypeErasure_ using
+[@boost:/doc/html/boost/type_erasure/_self.html `_self`]
+as its [@boost:/doc/html/boost/type_erasure/placeholder.html placeholder].
+`any_unordered_collection_value_type<Concept>` is the same type as
+_any_collection_value_type_`<Concept>`.
+
+[endsect]
+
+[section Class template `any_unordered_collection`]
+
+`any_unordered_collection<Concept,Allocator>` is an open, unordered _PolymorphicCollection_ associated to
+a dynamic _polymorphism_model_ based on _duck_typing_ as implemented by
+_Boost.TypeErasure_:
+
+* *Interface* = { `Concept` :
+    as [@boost:/doc/html/boost_typeerasure/conceptdef.html specified] by _Boost.TypeErasure_,
+    using the [@boost:/doc/html/boost/type_erasure/_self.html `_self`]
+    [@boost:/doc/html/boost/type_erasure/placeholder.html placeholder] }.
+* *Implementation*(`Concept`) = { `Concrete` : `Concrete` satisfies `Concept` }.
+* *subobject*(`x`) =
+  * `boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/any_cast.html `any_cast`]`<T&>(x)`
+    with `typeid(T)==boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/typeid_of.html `typeid_of`]`(x)`,
+    if `x` is an instantiation of `boost::type_erasure::`[@boost:/doc/html/boost/type_erasure/any.html `any`]
+    including [@boost:/doc/html/boost/type_erasure/typeid_.html `typeid_`]`<>`,
+  * `x`, otherwise.
+
+[unordered_poly_collection_synopsis `any_unordered_collection`..`template<typename Concept,typename Allocator>`..`_any_unordered_collection_value_type_<Concept>`..`std::type_info`]
+
+[endsect]
+
+[endsect]
+
 [section Header `"boost/poly_collection/variant_collection_fwd.hpp"` synopsis]
 
-[def _variant_collection_ [link poly_collection.reference.header_boost_poly_collection_va0.class_template_variant_collectio `variant_collection`]]
 [def _variant_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio `variant_collection_value_type`]]
 
   #include <boost/mp11/list.hpp>
@@ -1183,7 +1553,7 @@ _Boost.TypeErasure_:
 Defines the alias template _variant_collection_value_type_ (the actual type
 it refers to, though, is merely forward declared).
 Forward declares the class template _variant_collection_
-and specifies its default template arguments. 
+and specifies its default template arguments.
 Defines the alias template `variant_collection_of`. Forward declares associated
 free functions and brings `boost::poly_collection::variant_collection`
 and `poly_collection::variant_collection_of` to the `boost` namespace.
@@ -1299,27 +1669,27 @@ which is implementation defined.
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_eq operator==]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_ne operator!=]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_lt operator<]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_gt operator>]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_le operator=<]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
   template<typename... Ts>
   bool ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.operator_ge operator>=]``(
     const ``/variant_collection_value_type_impl/``<Ts...>& x,
-	const ``/variant_collection_value_type_impl/``<Ts...>& y);
+    const ``/variant_collection_value_type_impl/``<Ts...>& y);
 
   template<typename R=``/see-below/``,typename F,typename... Vs>
   ``/see-below/`` ``[link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio.visit visit]``(F&& f,Vs&&... xs);
@@ -1511,21 +1881,120 @@ converted to `R`.
 
 [section Class template `variant_collection`]
 
-`variant_collection<TypeList,Allocator>` is a closed _PolymorphicCollection_ associated to
+`variant_collection<TypeList,Allocator>` is a closed, ordered _PolymorphicCollection_ associated to
 a dynamic _polymorphism_model_ based on the interface of _std::variant_:
 
 * *Interface* = { `TypeList` = `L<Ts...>` : `L` is an arbitrary class template, `Ts...` is not empty, and
   each `Ti` in `Ts...` is different, _MoveConstructible_, and _MoveAssignable_ or such that
   [@http://en.cppreference.com/w/cpp/types/is_move_constructible `std::is_nothrow_move_constructible<Ti>::value`] is `true` }.
 * *Implementation*(`L<Ts...>`) = { `Ts...` } \u222a
-  { [link poly_collection.reference.header_boost_poly_collection_va0.alias_template_variant_collectio `variant_collection_value_type`]`<Us...>` : `Us...` \u2286 `Ts...` } \u222a
+  { _variant_collection_value_type_`<Us...>` : `Us...` \u2286 `Ts...` } \u222a
   { _std::variant_`<Us...>` : `Us...` \u2286 `Ts...` } \u222a
-  { [@boost:libs/variant2/doc/html/variant2.html#ref_variant `boost::variant2::variant`]`<Us...>` : `Us...` \u2286 `Ts...` }.
+  { _boost::variant2::variant_`<Us...>` : `Us...` \u2286 `Ts...` }.
 * *subobject*(`x`) =
   * `get<I>(x)` with `I==x.index()`, if the type of `x` is not in `Ts...`,
-  *	`x`, otherwise.
+  * `x`, otherwise.
 
 [closed_poly_collection_synopsis `variant_collection`..`template<typename TypeList,typename Allocator>`..`_variant_collection_value_type_<TypeList>`..`std::size_t`]
+
+[endsect]
+
+[endsect]
+
+[section Header `"boost/poly_collection/variant_unordered_collection_fwd.hpp"` synopsis]
+
+[def _variant_unordered_collection_value_type_ [link poly_collection.reference.header_boost_poly_collection_va2.alias_template_variant_unordered `variant_unordered_collection_value_type`]]
+
+  #include <boost/mp11/list.hpp>
+  #include <memory>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  template<typename TypeList>
+  using _variant_unordered_collection_value_type_=``/implementation-defined/``;
+
+  template<
+    typename TypeList,
+    typename Allocator=std::allocator<variant_unordered_collection_value_type<TypeList>>
+  >
+  class _variant_unordered_collection_;
+
+  template<typename... Ts>
+  using variant_unordered_collection_of=variant_unordered_collection<mp11::mp_list<Ts...>>;
+
+  template<typename TypeList,typename Allocator>
+  void swap(
+    variant_unordered_collection<TypeList,Allocator>& x,
+    variant_unordered_collection<TypeList,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  using poly_collection::variant_unordered_collection;
+  using poly_collection::variant_unordered_collection_of;
+
+  } /* namespace boost */
+
+Defines the alias template _variant_unordered_collection_value_type_ (the actual type
+it refers to, though, is merely forward declared).
+Forward declares the class template _variant_unordered_collection_
+and specifies its default template arguments.
+Defines the alias template `variant_unordered_collection_of`. Forward declares associated
+free functions and brings `boost::poly_collection::variant_unordered_collection`
+and `poly_collection::variant_unordered_collection_of` to the `boost` namespace.
+
+[endsect]
+
+[section Header `"boost/poly_collection/variant_unordered_collection.hpp"` synopsis]
+
+  #include <boost/poly_collection/variant_unordered_collection_fwd.hpp>
+
+  namespace boost{
+
+  namespace poly_collection{
+
+  // defines the type ``_variant_unordered_collection_value_type_`` refers to
+
+  template<typename TypeList,typename Allocator>
+  class _variant_unordered_collection_;
+
+  template<typename TypeList,typename Allocator>
+  void swap(
+    variant_unordered_collection<TypeList,Allocator>& x,
+    variant_unordered_collection<TypeList,Allocator>& y);
+
+  } /* namespace poly_collection */
+
+  } /* namespace boost */
+
+[section Alias template `variant_unordered_collection_value_type`]
+
+`variant_unordered_collection_value_type<TypeList>` is the `value_type` of
+`boost::variant_unordered_collection<TypeList,Allocator>`, where `TypeList`
+is a [@boost:/libs/mp11/doc/html/mp11.html#definitions Boost.Mp11 list]
+of different types `Ts...`.
+`variant_unordered_collection_value_type<TypeList>` is the same type as
+_variant_collection_value_type_`<TypeList>`
+
+[endsect]
+
+[section Class template `variant_unordered_collection`]
+
+`variant_unordered_collection<TypeList,Allocator>` is a closed, unordered _PolymorphicCollection_ associated to
+a dynamic _polymorphism_model_ based on the interface of _std::variant_:
+
+* *Interface* = { `TypeList` = `L<Ts...>` : `L` is an arbitrary class template, `Ts...` is not empty, and
+  each `Ti` in `Ts...` is different }.
+* *Implementation*(`L<Ts...>`) = { `Ts...` } \u222a
+  { _variant_unordered_collection_value_type_`<Us...>` : `Us...` \u2286 `Ts...` } \u222a
+  { _std::variant_`<Us...>` : `Us...` \u2286 `Ts...` } \u222a
+  { _boost::variant2::variant_`<Us...>` : `Us...` \u2286 `Ts...` }.
+* *subobject*(`x`) =
+  * `get<I>(x)` with `I==x.index()`, if the type of `x` is not in `Ts...`,
+  * `x`, otherwise.
+
+[closed_unordered_poly_collection_synopsis `variant_unordered_collection`..`template<typename TypeList,typename Allocator>`..`_variant_unordered_collection_value_type_<TypeList>`..`std::size_t`]
 
 [endsect]
 

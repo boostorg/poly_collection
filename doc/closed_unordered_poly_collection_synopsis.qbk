@@ -1,11 +1,11 @@
 [/
-  Copyright 2016-2026 Joaquin M Lopez Munoz.
+  Copyright 2026 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
 ]
 
-[template poly_collection_synopsis[class_name template_header value_type type_index]
+[template closed_unordered_poly_collection_synopsis[class_name template_header value_type type_index]
   ``[template_header]``
   class ``[class_name]``
   {
@@ -21,8 +21,8 @@
     using pointer=typename std::allocator_traits<Allocator>::pointer;
     using const_pointer=typename std::allocator_traits<Allocator>::const_pointer;
     using _type_index_=``[type_index]``;
-    using _iterator_=``/implementation-defined/``;
-    using _const_iterator_=``/implementation-defined/``;
+    using iterator=``/implementation-defined/``;
+    using const_iterator=``/implementation-defined/``;
     using _local_base_iterator_=``/implementation-defined/``;
     using _const_local_base_iterator_=``/implementation-defined/``;
     template<typename T> using _local_iterator_=``/implementation-defined/``;
@@ -53,14 +53,6 @@
     ``[class_name]``& operator=(``[class_name]``&&);
 
     allocator_type get_allocator()const noexcept;
-
-    ``[link poly_collection.reference.polymorphic_containers.polymorphic_collections.type_registration ['// type registration:]]``
-
-    template<typename... T>
-    void _register_types_();
-
-    bool _is_registered_(const type_index& info)const;
-    template<typename T> bool _is_registered_()const;
 
     ``[link poly_collection.reference.polymorphic_containers.polymorphic_collections.iterators ['// iterators:]]``
 
@@ -125,9 +117,6 @@
     template<typename T,typename... Args>
     iterator _emplace_hint_(const_iterator hint,Args&&... args);
 
-    template<typename T,typename LocalIterator,typename... Args>
-    auto _emplace_pos_(LocalIterator pos,Args&&... args);
-
     template<typename T>
     iterator _insert_(T&& x);
 
@@ -136,9 +125,6 @@
 
     template<typename InputIterator>
     void _insert_range_(InputIterator first,InputIterator last);
-
-    template<typename CollectionIterator,typename InputIterator>
-    void _insert_hint_range_(CollectionIterator hint,InputIterator first,InputIterator last);
 
     template<typename CollectionIterator>
     auto _erase_(CollectionIterator pos);

@@ -1,11 +1,11 @@
 [/
-  Copyright 2016-2026 Joaquin M Lopez Munoz.
+  Copyright 2026 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
 ]
 
-[template poly_collection_synopsis[class_name template_header value_type type_index]
+[template unordered_poly_collection_synopsis[class_name template_header value_type type_index]
   ``[template_header]``
   class ``[class_name]``
   {
@@ -125,9 +125,6 @@
     template<typename T,typename... Args>
     iterator _emplace_hint_(const_iterator hint,Args&&... args);
 
-    template<typename T,typename LocalIterator,typename... Args>
-    auto _emplace_pos_(LocalIterator pos,Args&&... args);
-
     template<typename T>
     iterator _insert_(T&& x);
 
@@ -136,9 +133,6 @@
 
     template<typename InputIterator>
     void _insert_range_(InputIterator first,InputIterator last);
-
-    template<typename CollectionIterator,typename InputIterator>
-    void _insert_hint_range_(CollectionIterator hint,InputIterator first,InputIterator last);
 
     template<typename CollectionIterator>
     auto _erase_(CollectionIterator pos);
