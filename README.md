@@ -17,7 +17,7 @@ Four *polymorphic collections*, along with
 [*unordered variants*](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.unordered_collections),
 are provided:
 
-* [`boost::base_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection), `boost::base_unordered_collection`` 
+* [`boost::base_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_base_collection), `boost::base_unordered_collection` 
 * [`boost::function_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_function_collection), `boost::function_unordered_collection`
 * [`boost::any_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_any_collection), `boost::any_unordered_collection`
 * [`boost::variant_collection`](http://www.boost.org/doc/html/poly_collection/tutorial.html#poly_collection.tutorial.basics.boost_variant_collection), `boost::variant_unordered_collection`
