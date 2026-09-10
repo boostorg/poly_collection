@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -27,7 +27,7 @@ namespace detail{
 
 /* Map-like wrapper over a vector of std::pair<std::size_t,T>. It is required
  * that the first member of the i-th element be i, which implies that
- * insert(i,x) must executed in increasing order of i.
+ * insert(i,x) must be executed in increasing order of i.
  */
 
 template<typename T,typename Allocator>

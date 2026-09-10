@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,11 +13,10 @@
 #pragma once
 #endif
 
-#include <boost/poly_collection/variant_collection_fwd.hpp>
 #include <boost/mp11/list.hpp>
-#include <boost/poly_collection/detail/variant_model.hpp>
 #include <boost/poly_collection/detail/poly_collection.hpp>
-#include <utility>
+#include <boost/poly_collection/detail/variant_model.hpp>
+#include <boost/poly_collection/variant_collection_fwd.hpp>
 
 namespace boost{
 
@@ -26,13 +25,12 @@ namespace poly_collection{
 template<typename TypeList,typename Allocator>
 class variant_collection:
   public common_impl::poly_collection<
-    mp11::mp_rename<TypeList,detail::variant_model>,Allocator>
+    mp11::mp_rename<
+      mp11::mp_push_front<TypeList,Allocator>,detail::variant_model>>
 {
   using base_type=common_impl::poly_collection<
-    mp11::mp_rename<TypeList,detail::variant_model>,Allocator>;
-
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
+    mp11::mp_rename<
+      mp11::mp_push_front<TypeList,Allocator>,detail::variant_model>>;
 
 public:
   using base_type::base_type;
@@ -53,7 +51,7 @@ bool operator==(
   const variant_collection<TypeList,Allocator>& x,
   const variant_collection<TypeList,Allocator>& y)
 {
-  return x.base()==y.base();
+  return x.equal(y);
 }
 
 template<typename TypeList,typename Allocator>
@@ -74,7 +72,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace  */
+} /* namespace poly_collection */
 
 using poly_collection::variant_collection;
 

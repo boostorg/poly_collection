@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -20,12 +20,12 @@ namespace boost{
 namespace poly_collection{
 
 namespace detail{
-template<typename Concept> struct any_model;
+template<typename Concept> struct any_polymorphism;
 }
 
 template<typename Concept>
 using any_collection_value_type=
-  typename detail::any_model<Concept>::value_type;
+  typename detail::any_polymorphism<Concept>::value_type;
 
 template<
   typename Concept,

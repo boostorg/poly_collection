@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -24,7 +24,7 @@ namespace poly_collection{
 
 namespace detail{
 
-/* segment<Model,Allocator> encapsulates implementations of
+/* segment<Model> encapsulates implementations of
  * Model::segment_backend virtual interface under a value-semantics type for
  * use by poly_collection. The techique is described by Sean Parent at slides
  * 157-205 of
@@ -35,12 +35,13 @@ namespace detail{
  * prefix) are used: this increases the performance of some operations.
  */
 
-template<typename Model,typename Allocator>
+template<typename Model>
 class segment
 {
 public:
   using value_type=typename Model::value_type;
-  using allocator_type=Allocator; /* needed for uses-allocator construction */
+  using allocator_type=typename Model::segment_allocator_type;
+    /* needed for uses-allocator construction */
   using base_iterator=typename Model::base_iterator;
   using const_base_iterator=typename Model::const_base_iterator;
   using base_sentinel=typename Model::base_sentinel;
@@ -251,6 +252,12 @@ public:
     return filter(impl<U>().nv_erase(it));
   }
 
+  template<typename U>
+  base_iterator erase(iterator<U> it)
+  {
+    return erase(const_iterator<U>{it});
+  }
+
   base_iterator erase(const_base_iterator f,const_base_iterator l)
   {
     return filter(impl().erase(f,l));
@@ -260,6 +267,12 @@ public:
   base_iterator erase(const_iterator<U> f,const_iterator<U> l)
   {
     return filter(impl<U>().nv_erase(f,l));
+  }
+
+  template<typename U>
+  base_iterator erase(iterator<U> f,iterator<U> l)
+  {
+    return erase(const_iterator<U>{f},const_iterator<U>{l});
   }
 
   template<typename Iterator>
@@ -279,11 +292,11 @@ public:
   void                 clear()noexcept{filter(impl<U>().nv_clear());}
 
 private:
-  using allocator_traits=std::allocator_traits<Allocator>;
-  using segment_backend=typename Model::template segment_backend<Allocator>;
+  using allocator_traits=std::allocator_traits<allocator_type>;
+  using segment_backend=typename Model::segment_backend;
   template<typename Concrete>
   using segment_backend_implementation=typename Model::
-    template segment_backend_implementation<Concrete,Allocator>;
+    template segment_backend_implementation<Concrete>;
   using segment_backend_unique_ptr=
     typename segment_backend::segment_backend_unique_ptr;
   using range=typename segment_backend::range;

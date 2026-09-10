@@ -28,6 +28,10 @@
 [def _std::function_ [@http://en.cppreference.com/w/cpp/utility/functional/function `std::function`]]
 [def _std::variant_ [@https://en.cppreference.com/w/cpp/utility/variant `std::variant`]]
 [def _std::unordered_multiset_ [@http://en.cppreference.com/w/cpp/container/unordered_multiset `std::unordered_multiset`]]
+[def _boost::container::hub_ [@boost:doc/html/container/non_standard_containers.html#container.non_standard_containers.hub `boost::container::hub`]],
+[def _boost::variant2::variant_ [@boost:libs/variant2/doc/html/variant2.html#ref_variant `boost::variant2::variant`]]
+[def _BidirectionalIterator_ [@http://en.cppreference.com/w/cpp/named_req/BidirectionalIterator [* `BidirectionalIterator`]]]
+[def _ForwardIterator_ [@http://en.cppreference.com/w/cpp/named_req/ForwardIterator [* `ForwardIterator`]]]
 [def _RandomAccessIterator_ [@http://en.cppreference.com/w/cpp/named_req/RandomAccessIterator [* `RandomAccessIterator`]]]
 
 [template ticket[number]'''<ulink url="https://svn.boost.org/trac/boost/ticket/'''[number]'''">'''#[number]'''</ulink>''']
@@ -53,12 +57,12 @@ lower execution speed.
 When the particular traversal order is not relevant to the user application,
 Boost.PolyCollection proposes an alternative data structure that restores memory
 contiguity and packs elements according to their concrete type. Four container
-class templates are provided:
+class templates are provided along with /unordered/, stable variations:
 
-* `boost::base_collection`
-* `boost::function_collection`
-* `boost::any_collection`
-* `boost::variant_collection`
+* `boost::base_collection`, `boost::base_unordered_collection`
+* `boost::function_collection`, `boost::function_unordered_collection`
+* `boost::any_collection`, `boost::any_unordered_collection`
+* `boost::variant_collection`, `boost::variant_unordered_collection`
 
 respectively dealing with four different types of dynamic polymorphism
 available in C++:
@@ -181,8 +185,19 @@ implemented by Boost.TypeErasure, and closed polymorphism in the spirit of
 * `boost::any_collection`
 * `boost::variant_collection`
 
-The interfaces of these containers are mostly the same and follow the usual
-conventions of standard library containers.
+Also, there are /unordered/ variants of these:
+
+* `boost::base_unordered_collection`
+* `boost::function_unordered_collection`
+* `boost::any_unordered_collection`
+* `boost::variant_unordered_collection`
+
+that use _boost::container::hub_ rather than `std::vector` as their
+segment data structure. These variants forgo control of element 
+positioning within a segment in exchange for iterator and reference stability.
+
+The interfaces all Boost.PolyCollection containers are mostly the same and follow
+the usual conventions of standard library containers.
 
 [endsect]
 
@@ -222,9 +237,9 @@ are rather those of containers like _std::unordered_multiset_, namely `insert` a
 * Elements are not created with `new` but constructed on the stack and passed
 directly much like one would do with a standard non-polymorphic container.
 
-[important Elements inserted into a `boost::base_collection` (or the other
-containers of Boost.PolyCollection) must be copyable and assignable; strictly
-speaking, they must at least model _MoveConstructible_ and either be
+[important Elements inserted into a `boost::base_collection` (or other
+containers of Boost.PolyCollection we'll see later) must be copyable and assignable; 
+strictly speaking, they must at least model _MoveConstructible_ and either be
 _MoveAssignable_ or not throw on move construction. This might
 force you to revisit your code as it is customary to explicitly forbid
 copying at the base level of a virtual hierarchy to avoid
@@ -539,8 +554,10 @@ associated to the segment for `T`. These iterators dereference to the same
 value as regular iterators (in the case of `boost::base_collection<base>`,
 `base&`) but can only be used to traverse a given segment (for instance,
 `local_base_iterator`'s from different segments cannot be compared between them).
-In exchange, `local_base_iterator` is a _RandomAccessIterator_, whereas
-whole-collection iterators only model _ForwardIterator_.
+In exchange, `local_base_iterator` is a _RandomAccessIterator_ [footnote
+It is just a _BidirectionalIterator_ in the case of 
+[link poly_collection.tutorial.unordered_collections unordered collections].],
+whereas whole-collection iterators only model _ForwardIterator_.
 
 A terser range-based `for` loop can be used with the convenience `segment`
 member function:
@@ -561,10 +578,9 @@ The observant reader will have noticed that in order to access `rank`, which
 is a member of `warrior` rather than its base class `sprite`, `first` (or
 `x` in the range `for` loop version) has to refer to a `warrior&`, and this
 is precisely the difference between `local_iterator<warrior>` (the type
-returned by `begin<warrior>()`) and `local_base_iterator`.
-`local_iterator<warrior>` is also a _RandomAccessIterator_: for most respects,
-\[`begin<T>()`, `end<T>()`) can be regarded as a range over an array of `T`
-objects. `local_iterator<T>`s can be explicitly converted to
+returned by `begin<warrior>()`) and `local_base_iterator`:
+`local_iterator<warrior>`'s `value_type` is `warrior`, not `sprite`.
+`local_iterator<T>`s can be explicitly converted to
 `local_base_iterator`s. Conversely, if a `local_base_iterator` is associated
 to a segment for `T`, it can then be explictly converted to a
 `local_iterator<T>` (otherwise the conversion is undefined behavior).
@@ -714,6 +730,73 @@ Note the naming here: `emplace_hint` is used when the position is indicated with
 a regular iterator, and for local iterators it is `emplace_pos`.
 [endsect]
 
+[section Unordered collections]
+
+[import ../example/unordered.cpp]
+(Code samples from [@boost:/libs/poly_collection/example/unordered.cpp `unordered.cpp`].)
+
+The collections presented so far do not allow for arbitrary ordering of their
+elements since these are grouped in segments according to their types,
+but, as we have seen, within a segment the user can indeed control exactly how the
+elements are arranged. Boost.PolyCollection provides /unordered/ collection variants
+that forgo this capability entirely:
+
+[unordered_1]
+
+If we traverse `c` and render its elements we get:
+
+[pre
+warrior 3,warrior 1,warrior 2
+]
+whereas with a regular `boost::base_collection` warrior #3 would go at the end. 
+In exchange for this loss of predictability, unordered collections provide 
+/stable/ iterators and references to elements:
+
+[unordered_2]
+
+How do these two aspects relate? In order to keep iterators stable, 
+`boost::base_unordered_collection` does not move elements around when erasing mid-sequence, so
+`c.erase(c.begin<warrior>())` creates a "hole" in the segment space that is
+later reused to place the element inserted by `c.insert(warrior{3})`. This
+combination of unorderedness and stability is a defining feature of containers
+such as [@https://en.cppreference.com/cpp/container/hive `std::hive`] or
+_boost::container::hub_, and in fact Boost.PolyCollection unordered collections are 
+internally based on the latter.
+
+Besides `boost::base_unordered_collection`, unordered versions for the rest
+of collections are also provided: `boost::function_unordered_collection`,
+`boost::any_unordered_collection` and `boost::variant_unordered_collection`.
+Their interface is mostly the same as that of their ordered counterparts,
+with some minor differences:
+
+* Positional insertion operations either are not present or
+ignore the position argument. 
+* Local iterators are _BidirectionalIterator_\ s rather than
+_RandomAccessIterator_\ s.
+
+[note As elements in an unordered collection are not moved around once inserted 
+(except in some corner cases), they are not required to be _MoveConstructible_,
+which is particularly convenient when dealing with virtual class hierarchies in
+`boost::base_unordered_collection`.
+]
+
+Consider using unordered collections when iterator/reference stability is required 
+in your program. In terms of performance:
+
+* Insertion in an unordered collection is generally faster than back insertion
+in the related ordered collection because no element reallocation happens when
+the capacity is exhausted.
+* Mid-erasures are much faster because there is no need
+to shift the elements past the erased one.
+* Iteration, on the other hand, is slower as segment traversal in an ordered
+collection resolves to iterating a `std::vector`, which is maximally efficient
+with respect to generated code and cache locality.
+
+Consult the [link poly_collection.performance performance section] for some
+numerical results.
+
+[endsect]
+
 [section Exceptions]
 
 [import ../example/exceptions.cpp]
@@ -726,10 +809,11 @@ those generated by user-provided types, polymorphic collections can throw the fo
 * `boost::poly_collection::unregistered_type`
 * `boost::poly_collection::not_copy_constructible`
 * `boost::poly_collection::not_equality_comparable`
+* `boost::poly_collection::not_move_constructible` (unordered collections only)
 
 The situations in which the first is raised have been
 [link poly_collection.tutorial.deeper_into_the_segmented_nature.type_registration already discussed];
-let us focus on the other two.
+let us focus on the others.
 
 We have a new type of sprite in our game defined by the non-copyable
 class `elf`:
@@ -771,13 +855,32 @@ identical collections. The situation is similar to that of standard
 associative containers.]
 ]
 
-These three are all the intrinsic exceptions thrown by Boost.PolyCollection.
-The implication is that if a type is _CopyConstructible_,
-_MoveAssignable_ (or move construction does not throw) and _EqualityComparable_, then
-the entire interface of Boost.PolyCollection is unrestrictedly available for it
+`boost::poly_collection::not_move_constructible` is only thrown by /unordered/
+collections, and only in two particular cases:
+
+[exceptions_3]
+
+The first throw is not surprising: `dwarf` is not move constructible, so the
+temporary `dwarf{0}` can't be used to construct the inserted element
+[footnote This does not happen with /ordered/ collections because there
+types are checked to be _MoveConstructible_ at compile time. Such a simple
+case as `insert(dwarf{0})` could in principle be detected statically,
+but this wouldn't be possible with `insert(static_cast<sprite&&>(dwarf{0}))`].
+As for `shrink_to_fit`, this operation compacts the segments in the collection, 
+which may require that some holes be filled by move-constructing elements there
+from somewhere else in the sequence. Other than these two cases, unordered 
+collections never move elements around.
+
+These four are all the intrinsic exceptions thrown by Boost.PolyCollection.
+If you want to make sure that the entire interface of Boost.PolyCollection is
+unrestrictedly available at run time for a given element type 
 [footnote Provided, of course, that the type has the /right/ to be in the collection,
 that is, it is derived from the specified base, or callable with the specified
-signature, etc.].
+signature, etc.], then the type must be:
+
+* (ordered collections) _CopyConstructible_, _MoveAssignable_ (or move construction 
+does not throw) and _EqualityComparable_.
+* (unordered collections) _MoveConstructible_ and _CopyConstructible_.
 
 [endsect]
 
@@ -798,9 +901,13 @@ Replacing the container used in the program from classic alternatives to
 Boost.PolyCollection:
 
 * `std::vector<base*>` (or similar) → `boost::base_collection<base>`
+* `boost::container::hub<base*>` (or similar) → `boost::base_unordered_collection<base>`
 * `std::vector<std::function<signature>>` → `boost::function_collection<signature>`
+* `boost::container::hub<std::function<signature>>` → `boost::function_unordered_collection<signature>`
 * `std::vector<boost::type_erasure::any<concept_>>` → `boost::any_collection<concept_>`
+* `boost::container::hub<boost::type_erasure::any<concept_>>` → `boost::any_unordered_collection<concept_>`
 * `std::vector<std::variant<Ts...>>` → `boost::any_collection<boost::mp11::mp_list<Ts...>>`
+* `boost::container::hub<std::variant<Ts...>>` → `boost::any_unordered_collection<boost::mp11::mp_list<Ts...>>`
 
 is expected to increase performance due to better caching and branch prediction
 behavior. But there is still room for improvement.
@@ -995,6 +1102,14 @@ for the following environments:
 
 [endsect]
 
+[section `boost::base_unordered_collection`]
+
+* Baseline container: `ptr_hub` = `boost::container::hub<std::unique_ptr<base>>`
+* Polymorphic collection: `base_unordered_collection` = `boost::base_unordered_collection<base>`
+* Element types: as with `boost::base_collection`
+
+[endsect]
+
 [section `boost::function_collection`]
 
 * Baseline container: `func_vector` = `std::vector<std::function<int(int)>>`
@@ -1002,6 +1117,14 @@ for the following environments:
 * Element types: `T1` = `concrete1`, `T2` = `concrete2`, `T3` = `concrete3`
 
 [perf_function_types]
+
+[endsect]
+
+[section `boost::function_unordered_collection`]
+
+* Baseline container: `func_hub` = `boost::container::hub<std::function<int(int)>>`
+* Polymorphic collection: `function_unordered_collection` = `boost::function_unordered_collection<int(int)>`
+* Element types: as with `boost::function_unordered_collection`
 
 [endsect]
 
@@ -1015,11 +1138,27 @@ for the following environments:
 
 [endsect]
 
+[section `boost::any_unordered_collection`]
+
+* Baseline container: `any_hub` = `boost::container::hub<boost::type_erasure::any<concept_>>`
+* Polymorphic collection: `any_unordered_collection` = `boost::any_unordered_collection<concept_>`
+* `concept_` and element types: as with `boost::any_collection`
+
+[endsect]
+
 [section `boost::variant_collection`]
 
 * Baseline container: `variant_vector` = `std::vector<std::variant<int,double,char>>`
 * Polymorphic collection: `variant_collection` = `boost::variant_collection<boost::mp11::mp_list<int,double,char>>`
 * Element types: `T1` = `int`, `T2` = `double`, `T3` = `char`
+
+[endsect]
+
+[section `boost::variant_unordered_collection`]
+
+* Baseline container: `variant_hub` = `boost::container::hub<std::variant<int,double,char>>`
+* Polymorphic collection: `variant_unordered_collection` = `boost::variant_unordered_collection<boost::mp11::mp_list<int,double,char>>`
+* Element types: as with `boost::variant_collection`
 
 [endsect]
 
@@ -1041,10 +1180,22 @@ The horizontal axis is logarithmic.
 [perf_fig Insertion.._clang130_x64_..insert_base_clang130_x64]
 [endsect]
 
+[section Results for `boost::base_unordered_collection`]
+[perf_fig Insertion.._vs2022_x64_..insert_base_unordered_vs2022_x64]
+[perf_fig Insertion.._gcc132_x64_..insert_base_unordered_gcc132_x64]
+[perf_fig Insertion.._clang130_x64_..insert_base_unordered_clang130_x64]
+[endsect]
+
 [section Results for `boost::function_collection`]
 [perf_fig Insertion.._vs2022_x64_..insert_function_vs2022_x64]
 [perf_fig Insertion.._gcc132_x64_..insert_function_gcc132_x64]
 [perf_fig Insertion.._clang130_x64_..insert_function_clang130_x64]
+[endsect]
+
+[section Results for `boost::function_unordered_collection`]
+[perf_fig Insertion.._vs2022_x64_..insert_function_unordered_vs2022_x64]
+[perf_fig Insertion.._gcc132_x64_..insert_function_unordered_gcc132_x64]
+[perf_fig Insertion.._clang130_x64_..insert_function_unordered_clang130_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
@@ -1053,10 +1204,22 @@ The horizontal axis is logarithmic.
 [perf_fig Insertion.._clang130_x64_..insert_any_clang130_x64]
 [endsect]
 
+[section Results for `boost::any_unordered_collection`]
+[perf_fig Insertion.._vs2022_x64_..insert_any_unordered_vs2022_x64]
+[perf_fig Insertion.._gcc132_x64_..insert_any_unordered_gcc132_x64]
+[perf_fig Insertion.._clang130_x64_..insert_any_unordered_clang130_x64]
+[endsect]
+
 [section Results for `boost::variant_collection`]
 [perf_fig Insertion.._vs2022_x64_..insert_variant_vs2022_x64]
 [perf_fig Insertion.._gcc132_x64_..insert_variant_gcc132_x64]
 [perf_fig Insertion.._clang130_x64_..insert_variant_clang130_x64]
+[endsect]
+
+[section Results for `boost::variant_unordered_collection`]
+[perf_fig Insertion.._vs2022_x64_..insert_variant_unordered_vs2022_x64]
+[perf_fig Insertion.._gcc132_x64_..insert_variant_unordered_gcc132_x64]
+[perf_fig Insertion.._clang130_x64_..insert_variant_unordered_clang130_x64]
 [endsect]
 
 [endsect]
@@ -1067,16 +1230,17 @@ Tests measure the time taken to traverse a container of size
 /n/ (/n/ between
 10'''<superscript>2</superscript>''' and 10'''<superscript>7</superscript>''')
 and execute an operation on each of its elements. The operation for
-`boost::base_collection` and `boost::function_collection` (and the associated
-baseline containers) is defined as
+`boost::base_collection`, `boost::base_unordered_collection`, 
+`boost::function_collection` and `boost::function_unordered_collection` 
+(and the associated baseline containers) is defined as
 
 [perf_for_each_callable]
 
-whereas for `boost::any_collection` we use
+whereas for `boost::any_collection` and `boost::any_unordered_collection` we use
 
 [perf_for_each_incrementable]
 
-and for `boost::variant_collection` we have
+and for `boost::variant_collection` and `boost::variant_unordered_collection` we have
 
 [perf_for_each_alternative]
 
@@ -1092,9 +1256,9 @@ efficiency at the expense of having worse cache friendliness.
 * With an extra post-insertion stage that randomly
 shuffles all the elements in the container. This is the worst possible
 scenario both in terms of caching and branch prediction.
-We don't exercise this setup for `variant_vector` as it is
-at equivalent to the direct case (`std::variant` does not allocate
-dynamic memory).
+We don't exercise this setup for `variant_vector` and `variant_hub`
+as it is equivalent to the direct case (`std::variant` does not 
+allocate dynamic memory).
 
 As for the polymorphic collection, three variations are measured:
 
@@ -1113,10 +1277,22 @@ The horizontal axis is logarithmic.
 [perf_fig Processing.._clang130_x64_..for_each_base_clang130_x64]
 [endsect]
 
+[section Results for `boost::base_unordered_collection`]
+[perf_fig Processing.._vs2022_x64_..for_each_base_unordered_vs2022_x64]
+[perf_fig Processing.._gcc132_x64_..for_each_base_unordered_gcc132_x64]
+[perf_fig Processing.._clang130_x64_..for_each_base_unordered_clang130_x64]
+[endsect]
+
 [section Results for `boost::function_collection`]
 [perf_fig Processing.._vs2022_x64_..for_each_function_vs2022_x64]
 [perf_fig Processing.._gcc132_x64_..for_each_function_gcc132_x64]
 [perf_fig Processing.._clang130_x64_..for_each_function_clang130_x64]
+[endsect]
+
+[section Results for `boost::function_unordered_collection`]
+[perf_fig Processing.._vs2022_x64_..for_each_function_unordered_vs2022_x64]
+[perf_fig Processing.._gcc132_x64_..for_each_function_unordered_gcc132_x64]
+[perf_fig Processing.._clang130_x64_..for_each_function_unordered_clang130_x64]
 [endsect]
 
 [section Results for `boost::any_collection`]
@@ -1125,10 +1301,22 @@ The horizontal axis is logarithmic.
 [perf_fig Processing.._clang130_x64_..for_each_any_clang130_x64]
 [endsect]
 
+[section Results for `boost::any_unordered_collection`]
+[perf_fig Processing.._vs2022_x64_..for_each_any_unordered_vs2022_x64]
+[perf_fig Processing.._gcc132_x64_..for_each_any_unordered_gcc132_x64]
+[perf_fig Processing.._clang130_x64_..for_each_any_unordered_clang130_x64]
+[endsect]
+
 [section Results for `boost::variant_collection`]
 [perf_fig Processing.._vs2022_x64_..for_each_variant_vs2022_x64]
 [perf_fig Processing.._gcc132_x64_..for_each_variant_gcc132_x64]
 [perf_fig Processing.._clang130_x64_..for_each_variant_clang130_x64]
+[endsect]
+
+[section Results for `boost::variant_unordered_collection`]
+[perf_fig Processing.._vs2022_x64_..for_each_variant_unordered_vs2022_x64]
+[perf_fig Processing.._gcc132_x64_..for_each_variant_unordered_gcc132_x64]
+[perf_fig Processing.._clang130_x64_..for_each_variant_unordered_clang130_x64]
 [endsect]
 
 [endsect]
@@ -1203,6 +1391,15 @@ to allow for the definition of container-level `operator<` and related operators
 [endsect]
 
 [section Release notes]
+
+[section Boost 1.93]
+
+* Added unordered, stable collections `boost::base_unordered_collection`,
+`boost::function_unordered_collection`, `boost::any_unordered_collection`
+and `boost::variant_unordered_collection`, internally based on
+_boost::container::hub_.
+
+[endsect]
 
 [section Boost 1.92]
 

@@ -1,5 +1,5 @@
 [/
-  Copyright 2016-2024 Joaquin M Lopez Munoz.
+  Copyright 2016-2026 Joaquin M Lopez Munoz.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt)
@@ -20,9 +20,9 @@
     using const_reference=const value_type&;
     using pointer=typename std::allocator_traits<Allocator>::pointer;
     using const_pointer=typename std::allocator_traits<Allocator>::const_pointer;
-	using _type_index_=``[type_index]``;
-    using iterator=``/implementation-defined/``;
-    using const_iterator=``/implementation-defined/``;
+    using _type_index_=``[type_index]``;
+    using _iterator_=``/implementation-defined/``;
+    using _const_iterator_=``/implementation-defined/``;
     using _local_base_iterator_=``/implementation-defined/``;
     using _const_local_base_iterator_=``/implementation-defined/``;
     template<typename T> using _local_iterator_=``/implementation-defined/``;

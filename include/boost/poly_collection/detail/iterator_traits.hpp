@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -22,7 +22,7 @@ namespace poly_collection{
 
 namespace common_impl{
 
-template<typename Model,typename Allocator>
+template<typename Model>
 class poly_collection;
 
 }
@@ -44,11 +44,18 @@ struct poly_collection_of /* to be specialized for iterator impls */
 template<typename PolyCollection>
 struct model_of;
 
-template<typename Model,typename Allocator>
-struct model_of<common_impl::poly_collection<Model,Allocator>>
+template<typename Model>
+struct model_of<common_impl::poly_collection<Model>>
 {
   using type=Model;
 };
+
+template<typename Iterator>
+using is_const_iterator=typename std::is_const<
+  typename std::remove_reference<
+    typename std::iterator_traits<Iterator>::reference
+  >::type
+>::type;
 
 template<typename Iterator>
 struct iterator_traits
@@ -56,11 +63,7 @@ struct iterator_traits
   using container_type=typename poly_collection_of<Iterator>::type;
   using model_type=typename model_of<container_type>::type;
   using type_index=typename container_type::type_index;
-  using is_const_iterator=typename std::is_const<
-    typename std::remove_reference<
-      typename std::iterator_traits<Iterator>::reference
-    >::type
-  >::type;
+  using is_const_iterator=detail::is_const_iterator<Iterator>;
   using iterator=typename std::conditional<
     is_const_iterator::value,
     typename container_type::const_iterator,   

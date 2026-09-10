@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,13 +13,16 @@
 #pragma once
 #endif
 
+#include <algorithm>
 #include <array>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/poly_collection/variant_collection_fwd.hpp>
 #include <boost/type_traits/has_equal_to.hpp>
 #include <boost/type_traits/make_void.hpp>
+#include <initializer_list>
 #include <iterator>
 #include <memory>
 #include <type_traits>
@@ -30,6 +33,9 @@ namespace test_utilities{
 
 template<typename... Values>
 void do_(Values...){}
+
+/* to be used if there are unsequencing problems */
+inline void do_(std::initializer_list<int>){} 
 
 template<typename Exception,typename F>
 void check_throw_case(F f)
@@ -104,6 +110,14 @@ using is_not_copy_constructible=std::integral_constant<
   !std::is_copy_constructible<T>::value
 >;
 
+using std::is_move_constructible;
+
+template<typename T>
+using is_not_move_constructible=std::integral_constant<
+  bool,
+  !std::is_move_constructible<T>::value
+>;
+
 template<typename T>
 using is_constructible_from_int=std::is_constructible<T,int>;
 
@@ -113,6 +127,14 @@ template<typename T>
 using is_not_copy_assignable=std::integral_constant<
   bool,
   !std::is_copy_assignable<T>::value
+>;
+
+using std::is_move_assignable;
+
+template<typename T>
+using is_not_move_assignable=std::integral_constant<
+  bool,
+  !std::is_move_assignable<T>::value
 >;
 
 template<typename T>
@@ -261,7 +283,7 @@ bool is_first(const PolyCollection& p,const TypeIndex& info,Iterator it)
 template<typename PolyCollection,typename TypeIndex,typename Iterator>
 bool is_last(const PolyCollection& p,const TypeIndex& info,Iterator it)
 {
-  return &*it==&*(p.end(info)-1);
+  return &*it==&*(std::prev(p.end(info),1));
 }
 
 template<typename T,typename PolyCollection,typename Iterator>
@@ -500,6 +522,65 @@ template<
 std::size_t typeid_(const PolyCollection&)
 {
   return boost::mp11::mp_find<typename PolyCollection::value_type,T>::value;
+}
+
+template<typename PolyCollection>
+using is_ordered_collection=is_equality_comparable<PolyCollection>;
+
+template<
+  typename... T,typename PolyCollection,
+  typename std::enable_if<
+    is_ordered_collection<PolyCollection>::value>::type* =nullptr
+>
+bool equal(PolyCollection& p1,PolyCollection& p2)
+{
+  return p1==p2;
+}
+
+template<typename PolyCollection>
+struct equal_aux_lambda
+{
+  equal_aux_lambda(const PolyCollection& p1_,const PolyCollection& p2_):
+    p1(p1_),p2(p2_){}
+
+  template<typename I>
+  void operator()(I i){res=res&check<typename I::type>();}
+
+  template<
+    typename T,
+    typename std::enable_if<is_equality_comparable<T>::value>::type* =nullptr
+  >
+  bool check()const
+  {
+    if(is_registered<T>(p1)!=is_registered<T>(p2))return false;
+    if(!is_registered<T>(p1))return true;
+    if(p1.template size<T>()!=p2.template size<T>())return false;
+    return std::equal(
+      p1.template begin<T>(),p1.template end<T>(),p2.template begin<T>());
+  }
+
+  template<
+    typename T,
+    typename std::enable_if<!is_equality_comparable<T>::value>::type* =nullptr
+  >
+  bool check()const{return true;}
+
+  const PolyCollection &p1,&p2;
+  bool                  res=true;
+};
+
+template<
+  typename... T,typename PolyCollection,
+  typename std::enable_if<
+    !is_ordered_collection<PolyCollection>::value>::type* =nullptr
+>
+bool equal(PolyCollection& p1,PolyCollection& p2)
+{
+  using namespace boost::mp11;
+
+  equal_aux_lambda<PolyCollection> f(p1,p2);
+  mp_for_each<mp_transform<mp_identity,mp_list<T...>>>(f);
+  return f.res;
 }
 
 } /* namespace test_utilities */

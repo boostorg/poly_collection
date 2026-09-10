@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,9 +13,6 @@
 #pragma once
 #endif
 
-#include <boost/mp11/algorithm.hpp>
-#include <boost/mp11/set.hpp>
-#include <boost/poly_collection/detail/is_moveable.hpp>
 #include <boost/type_traits/make_void.hpp>
 #include <type_traits>
 
@@ -31,19 +28,7 @@ struct is_closed_collection:std::false_type{};
 template<typename Model>
 struct is_closed_collection<
   Model,void_t<typename Model::acceptable_type_list>
->:std::true_type
-{
-  using type_list=typename Model::acceptable_type_list;
-
-  static_assert(
-    mp11::mp_is_set<type_list>::value,
-    "all types in a closed collection must be distinct");
-
-  static_assert(
-    mp11::mp_all_of<type_list,is_moveable>::value,
-    "all types of a closed collection must be nothrow move constructible "
-    "or else move constructible and move assignable");
-};
+>:std::true_type{};
   
 } /* namespace poly_collection::detail */
 

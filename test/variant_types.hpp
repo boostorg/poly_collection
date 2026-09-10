@@ -1,4 +1,4 @@
-/* Copyright 2024 Joaquin M Lopez Munoz.
+/* Copyright 2024-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -16,13 +16,19 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/poly_collection/variant_collection.hpp>
+#include <boost/poly_collection/variant_unordered_collection.hpp>
 #include <string>
+#include "non_moveable.hpp"
 
 namespace variant_types{
 
 struct alternative1
 {
   alternative1(int n=0):n{n}{}
+  alternative1(alternative1&&)=default;
+  alternative1(const alternative1&)=delete;
+  alternative1& operator=(alternative1&&)=default;
+  alternative1& operator=(const alternative1&)=delete;
   int operator()(int x)const{return x;}
   bool operator==(const alternative1& x)const{return n==x.n;}
   int n;
@@ -63,6 +69,13 @@ struct alternative5
 
 using collection=boost::variant_collection_of<
   alternative1,alternative2,alternative3,alternative4,alternative5
+>;
+using unordered_collection=boost::variant_unordered_collection_of<
+  alternative1,alternative2,alternative3,alternative4,alternative5
+>;
+using extended_unordered_collection=boost::variant_unordered_collection_of<
+  alternative1,alternative2,non_moveable<alternative2>,alternative3,
+  alternative4,alternative5
 >;
 
 using value_type=collection::value_type;

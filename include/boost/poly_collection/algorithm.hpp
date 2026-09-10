@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -21,8 +21,10 @@
 #include <boost/poly_collection/detail/iterator_traits.hpp>
 #include <boost/poly_collection/detail/segment_split.hpp>
 #include <boost/poly_collection/detail/type_restitution.hpp>
+#include <cstddef>
 #include <iterator>
 #include <random>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -134,9 +136,10 @@ struct for_each_n_alg
     typename InputIterator,typename Size,typename Function
   >
   InputIterator operator()(
-    InputIterator first,Size n,Function& f)const /* note the & */
+    InputIterator first,InputIterator last,
+    Size& n,Function& f)const /* note the &s */
   {
-    for(;n>0;++first,(void)--n)f(*first);
+    for(;first!=last&&n>0;++first,(void)--n)f(*first);
     return first;
   }
 };
@@ -150,23 +153,19 @@ BOOST_FORCEINLINE Iterator for_each_n(const Iterator& first,Size n,Function f)
   using traits=iterator_traits<Iterator>;
   using model_type=typename traits::model_type;
   using local_base_iterator=typename traits::local_base_iterator;
+  using range_info=typename segment_splitter<Iterator>::info;
 
   if(n<=0)return first;
 
-  auto alg=restitute_iterator<model_type,Ts...>(
-         cast_return<local_base_iterator>(for_each_n_alg{}));
+  auto alg=restitute_range<model_type,Ts...>(
+         cast_return<local_base_iterator>(for_each_n_alg{}),n,f);
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    Size m=static_cast<Size>(sit->end()-lbit);
-    if(n<=m){
-      auto it=alg(sit->type_info(),lbit,n,f);
+    auto it=alg(range_info{sit->type_info(),lbit,sit->end()});
+    if(n==0){
       return traits::iterator_from(
         it,traits::end_base_segment_info_iterator_from(first));
-    }
-    else{
-      alg(sit->type_info(),lbit,m,f);
-      n-=m;
     }
     ++sit;
     lbit=sit->begin();
@@ -285,7 +284,7 @@ struct adjacent_find_alg
       carry=true;
       prev_info=traits::template index<
         typename std::iterator_traits<LocalIterator>::value_type>();
-      prev=LocalBaseIterator{last-1};
+      prev=LocalBaseIterator{std::prev(last)};
     }
     else carry=false;
     return LocalBaseIterator{res};
@@ -551,7 +550,7 @@ BOOST_FORCEINLINE std::ptrdiff_t fast_distance(
   else{
     std::ptrdiff_t m=std::distance(
       traits::local_base_iterator_from(first),sfirst->end());
-    while(++sfirst!=slast)m+=std::distance(sfirst->begin(),sfirst->end());
+    while(++sfirst!=slast)m+=static_cast<std::ptrdiff_t>(sfirst->size());
     if(slast!=traits::end_base_segment_info_iterator_from(last)){
       m+=std::distance(
         slast->begin(),traits::local_base_iterator_from(last));
@@ -806,7 +805,19 @@ BOOST_FORCEINLINE OutputIterator copy(
   return generic_copy<std_copy,Ts...>(first,last,res);
 }
 
-BOOST_POLY_COLLECTION_DEFINE_OVERLOAD_SET(std_copy_n,std::copy_n)
+struct copy_n_alg
+{
+  template<
+    typename InputIterator,typename Size,typename OutputIterator
+  >
+  OutputIterator operator()(
+    InputIterator first,InputIterator last,
+    Size& n,OutputIterator res)const /* note the & */
+  {
+    for(;first!=last&&n>0;++first,(void)--n)*res++=*first;
+    return res;
+  }
+};
 
 template<
   typename... Ts,typename Iterator,typename Size,typename OutputIterator,
@@ -817,16 +828,16 @@ BOOST_FORCEINLINE OutputIterator copy_n(
 {
   using traits=iterator_traits<Iterator>;
   using model_type=typename traits::model_type;
+  using range_info=typename segment_splitter<Iterator>::info;
 
   if(count<=0)return res;
 
   auto lbit=traits::local_base_iterator_from(first);
   auto sit=traits::base_segment_info_iterator_from(first);
   for(;;){
-    auto n=(std::min)(count,static_cast<Size>(sit->end()-lbit));
-    auto alg=restitute_iterator<model_type,Ts...>(std_copy_n{},n,res);
-    res=alg(sit->type_info(),lbit);
-    if((count-=n)==0)break;
+    auto alg=restitute_range<model_type,Ts...>(copy_n_alg{},count,res);
+    res=alg(range_info{sit->type_info(),lbit,sit->end()});
+    if(count==0)break;
     ++sit;
     lbit=sit->begin();
   }
@@ -1015,7 +1026,7 @@ struct unique_copy_alg
     carry=true;
     prev_info=traits::template index<
       typename std::iterator_traits<LocalIterator>::value_type>();
-    prev=LocalBaseIterator{last-1};
+    prev=LocalBaseIterator{std::prev(last)};
     return res;
   }
 };

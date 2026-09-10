@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -25,12 +25,8 @@
 
 using namespace test_utilities;
 
-template<
-  typename PolyCollection,typename ValueFactory,typename... Types,
-  typename std::enable_if<
-    !is_closed_collection<PolyCollection>::value>::type* =nullptr
->
-void test_insertion_throw()
+template<typename PolyCollection,typename ValueFactory,typename... Types>
+void test_insertion_throw_open(std::false_type /* unordered */)
 {
   {
     using unregistered_type=boost::poly_collection::unregistered_type;
@@ -43,15 +39,7 @@ void test_insertion_throw()
     check_throw<unregistered_type>(
       [&]{p.insert(*p2.begin());},
       [&]{p.insert(p.end(),*p2.begin());},
-      [&]{p.insert(p.cend(),*p2.begin());},
-      [&]{p.insert(
-        external_iterator(p2.begin()),external_iterator(p2.end()));},
-      [&]{p.insert(
-        p.end(),
-        external_iterator(p2.begin()),external_iterator(p2.end()));},
-      [&]{p.insert(
-        p.cend(),
-        external_iterator(p2.begin()),external_iterator(p2.end()));});
+      [&]{p.insert(p.cend(),*p2.begin());});
   }
   {
     using not_copy_constructible=
@@ -79,7 +67,49 @@ void test_insertion_throw()
       [&]{p.insert(p2lb,p2le);},
       [&]{p.insert(p2.begin(),p2.end());},
       [&]{p.insert(p2.begin(typeid_<type>(p)),p2.end(typeid_<type>(p)));},
-      [&]{p.insert(p2.template begin<type>(),p2.template end<type>());},
+      [&]{p.insert(p2.template begin<type>(),p2.template end<type>());});
+  }
+}
+
+template<typename PolyCollection,typename ValueFactory,typename... Types>
+void test_insertion_throw_open(std::true_type /* ordered */)
+{
+  {
+    using unregistered_type=boost::poly_collection::unregistered_type;
+    using type=first_of<constraints<is_copy_constructible>,Types...>;
+
+    test_insertion_throw_open<PolyCollection,ValueFactory,Types...>(
+      std::false_type{}); /* ordered > unordered */
+
+    PolyCollection p,p2;
+    ValueFactory   v;
+
+    p2.insert(v.template make<type>());
+    check_throw<unregistered_type>(
+      [&]{p.insert(
+        external_iterator(p2.begin()),external_iterator(p2.end()));},
+      [&]{p.insert(
+        p.end(),
+        external_iterator(p2.begin()),external_iterator(p2.end()));},
+      [&]{p.insert(
+        p.cend(),
+        external_iterator(p2.begin()),external_iterator(p2.end()));});
+  }
+  {
+    using not_copy_constructible=
+      boost::poly_collection::not_copy_constructible;
+    using type=first_of<constraints<is_not_copy_constructible>,Types...>;
+
+    PolyCollection p,p2;
+    ValueFactory   v;
+
+    register_types<type>(p);
+    p2.insert(v.template make<type>());
+    auto p2b=external_iterator(p2.begin()),
+         p2e=external_iterator(p2.end());
+    auto p2lb=external_iterator(p2.template begin<type>()),
+         p2le=external_iterator(p2.template end<type>());
+    check_throw<not_copy_constructible>(
       [&]{p.insert(p.end(),p2b,p2e);},
       [&]{p.insert(p.end(),p2lb,p2le);},
       [&]{p.insert(p.end(),p2.begin(),p2.end());},
@@ -104,6 +134,17 @@ void test_insertion_throw()
 template<
   typename PolyCollection,typename ValueFactory,typename... Types,
   typename std::enable_if<
+    !is_closed_collection<PolyCollection>::value>::type* =nullptr
+>
+void test_insertion_throw()
+{
+  test_insertion_throw_open<PolyCollection,ValueFactory,Types...>(
+   is_ordered_collection<PolyCollection>{});
+}
+
+template<
+  typename PolyCollection,typename ValueFactory,typename... Types,
+  typename std::enable_if<
     is_closed_collection<PolyCollection>::value>::type* =nullptr
 >
 void test_insertion_throw()
@@ -111,9 +152,134 @@ void test_insertion_throw()
 }
 
 template<typename PolyCollection,typename ValueFactory,typename... Types>
-void test_insertion()
+void test_insertion(std::false_type /* unordered*/)
 {
-  test_insertion_throw<PolyCollection,ValueFactory,Types...>();
+  {
+    PolyCollection p;
+    ValueFactory   v;
+
+    fill<constraints<>,Types...>(p,v,2);
+    std::size_t s;
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+  }
+  {
+    PolyCollection p;
+    ValueFactory   v;
+
+    fill<constraints<>,Types...>(p,v,2);
+    std::size_t s;
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.begin(),constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.cbegin(),constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.begin(typeid_<Types>(p)),
+        constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.cbegin(typeid_<Types>(p)),
+        constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.template begin<Types>(),
+        constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+
+    do_({(
+      s=p.template size<Types>(),
+      p.insert(
+        p.template cbegin<Types>(),
+        constref_if_copy_constructible(v.template make<Types>())),
+      BOOST_TEST(p.template size<Types>()==s+1)
+    ,0)...});
+  }
+  {
+    PolyCollection p,p2;
+    ValueFactory   v;
+
+    register_types<Types...>(p);
+    register_types<Types...>(p2);
+    fill<
+      constraints<is_copy_constructible,is_equality_comparable>,
+      Types...
+    >(p2,v,2);
+
+    p.insert(external_iterator(p2.begin()),external_iterator(p2.end()));
+    BOOST_TEST(equal<Types...>(p,p2));
+    p.clear();
+
+    p.insert(p2.begin(),p2.end());
+    BOOST_TEST(equal<Types...>(p,p2));
+    p.clear();
+
+    p.insert(p2.cbegin(),p2.cend());
+    BOOST_TEST(equal<Types...>(p,p2));
+    p.clear();
+
+    for(auto s:p2.segment_traversal()){
+      p.insert(s.begin(),s.end());
+      BOOST_TEST(p.size()==p2.size(s.type_info()));
+      p.clear();
+
+      p.insert(s.cbegin(),s.cend());
+      BOOST_TEST(p.size()==p2.size(s.type_info()));
+      p.clear();
+    }
+
+    do_((
+      p.insert(
+        external_iterator(p2.template begin<Types>()),
+        external_iterator(p2.template end<Types>())),
+      BOOST_TEST(p.size()==p2.template size<Types>()),
+      p.clear() 
+    ,0)...);
+
+    do_((
+      p.insert(p2.template begin<Types>(),p2.template end<Types>()),
+      BOOST_TEST(p.size()==p2.template size<Types>()),
+      p.clear() 
+    ,0)...);
+
+    do_((
+      p.insert(p2.template cbegin<Types>(),p2.template cend<Types>()),
+      BOOST_TEST(p.size()==p2.template size<Types>()),
+      p.clear() 
+    ,0)...);
+  }
+}
+
+template<typename PolyCollection,typename ValueFactory,typename... Types>
+void test_insertion(std::true_type /* ordered*/)
+{
+  test_insertion<PolyCollection,ValueFactory,Types...>(
+    std::false_type{}); /* ordered > unordered */
   {
     PolyCollection p;
     ValueFactory   v;
@@ -162,59 +328,6 @@ void test_insertion()
           p.template cbegin<Types>(),
           constref_if_copy_constructible(v.template make<Types>())))
     ),0)...);
-  }
-  {
-    PolyCollection p,p2;
-    ValueFactory   v;
-
-    register_types<Types...>(p);
-    register_types<Types...>(p2);
-    fill<
-      constraints<is_copy_constructible,is_equality_comparable>,
-      Types...
-    >(p2,v,2);
-
-    p.insert(external_iterator(p2.begin()),external_iterator(p2.end()));
-    BOOST_TEST(p==p2);
-    p.clear();
-
-    p.insert(p2.begin(),p2.end());
-    BOOST_TEST(p==p2);
-    p.clear();
-
-    p.insert(p2.cbegin(),p2.cend());
-    BOOST_TEST(p==p2);
-    p.clear();
-
-    for(auto s:p2.segment_traversal()){
-      p.insert(s.begin(),s.end());
-      BOOST_TEST(p.size()==p2.size(s.type_info()));
-      p.clear();
-
-      p.insert(s.cbegin(),s.cend());
-      BOOST_TEST(p.size()==p2.size(s.type_info()));
-      p.clear();
-    }
-
-    do_((
-      p.insert(
-        external_iterator(p2.template begin<Types>()),
-        external_iterator(p2.template end<Types>())),
-      BOOST_TEST(p.size()==p2.template size<Types>()),
-      p.clear() 
-    ,0)...);
-
-    do_((
-      p.insert(p2.template begin<Types>(),p2.template end<Types>()),
-      BOOST_TEST(p.size()==p2.template size<Types>()),
-      p.clear() 
-    ,0)...);
-
-    do_((
-      p.insert(p2.template cbegin<Types>(),p2.template cend<Types>()),
-      BOOST_TEST(p.size()==p2.template size<Types>()),
-      p.clear() 
-    ,0)...);
   }
   {
     PolyCollection p,p1,p2;
@@ -301,7 +414,7 @@ void test_insertion()
 
     auto remove_original=[](PolyCollection& p)
     {
-      auto it=p.segment_traversal().begin()->end();
+      auto it=p.template end<type>();
       p.erase(it-2,it);
     };
 
@@ -366,6 +479,15 @@ void test_insertion()
   }
 }
 
+template<typename PolyCollection,typename ValueFactory,typename... Types>
+void test_insertion()
+{
+  test_insertion_throw<PolyCollection,ValueFactory,Types...>();
+  test_insertion<PolyCollection,ValueFactory,Types...>(
+    is_ordered_collection<PolyCollection>{});
+}
+
+template<template<typename...>class VariantPolyCollection>
 void test_variant_insertion()
 {
   struct move_track
@@ -376,7 +498,7 @@ void test_variant_insertion()
     int n;
   };
 
-  boost::variant_collection<
+  VariantPolyCollection<
     boost::mp11::mp_list<int,char,double,move_track>> c1;
 
   c1.insert(1);
@@ -385,25 +507,25 @@ void test_variant_insertion()
 
   auto c2=c1;
   c1.insert(*c2.begin());
-  BOOST_TEST_EQ(c1.size<int>(),2);
+  BOOST_TEST_EQ(c1.template size<int>(),2);
 
   boost::variant2::variant<move_track,double,char> v1('a');
   c1.insert(v1);
-  BOOST_TEST_EQ(c1.size<char>(),2);
+  BOOST_TEST_EQ(c1.template size<char>(),2);
 
-  v1.emplace<move_track>(1);
+  v1.template emplace<move_track>(1);
   c1.insert(std::move(v1));
-  BOOST_TEST_EQ(c1.size<move_track>(),1);
+  BOOST_TEST_EQ(c1.template size<move_track>(),1);
   BOOST_TEST(boost::variant2::get<move_track>(v1).n==0);
 
 #if !defined(BOOST_NO_CXX17_HDR_VARIANT)
   std::variant<int,move_track,double> v2(3.1416);
   c1.insert(v2);
-  BOOST_TEST_EQ(c1.size<double>(),2);
+  BOOST_TEST_EQ(c1.template size<double>(),2);
 
-  v2.emplace<move_track>(1);
+  v2.template emplace<move_track>(1);
   c1.insert(std::move(v2));
-  BOOST_TEST_EQ(c1.size<move_track>(),2);
+  BOOST_TEST_EQ(c1.template size<move_track>(),2);
   BOOST_TEST(std::get<move_track>(v2).n==0);
 #endif
 }
@@ -426,5 +548,23 @@ void test_insertion()
     variant_types::collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
-  test_variant_insertion();
+  test_variant_insertion<boost::variant_collection>();
+
+  test_insertion<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_insertion<
+    base_types::unordered_collection,auto_increment,
+    base_types::t1,base_types::t2,base_types::t3,
+    base_types::t4,base_types::t5>();
+  test_insertion<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,function_types::t2,function_types::t3,
+    function_types::t4,function_types::t5>();
+  test_insertion<
+    variant_types::unordered_collection,auto_increment,
+    variant_types::t1,variant_types::t2,variant_types::t3,
+    variant_types::t4,variant_types::t5>();
+  test_variant_insertion<boost::variant_unordered_collection>();
 }

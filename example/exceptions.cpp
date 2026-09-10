@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <array>
 #include <boost/poly_collection/base_collection.hpp>
+#include <boost/poly_collection/base_unordered_collection.hpp>
 #include <random>
 #include "rolegame.hpp"
 
@@ -59,4 +60,35 @@ int main()
                   // throws boost::poly_collection::not_equality_comparable
 //]
   }catch(boost::poly_collection::not_equality_comparable&){}
+
+  {
+//[exceptions_3
+  struct dwarf:sprite
+  {
+    using sprite::sprite;
+    dwarf(dwarf&&)=delete; // not moveable
+    void render(std::ostream& os)const override{os<<"dwarf "<<id;}
+  };
+  boost::base_unordered_collection<sprite> c;
+//=  ...
+//=
+//<-
+  try{
+//->
+  c.insert(dwarf{0}); // throws boost::poly_collection::not_move_constructible
+//<-
+  }catch(boost::poly_collection::not_move_constructible&){}
+//->
+//<-
+  try{
+//->
+  c.emplace<dwarf>(0);
+  c.emplace<dwarf>(1);
+  c.erase(c.begin<dwarf>());
+  c.shrink_to_fit(); // throws boost::poly_collection::not_move_constructible
+//<-
+  }catch(boost::poly_collection::not_move_constructible&){}
+//->
+//]
+  }
 }

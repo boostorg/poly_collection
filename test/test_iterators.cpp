@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -8,6 +8,7 @@
 
 #include "test_iterators.hpp"
 
+#include <boost/config.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <iterator>
 #include <type_traits>
@@ -19,6 +20,18 @@
 
 using namespace test_utilities;
 
+#if !defined(BOOST_NO_CXX20_HDR_CONCEPTS)
+template<typename Iterator>
+struct is_input:std::bool_constant<std::input_iterator<Iterator>>{};
+template<typename Iterator>
+struct is_forward:std::bool_constant<std::forward_iterator<Iterator>>{};
+template<typename Iterator>
+struct is_bidirectional:
+  std::bool_constant<std::bidirectional_iterator<Iterator>>{};
+template<typename Iterator>
+struct is_random_access:
+  std::bool_constant<std::random_access_iterator<Iterator>>{};
+#else
 template<typename Iterator>
 using is_input=std::is_base_of<
   std::input_iterator_tag,
@@ -30,14 +43,42 @@ using is_forward=std::is_base_of<
   typename std::iterator_traits<Iterator>::iterator_category
 >;
 template<typename Iterator>
+using is_bidirectional=std::is_base_of<
+  std::bidirectional_iterator_tag,
+  typename std::iterator_traits<Iterator>::iterator_category
+>;
+template<typename Iterator>
 using is_random_access=std::is_base_of<
   std::random_access_iterator_tag,
   typename std::iterator_traits<Iterator>::iterator_category
 >;
+#endif
+
+template<
+  typename Iterator,typename DifferenceType,
+  typename std::enable_if<is_random_access<Iterator>::value>::type* =nullptr
+>
+typename std::iterator_traits<Iterator>::reference bracket(
+  Iterator it,DifferenceType n)
+{
+  return it[n];
+}
+
+template<
+  typename Iterator,typename DifferenceType,
+  typename std::enable_if<!is_random_access<Iterator>::value>::type* =nullptr
+>
+typename std::iterator_traits<Iterator>::reference bracket(
+  Iterator it,DifferenceType n)
+{
+  return *std::next(it,n);
+}
 
 template<typename Type,typename PolyCollection>
 void test_iterators(PolyCollection& p)
 {
+  using iterator=typename PolyCollection::iterator;
+  using const_iterator=typename PolyCollection::const_iterator;
   using local_base_iterator=typename PolyCollection::local_base_iterator;
   using const_local_base_iterator=
     typename PolyCollection::const_local_base_iterator;
@@ -51,12 +92,21 @@ void test_iterators(PolyCollection& p)
     typename PolyCollection::template const_segment_info<Type>;
   using segment_info=typename PolyCollection::template segment_info<Type>;
 
-  static_assert(is_random_access<local_iterator>::value,
-                "local_iterator must be random access");
-  static_assert(is_random_access<const_local_iterator>::value,
-                "const_local_iterator must be random access");
-  static_assert(std::is_base_of<const_segment_info,segment_info>::value,
-                "segment_info must derive from const_segment_info");
+  static_assert(
+    is_ordered_collection<PolyCollection>::value?
+      is_random_access<local_iterator>::value:
+      is_bidirectional<local_iterator>::value,
+    "local_iterator must be random access/bidirectional "
+    "(ordered/unordered collection)");
+  static_assert(
+    is_ordered_collection<PolyCollection>::value?
+      is_random_access<const_local_iterator>::value:
+      is_bidirectional<const_local_iterator>::value,
+    "const_local_iterator must be random access/bidirectional"
+    "(ordered/unordered collection)");;
+  static_assert(
+    std::is_base_of<const_segment_info,segment_info>::value,
+    "segment_info must derive from const_segment_info");
 
   {
     local_iterator       lit,lit2;
@@ -101,7 +151,15 @@ void test_iterators(PolyCollection& p)
   BOOST_TEST(cllast==i.cend());
   BOOST_TEST(cllast==ci.end());
 
-  for(;lbfirst!=lblast;++lbfirst,++clbfirst,++lfirst,++clfirst){
+  iterator       first=p.begin();
+  const_iterator cfirst=p.begin();
+  while(static_cast<local_base_iterator>(first)!=lbfirst){
+    ++first;
+    ++cfirst;
+  }
+
+  for(;lbfirst!=lblast;
+      ++lbfirst,++clbfirst,++lfirst,++clfirst,++first,++cfirst){
     BOOST_TEST(lfirst==static_cast<local_iterator>(lbfirst));
     BOOST_TEST(static_cast<local_base_iterator>(lfirst)==lbfirst);
     BOOST_TEST(clfirst==static_cast<const_local_iterator>(clbfirst));
@@ -110,9 +168,15 @@ void test_iterators(PolyCollection& p)
     BOOST_TEST(&*lfirst==&*static_cast<local_iterator>(lbfirst));
     BOOST_TEST(&*clfirst==&*static_cast<const_local_iterator>(clbfirst));
     BOOST_TEST(&*clfirst==&*lfirst);
+    BOOST_TEST(static_cast<local_base_iterator>(first)==lbfirst);
+    BOOST_TEST(static_cast<local_iterator>(first)==lfirst);
+    BOOST_TEST(static_cast<const_local_base_iterator>(first)==clbfirst);
+    BOOST_TEST(static_cast<const_local_iterator>(first)==clfirst);
+    BOOST_TEST(static_cast<const_local_base_iterator>(cfirst)==clbfirst);
+    BOOST_TEST(static_cast<const_local_iterator>(cfirst)==clfirst);
 
-    Type&       r=p.template begin<Type>()[n];
-    const Type& cr=cp.template begin<Type>()[n];
+    Type&       r=bracket(p.template begin<Type>(),n);
+    const Type& cr=bracket(cp.template begin<Type>(),n);
 
     BOOST_TEST(&*lfirst==&r);
     BOOST_TEST(&*clfirst==&cr);
@@ -126,9 +190,11 @@ void test_iterators(PolyCollection& p)
   BOOST_TEST(clfirst==static_cast<const_local_iterator>(cllast));
   BOOST_TEST(clfirst==llast);
   BOOST_TEST(
-    (std::ptrdiff_t)n==p.end(typeid_<Type>(p))-p.begin(typeid_<Type>(p)));
+    (std::ptrdiff_t)n==
+    std::distance(p.begin(typeid_<Type>(p)),p.end(typeid_<Type>(p))));
   BOOST_TEST(
-    (std::ptrdiff_t)n==p.template end<Type>()-p.template begin<Type>());
+    (std::ptrdiff_t)n==
+    std::distance(p.template begin<Type>(),p.template end<Type>()));
 
   for(auto s:p.segment_traversal()){
     if(s.type_info()==typeid_<Type>(p)){
@@ -177,25 +243,37 @@ void test_iterators()
   using segment_traversal_info=
     typename PolyCollection::segment_traversal_info;
 
-  static_assert(is_forward<iterator>::value,
-                "iterator must be forward");
-  static_assert(is_forward<const_iterator>::value,
-                "const_iterator must be forward");
-  static_assert(is_random_access<local_base_iterator>::value,
-                "local_base_iterator must be random access");
-  static_assert(is_random_access<const_local_base_iterator>::value,
-                "const_local_base_iterator must be random access");
-  static_assert(std::is_base_of<
-                  const_base_segment_info,base_segment_info>::value,
-                "base_segment_info must derive from const_base_segment_info");
-  static_assert(is_input<base_segment_info_iterator>::value,
-                "base_segment_info_iterator must be input");
-  static_assert(is_input<const_base_segment_info_iterator>::value,
-                "const_base_segment_info_iterator must be input");
-  static_assert(std::is_base_of<
-                  const_segment_traversal_info,segment_traversal_info>::value,
-                "const_segment_traversal_info must derive "\
-                "from segment_traversal_info");
+  static_assert(
+    is_forward<iterator>::value,
+    "iterator must be forward");
+  static_assert(
+    is_forward<const_iterator>::value,
+    "const_iterator must be forward");
+  static_assert(
+    is_ordered_collection<PolyCollection>::value?
+      is_random_access<local_base_iterator>::value:
+      is_bidirectional<local_base_iterator>::value,
+    "local_base_iterator must be random access/bidirectional "
+    "(ordered/unordered collection)");
+  static_assert(
+    is_ordered_collection<PolyCollection>::value?
+      is_random_access<const_local_base_iterator>::value:
+      is_bidirectional<const_local_base_iterator>::value,
+    "const_local_base_iterator must be random access/bidirectional "
+    "(ordered/unordered collection)");
+  static_assert(
+    std::is_base_of<const_base_segment_info,base_segment_info>::value,
+    "base_segment_info must derive from const_base_segment_info");
+  static_assert(
+    is_input<base_segment_info_iterator>::value,
+    "base_segment_info_iterator must be input");
+  static_assert(
+    is_input<const_base_segment_info_iterator>::value,
+    "const_base_segment_info_iterator must be input");
+  static_assert(
+    std::is_base_of<
+      const_segment_traversal_info,segment_traversal_info>::value,
+    "const_segment_traversal_info must derive from segment_traversal_info");
 
   {
     iterator                         it,it2;
@@ -271,8 +349,8 @@ void test_iterators()
         BOOST_TEST(lbfirst==clbfirst);
         BOOST_TEST(&*lbfirst==&*clbfirst);
 
-        value_type&       r=first->begin()[m];
-        const value_type& cr=cfirst->begin()[m];
+        value_type&       r=bracket(first->begin(),m);
+        const value_type& cr=bracket(cfirst->begin(),m);
 
         BOOST_TEST(&*lbfirst==&r);
         BOOST_TEST(&*clbfirst==&cr);
@@ -281,9 +359,12 @@ void test_iterators()
       }
       BOOST_TEST(clbfirst==clblast);
       BOOST_TEST(lblast==clblast);
-      BOOST_TEST((std::ptrdiff_t)m==first->end()-first->begin());
-      BOOST_TEST((std::ptrdiff_t)m==cfirst->end()-cfirst->begin());
-      BOOST_TEST((std::ptrdiff_t)m==cfirst->cend()-cfirst->cbegin());
+      BOOST_TEST(
+        (std::ptrdiff_t)m==std::distance(first->begin(),first->end()));
+      BOOST_TEST(
+        (std::ptrdiff_t)m==std::distance(cfirst->begin(),cfirst->end()));
+      BOOST_TEST(
+        (std::ptrdiff_t)m==std::distance(cfirst->cbegin(),cfirst->cend()));
 
       n+=m;
     }
@@ -311,6 +392,23 @@ void test_iterators()
     function_types::t4,function_types::t5>();
   test_iterators<
     variant_types::collection,auto_increment,
+    variant_types::t1,variant_types::t2,variant_types::t3,
+    variant_types::t4,variant_types::t5>();
+
+  test_iterators<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_iterators<
+    base_types::unordered_collection,auto_increment,
+    base_types::t1,base_types::t2,base_types::t3,
+    base_types::t4,base_types::t5>();
+  test_iterators<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,function_types::t2,function_types::t3,
+    function_types::t4,function_types::t5>();
+  test_iterators<
+    variant_types::unordered_collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
 }

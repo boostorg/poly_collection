@@ -1,4 +1,4 @@
-/* Copyright 2018-2024 Joaquin M Lopez Munoz.
+/* Copyright 2018-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,11 +13,14 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp>
+#include <boost/config/workaround.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/integer_sequence.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
-#include <new>
+#include <cstddef>
 #include <memory>
+#include <new>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -207,6 +210,14 @@ struct allocator_adaptor:Allocator
     p->~T();
   }
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=50100)
+/* Confirmed bogus, triggered whitin std::vector::_M_erase. TODO: investigate
+ * bugzilla and maybe file a bug report.
+ */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds="
+#endif
+
   template<typename T,typename U>
   void destroy(value_holder<T,U>* p)
   {
@@ -214,6 +225,10 @@ struct allocator_adaptor:Allocator
       allocator(),
       reinterpret_cast<T*>(static_cast<value_holder_base<T>*>(p)));
   }
+
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=50100)
+#pragma GCC diagnostic pop
+#endif
 
   allocator_adaptor
   select_on_container_copy_construction()const noexcept

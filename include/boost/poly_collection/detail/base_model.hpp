@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,14 +13,13 @@
 #pragma once
 #endif
 
-#include <boost/core/addressof.hpp>
-#include <boost/poly_collection/detail/is_final.hpp>
+#include <boost/poly_collection/detail/allocator_adaptor.hpp>
+#include <boost/poly_collection/detail/base_polymorphism.hpp>
 #include <boost/poly_collection/detail/packed_segment.hpp>
+#include <boost/poly_collection/detail/segment.hpp>
+#include <boost/poly_collection/detail/segment_backend.hpp>
 #include <boost/poly_collection/detail/stride_iterator.hpp>
-#include <memory>
-#include <type_traits>
-#include <typeinfo>
-#include <utility>
+#include <cstddef>
 
 namespace boost{
 
@@ -30,67 +29,52 @@ namespace detail{
 
 /* model for base_collection */
 
-template<typename Base>
-struct base_model
+struct base_storage_iterator_traits /* for stride_iterator */
 {
-  using value_type=Base;
-  using type_index=std::type_info;
+  template<typename Base,typename Derived>
+  using is_implementation=
+    typename base_polymorphism<Base>::template is_implementation<Derived>;
+  template<typename Base,typename Derived>
+  using iterator=Derived*;
+
+#include <boost/poly_collection/detail/begin_no_sanitize.hpp>
+  template<typename Iterator,typename Base>
+  static BOOST_POLY_COLLECTION_NO_SANITIZE Iterator make_iterator(
+    Base* p)noexcept
+  {
+    return static_cast<Iterator>(p);
+  }
+#include <boost/poly_collection/detail/end_no_sanitize.hpp>
+
+  template<typename Base,typename Derived>
+  static const Base* base_pointer_from(const Derived *p)noexcept{return p;}
+
   template<typename Derived>
-  using is_implementation=std::is_base_of<Base,Derived>;
-  template<typename T>
-  using is_terminal=is_final<T>; //TODO: should we say !is_polymorhpic||is_final?
+  static std::size_t stride_from(Derived*)noexcept{return sizeof(Derived);}
+};
 
-private:
-  template<typename T>
-  using enable_if_not_terminal=
-    typename std::enable_if<!is_terminal<T>::value>::type*;
-  template<typename T>
-  using enable_if_terminal=
-    typename std::enable_if<is_terminal<T>::value>::type*;
-
-public:
-  template<typename T> 
-  static const std::type_info& index(){return typeid(T);}
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static const std::type_info& subindex(const T& x){return typeid(x);}
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static const std::type_info& subindex(const T&){return typeid(T);}
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static void* subaddress(T& x)
-  {
-    return dynamic_cast<void*>(boost::addressof(x));
-  }
-
-  template<typename T,enable_if_not_terminal<T> =nullptr>
-  static const void* subaddress(const T& x)
-  {
-    return dynamic_cast<const void*>(boost::addressof(x));
-  }
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static void* subaddress(T& x){return boost::addressof(x);}
-
-  template<typename T,enable_if_terminal<T> =nullptr>
-  static const void* subaddress(const T& x){return boost::addressof(x);}
-
-  using base_iterator=stride_iterator<Base>;
-  using const_base_iterator=stride_iterator<const Base>;
+template<typename Base,typename Allocator>
+struct base_storage
+{
+  using value_type=typename base_polymorphism<Base>::value_type;
+  using allocator_type=Allocator;
+  using segment_allocator_type=allocator_adaptor<Allocator>;
+  using base_iterator=stride_iterator<Base,base_storage_iterator_traits>;
+  using const_base_iterator=
+    stride_iterator<const Base,base_storage_iterator_traits>;
   using base_sentinel=Base*;
   using const_base_sentinel=const Base*;
   template<typename Derived>
-  using iterator=Derived*;
+  using iterator=typename base_storage_iterator_traits::
+    template iterator<value_type,Derived>;
   template<typename Derived>
-  using const_iterator=const Derived*;
-  template<typename Allocator>
-  using segment_backend=detail::segment_backend<base_model,Allocator>;
-  template<typename Derived,typename Allocator>
-  using segment_backend_implementation=
-    packed_segment<base_model,Derived,Allocator>;
+  using const_iterator=typename base_storage_iterator_traits::
+    template iterator<value_type,const Derived>;
+  using segment_backend=detail::segment_backend<base_storage>;
+  template<typename Derived>
+  using segment_backend_implementation=packed_segment<base_storage,Derived>;
 
-  static base_iterator nonconst_iterator(const_base_iterator it)
+  static base_iterator nonconst_iterator(const_base_iterator it)noexcept
   {
     return {
       const_cast<value_type*>(static_cast<const value_type*>(it)),
@@ -99,13 +83,13 @@ public:
   }
 
   template<typename T>
-  static iterator<T> nonconst_iterator(const_iterator<T> it)
+  static iterator<T> nonconst_iterator(const_iterator<T> it)noexcept
   {
     return const_cast<iterator<T>>(it);
   }
 
 private:
-  template<typename,typename,typename>
+  template<typename,typename>
   friend class packed_segment;
 
   template<typename Derived>
@@ -113,6 +97,15 @@ private:
   {
     return p;
   }
+};
+
+template<typename Base,typename Allocator>
+struct base_model:base_polymorphism<Base>,base_storage<Base,Allocator>
+{
+  /* disambiguate multiply-inherited, identical typedef */
+  using value_type=typename base_polymorphism<Base>::value_type;
+
+  using segment=detail::segment<base_model>;
 };
 
 } /* namespace poly_collection::detail */

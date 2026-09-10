@@ -1,4 +1,4 @@
-/* Copyright 2016-2017 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,10 +13,9 @@
 #pragma once
 #endif
 
-#include <boost/poly_collection/function_collection_fwd.hpp>
 #include <boost/poly_collection/detail/function_model.hpp>
 #include <boost/poly_collection/detail/poly_collection.hpp>
-#include <utility>
+#include <boost/poly_collection/function_collection_fwd.hpp>
 
 namespace boost{
 
@@ -25,13 +24,10 @@ namespace poly_collection{
 template<typename Signature,typename Allocator>
 class function_collection:
  public common_impl::poly_collection<
-   detail::function_model<Signature>,Allocator>
+   detail::function_model<Signature,Allocator>>
 {
   using base_type=common_impl::poly_collection<
-    detail::function_model<Signature>,Allocator>;
-
-  base_type&       base()noexcept{return *this;}
-  const base_type& base()const noexcept{return *this;}
+    detail::function_model<Signature,Allocator>>;
 
 public:
   using base_type::base_type;
@@ -52,7 +48,7 @@ bool operator==(
   const function_collection<Signature,Allocator>& x,
   const function_collection<Signature,Allocator>& y)
 {
-  return x.base()==y.base();
+  return x.equal(y);
 }
 
 template<typename Signature,typename Allocator>
@@ -71,7 +67,7 @@ void swap(
   x.swap(y);
 }
 
-} /* namespace  */
+} /* namespace poly_collection */
 
 using poly_collection::function_collection;
 

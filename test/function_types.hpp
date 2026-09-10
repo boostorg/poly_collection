@@ -1,4 +1,4 @@
-/* Copyright 2016-2018 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/poly_collection/function_collection.hpp>
+#include <boost/poly_collection/function_unordered_collection.hpp>
 #include <typeinfo>
 
 namespace function_types{
@@ -70,6 +71,8 @@ struct int_alias /* brings this namespace into ADL for operator== below */
 
 using signature=int_alias(int);
 using collection=boost::function_collection<signature>;
+using unordered_collection=
+  boost::function_unordered_collection<signature>;
 
 using t1=function1;
 using t2=function2;

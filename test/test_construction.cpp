@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -48,7 +48,7 @@ void test_allocator_aware_construction()
 
   {
     rooted_poly_collection p2{cp};
-    BOOST_TEST(p2==p);
+    BOOST_TEST(equal<Types...>(p2,p));
     BOOST_TEST(p2.get_allocator().comes_from(root1));
   }
   {
@@ -56,7 +56,7 @@ void test_allocator_aware_construction()
     auto                   d2=get_layout_data<Types...>(p2);
     rooted_poly_collection p3{std::move(p2)};
     auto                   d3=get_layout_data<Types...>(p3);
-    BOOST_TEST(p3==p);
+    BOOST_TEST(equal<Types...>(p3,p));
     BOOST_TEST(d2==d3);
     BOOST_TEST(p2.empty());
     do_((BOOST_TEST(!is_open_and_registered<Types>(p2)),0)...);
@@ -64,7 +64,7 @@ void test_allocator_aware_construction()
   }
   {
     rooted_poly_collection p2{cp,root2};
-    BOOST_TEST(p2==p);
+    BOOST_TEST(equal<Types...>(p2,p));
     BOOST_TEST(p2.get_allocator().comes_from(root2));
   }
 #if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
@@ -88,7 +88,7 @@ void test_allocator_aware_construction()
     rooted_poly_collection p3{std::move(p2),root2};
     auto                   d3=get_layout_data<Types...>(p3);
 
-    BOOST_TEST(p3==p);
+    BOOST_TEST(equal<Types...>(p3,p));
     if(AlwaysEqual)BOOST_TEST(d2==d3);
 
     BOOST_TEST(p2.empty());
@@ -108,7 +108,7 @@ void test_allocator_aware_construction()
   {
     rooted_poly_collection p2{root2};
     p2=cp;
-    BOOST_TEST(p2==p);
+    BOOST_TEST(equal<Types...>(p2,p));
 
 #if BOOST_WORKAROUND(BOOST_MSVC,<=1900)
     /* std::unordered_map copy assignment does not propagate allocators */
@@ -143,7 +143,7 @@ void test_allocator_aware_construction()
     rooted_poly_collection p3{root2};
     p3=std::move(p2);
     auto                   d3=get_layout_data<Types...>(p3);
-    BOOST_TEST(p3==p);
+    BOOST_TEST(equal<Types...>(p3,p));
     if(Propagate||AlwaysEqual){
       BOOST_TEST(d2==d3);
       BOOST_TEST(p2.empty());
@@ -255,7 +255,7 @@ void test_construction()
 
     {
       PolyCollection p2{cp.begin(),cp.end()};
-      BOOST_TEST(p2==p);
+      BOOST_TEST(equal<Types...>(p2,p));
     }
     {
       using type=first_of<
@@ -374,6 +374,24 @@ void test_construction()
     function_types::t4,function_types::t5>();
   test_construction<
     variant_types::collection,auto_increment,
+    variant_types::t1,variant_types::t2,variant_types::t3,
+    variant_types::t4,variant_types::t5>();
+  test_scoped_allocator();
+
+  test_construction<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_construction<
+    base_types::unordered_collection,auto_increment,
+    base_types::t1,base_types::t2,base_types::t3,
+    base_types::t4,base_types::t5>();
+  test_construction<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,function_types::t2,function_types::t3,
+    function_types::t4,function_types::t5>();
+  test_construction<
+    variant_types::unordered_collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
   test_scoped_allocator();

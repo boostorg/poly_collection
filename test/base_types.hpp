@@ -1,4 +1,4 @@
-/* Copyright 2016-2018 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/poly_collection/base_collection.hpp>
+#include <boost/poly_collection/base_unordered_collection.hpp>
 
 namespace base_types{
 
@@ -74,6 +75,7 @@ struct derived5:base,another_base
 };
 
 using collection=boost::base_collection<base>;
+using unordered_collection=boost::base_unordered_collection<base>;
 
 using t1=derived1;
 using t2=derived2;

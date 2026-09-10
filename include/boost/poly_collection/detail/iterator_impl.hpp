@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -18,8 +18,8 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/poly_collection/detail/is_constructible.hpp>
 #include <boost/poly_collection/detail/iterator_traits.hpp>
+#include <iterator>
 #include <type_traits>
-#include <typeinfo>
 
 namespace boost{
 
@@ -31,106 +31,7 @@ namespace detail{
  * out of class to allow for use in deduced contexts.
  */
 
-template<typename PolyCollection,bool Const>
-using iterator_impl_value_type=typename std::conditional<
-  Const,
-  const typename PolyCollection::value_type,
-  typename PolyCollection::value_type
->::type;
-
-template<typename PolyCollection,bool Const>
-class iterator_impl:
-  public boost::iterator_facade<
-    iterator_impl<PolyCollection,Const>,
-    iterator_impl_value_type<PolyCollection,Const>,
-    boost::forward_traversal_tag
-  >
-{
-  using segment_type=typename PolyCollection::segment_type;
-  using const_segment_base_iterator=
-    typename PolyCollection::const_segment_base_iterator;
-  using const_segment_base_sentinel=
-    typename PolyCollection::const_segment_base_sentinel;
-  using const_segment_map_iterator=
-    typename PolyCollection::const_segment_map_iterator;
-
-public:
-  using value_type=iterator_impl_value_type<PolyCollection,Const>;
-
-private:
-  iterator_impl(
-    const_segment_map_iterator mapit,
-    const_segment_map_iterator mapend)noexcept:
-    mapit{mapit},mapend{mapend}
-  {
-    next_segment_position();
-  }
-
-  iterator_impl(
-    const_segment_map_iterator mapit_,const_segment_map_iterator mapend_,
-    const_segment_base_iterator segpos_)noexcept:
-    mapit{mapit_},mapend{mapend_},segpos{segpos_}
-  {
-    if(mapit!=mapend&&segpos==sentinel()){
-      ++mapit;
-      next_segment_position();
-    }
-  }
-
-public:
-  iterator_impl()=default;
-  iterator_impl(const iterator_impl&)=default;
-  iterator_impl& operator=(const iterator_impl&)=default;
-
-  template<bool Const2,typename std::enable_if<!Const2>::type* =nullptr>
-  iterator_impl(const iterator_impl<PolyCollection,Const2>& x):
-    mapit{x.mapit},mapend{x.mapend},segpos{x.segpos}{}
-      
-private:
-  template<typename,bool>
-  friend class iterator_impl;
-  friend PolyCollection;
-  friend class boost::iterator_core_access;
-  template<typename>
-  friend struct iterator_traits;
-
-  value_type& dereference()const noexcept
-    {return const_cast<value_type&>(*segpos);}
-  bool equal(const iterator_impl& x)const noexcept{return segpos==x.segpos;}
-
-  void increment()noexcept
-  {
-    if(++segpos==sentinel()){
-      ++mapit;
-      next_segment_position();
-    }
-  }
-
-  void next_segment_position()noexcept
-  {
-    for(;mapit!=mapend;++mapit){
-      segpos=segment().begin();
-      if(segpos!=sentinel())return;
-    }
-    segpos=nullptr;
-  }
-
-  segment_type&       segment()noexcept
-    {return const_cast<segment_type&>(mapit->second);}
-  const segment_type& segment()const noexcept{return mapit->second;}
-
-  const_segment_base_sentinel sentinel()const noexcept
-    {return segment().sentinel();}
-
-  const_segment_map_iterator  mapit,mapend;
-  const_segment_base_iterator segpos;
-};
-
-template<typename PolyCollection,bool Const>
-struct poly_collection_of<iterator_impl<PolyCollection,Const>>
-{
-  using type=PolyCollection;
-};
+template<typename PolyCollection,bool Const> class iterator_impl;
 
 template<typename PolyCollection,typename BaseIterator>
 class local_iterator_impl:
@@ -196,7 +97,9 @@ public:
     typename std::enable_if<
       !is_constructible<BaseIterator,BaseIterator2>::value&&
       is_constructible<BaseIterator,segment_base_iterator>::value&&
-      is_constructible<BaseIterator2,segment_base_iterator>::value
+      is_constructible<BaseIterator2,segment_base_iterator>::value&&
+      (is_const_iterator<BaseIterator>::value||
+        !is_const_iterator<BaseIterator2>::value)
     >::type* =nullptr
   >
   explicit local_iterator_impl(
@@ -207,13 +110,24 @@ public:
 
   /* define [] to avoid Boost.Iterator operator_brackets_proxy mess */
 
-  template<typename DifferenceType>
+  template<
+    typename DifferenceType,
+    typename BI=BaseIterator,
+    typename std::enable_if<
+      std::is_base_of<
+        std::random_access_iterator_tag,
+        typename std::iterator_traits<BI>::iterator_category
+      >::value
+    >::type* =nullptr
+  >
   typename std::iterator_traits<BaseIterator>::reference
   operator[](DifferenceType n)const{return *(*this+n);}
 
 private:
   template<typename,typename>
   friend class local_iterator_impl;
+  template<typename,bool>
+  friend class iterator_impl;
   friend PolyCollection;
   template<typename>
   friend struct iterator_traits;
@@ -251,6 +165,119 @@ private:
 
 template<typename PolyCollection,typename BaseIterator>
 struct poly_collection_of<local_iterator_impl<PolyCollection,BaseIterator>>
+{
+  using type=PolyCollection;
+};
+  
+template<typename PolyCollection,bool Const>
+using iterator_impl_value_type=typename std::conditional<
+  Const,
+  const typename PolyCollection::value_type,
+  typename PolyCollection::value_type
+>::type;
+
+template<typename PolyCollection,bool Const>
+class iterator_impl:
+  public boost::iterator_facade<
+    iterator_impl<PolyCollection,Const>,
+    iterator_impl_value_type<PolyCollection,Const>,
+    boost::forward_traversal_tag
+  >
+{
+  using segment_type=typename PolyCollection::segment_type;
+  using segment_base_iterator=typename std::conditional<Const,
+    typename PolyCollection::const_segment_base_iterator,
+    typename PolyCollection::segment_base_iterator>::type;
+  using const_segment_base_sentinel=
+    typename PolyCollection::const_segment_base_sentinel;
+  using const_segment_map_iterator=
+    typename PolyCollection::const_segment_map_iterator;
+
+public:
+  using value_type=iterator_impl_value_type<PolyCollection,Const>;
+
+private:
+  iterator_impl(
+    const_segment_map_iterator mapit,
+    const_segment_map_iterator mapend)noexcept:
+    mapit{mapit},mapend{mapend}
+  {
+    next_segment_position();
+  }
+
+  iterator_impl(
+    const_segment_map_iterator mapit_,const_segment_map_iterator mapend_,
+    segment_base_iterator segpos_)noexcept:
+    mapit{mapit_},mapend{mapend_},segpos{segpos_}
+  {
+    if(mapit!=mapend&&segpos==sentinel()){
+      ++mapit;
+      next_segment_position();
+    }
+  }
+
+public:
+  iterator_impl()=default;
+  iterator_impl(const iterator_impl&)=default;
+  iterator_impl& operator=(const iterator_impl&)=default;
+
+  template<bool Const2,typename std::enable_if<!Const2>::type* =nullptr>
+  iterator_impl(const iterator_impl<PolyCollection,Const2>& x):
+    mapit{x.mapit},mapend{x.mapend},segpos{x.segpos}{}
+
+  template<
+    typename BaseIterator,
+    typename std::enable_if<
+      std::is_constructible<BaseIterator,segment_base_iterator>::value
+    >::type* =nullptr
+  >
+  explicit operator local_iterator_impl<PolyCollection,BaseIterator>()const
+  {
+    return {mapit,BaseIterator(segpos)};
+  }
+
+private:
+  template<typename,bool>
+  friend class iterator_impl;
+  friend PolyCollection;
+  friend class boost::iterator_core_access;
+  template<typename>
+  friend struct iterator_traits;
+
+  value_type& dereference()const noexcept
+    {return const_cast<value_type&>(*segpos);}
+  bool equal(const iterator_impl& x)const noexcept{return segpos==x.segpos;}
+
+  void increment()noexcept
+  {
+    if(++segpos==sentinel()){
+      ++mapit;
+      next_segment_position();
+    }
+  }
+
+  void next_segment_position()noexcept
+  {
+    for(;mapit!=mapend;++mapit){
+      segpos=segment().begin();
+      if(segpos!=sentinel())return;
+    }
+    segpos=nullptr;
+  }
+
+  segment_type&       segment()noexcept
+    {return const_cast<segment_type&>(mapit->second);}
+  const segment_type& segment()const noexcept{return mapit->second;}
+
+  const_segment_base_sentinel sentinel()const noexcept
+    {return segment().sentinel();}
+
+  const_segment_map_iterator  mapit,mapend;
+  segment_base_iterator       segpos;
+};
+
+template<typename PolyCollection,bool Const>
+struct poly_collection_of<iterator_impl<PolyCollection,Const>>
 {
   using type=PolyCollection;
 };

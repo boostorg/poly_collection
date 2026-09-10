@@ -14,7 +14,6 @@
 #endif
 
 #include <boost/config.hpp>
-#include <boost/core/addressof.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/function.hpp>
@@ -30,11 +29,10 @@
 #include <boost/type_traits/has_less.hpp>
 #include <boost/type_traits/has_less_equal.hpp>
 #include <boost/type_traits/has_not_equal_to.hpp>
-#include <boost/type_traits/is_constructible.hpp>
 #include <cstddef>
+#include <exception>
 #include <limits>
 #include <memory>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
@@ -114,7 +112,7 @@ public:
       std::is_constructible<T,Args&&...>::value
     >::type* =nullptr
   >
-  fixed_variant_closure(Args&&... args)
+  explicit fixed_variant_closure(Args&&... args)
     noexcept(std::is_nothrow_constructible<T,Args&&...>::value):
     fixed_variant_store<T>{std::forward<Args>(args)...},
     Base{this->value}

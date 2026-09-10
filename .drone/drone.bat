@@ -1,4 +1,5 @@
 @REM Copyright 2022 Peter Dimov
+@REM Copyright 2026 Joaquin M Lopez Munoz
 @REM Distributed under the Boost Software License, Version 1.0.
 @REM https://www.boost.org/LICENSE_1_0.txt
 
@@ -20,4 +21,6 @@ b2 -d0 headers
 
 if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
 if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
-b2 -j3 libs/%LIBRARY%/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release embed-manifest-via=linker
+if "%VARIANT%" == "" set VARIANT=debug,release
+set VARIANT=variant=%VARIANT%
+b2 -j3 libs/%LIBRARY%/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% %VARIANT% embed-manifest-via=linker

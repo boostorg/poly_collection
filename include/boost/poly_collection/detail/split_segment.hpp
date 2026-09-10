@@ -1,4 +1,4 @@
-/* Copyright 2016-2020 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -34,7 +34,7 @@ namespace detail{
  * Requires:
  *   - [const_]base_iterator is constructible from value_type*.
  *   - value_type is copy constructible.
- *   - Model::make_value_type(x) returns a value_type created from a reference
+ *   - StorageModel::make_value_type(x) returns a value_type created from a reference
  *     to the concrete type.
  *
  * Conversion from base_iterator to local_iterator<Concrete> requires accesing
@@ -43,25 +43,26 @@ namespace detail{
  * slightly complicates the memory management.
  */
 
-template<typename Model,typename Concrete,typename Allocator>
-class split_segment:public segment_backend<Model,Allocator>
+template<typename StorageModel,typename Concrete>
+class split_segment:public segment_backend<StorageModel>
 {
-  using value_type=typename Model::value_type;
+  using value_type=typename StorageModel::value_type;
+  using allocator_type=typename StorageModel::segment_allocator_type;
   using store_value_type=value_holder<Concrete>;
   using store=std::vector<
     store_value_type,
-    typename std::allocator_traits<Allocator>::
+    typename std::allocator_traits<allocator_type>::
       template rebind_alloc<store_value_type>
   >;
   using store_iterator=typename store::iterator;
   using const_store_iterator=typename store::const_iterator;
   using index=std::vector<
     value_type,
-    typename std::allocator_traits<Allocator>::
+    typename std::allocator_traits<allocator_type>::
       template rebind_alloc<value_type>
   >;
   using const_index_iterator=typename index::const_iterator;
-  using segment_backend=detail::segment_backend<Model,Allocator>;
+  using segment_backend=detail::segment_backend<StorageModel>;
   using typename segment_backend::segment_backend_unique_ptr;
   using typename segment_backend::value_pointer;
   using typename segment_backend::const_value_pointer;
@@ -71,7 +72,7 @@ class split_segment:public segment_backend<Model,Allocator>
     typename segment_backend::template const_iterator<Concrete>;
   using typename segment_backend::base_sentinel;
   using typename segment_backend::range;
-  using segment_allocator_type=typename std::allocator_traits<Allocator>::
+  using segment_allocator_type=typename std::allocator_traits<allocator_type>::
     template rebind_alloc<split_segment>;
 
 public:
@@ -87,17 +88,17 @@ public:
     return new_(s.get_allocator(),store{s});
   }
 
-  virtual segment_backend_unique_ptr copy(const Allocator& al)const
+  virtual segment_backend_unique_ptr copy(const allocator_type& al)const
   {
     return new_(al,store{s,al});
   }
 
-  virtual segment_backend_unique_ptr empty_copy(const Allocator& al)const
+  virtual segment_backend_unique_ptr empty_copy(const allocator_type& al)const
   {
     return new_(al,al);
   }
 
-  virtual segment_backend_unique_ptr move(const Allocator& al)
+  virtual segment_backend_unique_ptr move(const allocator_type& al)
   {
     return new_(al,store{std::move(s),al});
   }
@@ -107,22 +108,22 @@ public:
     return s==static_cast<const split_segment&>(x).s;
   }
 
-  virtual Allocator     get_allocator()const noexcept
-                         {return s.get_allocator();}
-  virtual base_iterator begin()const noexcept{return nv_begin();}
-  base_iterator         nv_begin()const noexcept
-                         {return base_iterator{value_ptr(i.data())};}
-  virtual base_iterator end()const noexcept{return nv_end();}
-  base_iterator         nv_end()const noexcept
-                         {return base_iterator{value_ptr(i.data()+s.size())};}
-  virtual bool          empty()const noexcept{return nv_empty();}
-  bool                  nv_empty()const noexcept{return s.empty();}
-  virtual std::size_t   size()const noexcept{return nv_size();}
-  std::size_t           nv_size()const noexcept{return s.size();}
-  virtual std::size_t   max_size()const noexcept{return nv_max_size();}
-  std::size_t           nv_max_size()const noexcept{return s.max_size()-1;}
-  virtual std::size_t   capacity()const noexcept{return nv_capacity();}
-  std::size_t           nv_capacity()const noexcept{return s.capacity();}
+  virtual allocator_type get_allocator()const noexcept
+                          {return s.get_allocator();}
+  virtual base_iterator  begin()const noexcept{return nv_begin();}
+  base_iterator          nv_begin()const noexcept
+                          {return base_iterator{value_ptr(i.data())};}
+  virtual base_iterator  end()const noexcept{return nv_end();}
+  base_iterator          nv_end()const noexcept
+                          {return base_iterator{value_ptr(i.data()+s.size())};}
+  virtual bool           empty()const noexcept{return nv_empty();}
+  bool                   nv_empty()const noexcept{return s.empty();}
+  virtual std::size_t    size()const noexcept{return nv_size();}
+  std::size_t            nv_size()const noexcept{return s.size();}
+  virtual std::size_t    max_size()const noexcept{return nv_max_size();}
+  std::size_t            nv_max_size()const noexcept{return s.max_size()-1;}
+  virtual std::size_t    capacity()const noexcept{return nv_capacity();}
+  std::size_t            nv_capacity()const noexcept{return s.capacity();}
 
   virtual base_sentinel reserve(std::size_t n){return nv_reserve(n);}
 
@@ -309,7 +310,7 @@ private:
     std::allocator_traits<segment_allocator_type>::deallocate(al,q,1);
   }
 
-  split_segment(const Allocator& al):
+  split_segment(const allocator_type& al):
     s{typename store::allocator_type{al}},
     i{{},typename index::allocator_type{al}}
   {
@@ -380,7 +381,7 @@ private:
   void build_index(std::size_t start=0)
   {
     for(std::size_t n=start,m=s.size();n<=m;++n){
-      i.push_back(Model::make_value_type(concrete_ref(s.data()[n])));
+      i.push_back(StorageModel::make_value_type(concrete_ref(s.data()[n])));
     };
   }
 

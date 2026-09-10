@@ -1,4 +1,4 @@
-/* Copyright 2016-2024 Joaquin M Lopez Munoz.
+/* Copyright 2016-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -24,10 +24,17 @@ void test_local_erase(const PolyCollection& p2)
   using size_type=typename PolyCollection::size_type;
 
   for(size_type i=0;i<p2.template size<Type>();++i){
-    PolyCollection p=p2;
-    auto it=p.erase(p.template cbegin<Type>()+i);
-    BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
-    BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-1);
+    PolyCollection p3=p2;
+    auto it3=p3.erase(std::next(p3.template cbegin<Type>(),i));
+    BOOST_TEST(
+      std::distance(p3.template begin<Type>(),it3)==(std::ptrdiff_t)i);
+    BOOST_TEST(p3.template size<Type>()==p2.template size<Type>()-1);
+
+    PolyCollection p4=p2;
+    auto it4=p4.erase(std::next(p4.template begin<Type>(),i));
+    BOOST_TEST(
+      std::distance(p4.template begin<Type>(),it4)==(std::ptrdiff_t)i);
+    BOOST_TEST(p4.template size<Type>()==p2.template size<Type>()-1);
   }  
 }
 
@@ -38,12 +45,21 @@ void test_local_range_erase(const PolyCollection& p2)
 
   for(size_type i=0;i<=p2.template size<Type>();++i){
     for(size_type j=i;j<=p2.template size<Type>();++j){
-      PolyCollection p=p2;
-      auto first=p.template cbegin<Type>()+i,
-           last=p.template cbegin<Type>()+j;
-      auto it=p.erase(first,last);
-      BOOST_TEST(it-p.template begin<Type>()==(std::ptrdiff_t)i);
-      BOOST_TEST(p.template size<Type>()==p2.template size<Type>()-(j-i));
+      PolyCollection p3=p2;
+      auto first3=std::next(p3.template cbegin<Type>(),i),
+           last3=std::next(p3.template cbegin<Type>(),j);
+      auto it3=p3.erase(first3,last3);
+      BOOST_TEST(
+        std::distance(p3.template begin<Type>(),it3)==(std::ptrdiff_t)i);
+      BOOST_TEST(p3.template size<Type>()==p2.template size<Type>()-(j-i));
+
+      PolyCollection p4=p2;
+      auto first4=std::next(p4.template begin<Type>(),i),
+           last4=std::next(p4.template begin<Type>(),j);
+      auto it4=p4.erase(first4,last4);
+      BOOST_TEST(
+        std::distance(p4.template begin<Type>(),it4)==(std::ptrdiff_t)i);
+      BOOST_TEST(p4.template size<Type>()==p2.template size<Type>()-(j-i));
     }
   }
 }
@@ -82,8 +98,8 @@ void test_erasure()
     auto& info=s.type_info();
     for(size_type i=0;i<p2.size(info);++i){
       p=p2;
-      auto it=p.erase(p.cbegin(info)+i);
-      BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+      auto it=p.erase(std::next(p.cbegin(info),i));
+      BOOST_TEST(std::distance(p.begin(info),it)==(std::ptrdiff_t)i);
       BOOST_TEST(p.size(info)==p2.size(info)-1);
     }
   }
@@ -107,10 +123,10 @@ void test_erasure()
     for(size_type i=0;i<=p2.size(info);++i){
       for(size_type j=i;j<=p2.size(info);++j){
         p=p2;
-        auto first=p.cbegin(info)+i,
-              last=p.cbegin(info)+j;
+        auto first=std::next(p.cbegin(info),i),
+              last=std::next(p.cbegin(info),j);
         auto it=p.erase(first,last);
-        BOOST_TEST(it-p.begin(info)==(std::ptrdiff_t)i);
+        BOOST_TEST(std::distance(p.begin(info),it)==(std::ptrdiff_t)i);
         BOOST_TEST(p.size(info)==p2.size(info)-(j-i));
       }
     }
@@ -151,6 +167,23 @@ void test_erasure()
     function_types::t4,function_types::t5>();
   test_erasure<
     variant_types::collection,auto_increment,
+    variant_types::t1,variant_types::t2,variant_types::t3,
+    variant_types::t4,variant_types::t5>();
+
+  test_erasure<
+    any_types::unordered_collection,auto_increment,
+    any_types::t1,any_types::t2,any_types::t3,
+    any_types::t4,any_types::t5>();
+  test_erasure<
+    base_types::unordered_collection,auto_increment,
+    base_types::t1,base_types::t2,base_types::t3,
+    base_types::t4,base_types::t5>();
+  test_erasure<
+    function_types::unordered_collection,auto_increment,
+    function_types::t1,function_types::t2,function_types::t3,
+    function_types::t4,function_types::t5>();
+  test_erasure<
+    variant_types::unordered_collection,auto_increment,
     variant_types::t1,variant_types::t2,variant_types::t3,
     variant_types::t4,variant_types::t5>();
 }
